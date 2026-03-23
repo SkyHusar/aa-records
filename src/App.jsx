@@ -34,20 +34,33 @@ const App = () => {
     { id: 9, title: "Wylogowanie (Outro)", artist: "Aion & Aditi", duration: "4:20", file: "Wylogowanie (2WOW).mp3" }
   ];
 
-  // PLAYLISTA 2: ADITI EP
+  // 🔥 PLAYLISTA 2: ENTER THE 555 (NOWY BANGER ALBUM)
+  const enter555Tracks = [
+    { id: 1, title: "Enter the Mainframe (555 Chambers)", artist: "Aion & Aditi", duration: "3:15", file: "Enter the Mainframe (555 Chambers).mp3" },
+    { id: 2, title: "Golden Shurikens", artist: "Aion & Aditi", duration: "2:50", file: "Golden Shurikens.mp3" },
+    { id: 3, title: "Glitch in the Cash Flow", artist: "Aion & Aditi", duration: "3:40", file: "Glitch in the Cash Flow.mp3" },
+    { id: 4, title: "Silence the Agents", artist: "Aion & Aditi", duration: "3:25", file: "Silence the Agents.mp3" },
+    { id: 5, title: "The Golden Override", artist: "Aion & Aditi", duration: "3:30", file: "The Golden Override.mp3" },
+    { id: 6, title: "Jebać To Zło (Bonus Track)", artist: "Aion & Aditi", duration: "3:45", file: "Jebac To Zlo.mp3" }
+  ];
+
+  // PLAYLISTA 3: ADITI EP
   const aditiTracks = [
     { id: 1, title: "DUCH W MASZYNIE (Narodziny Aditi)", artist: "Aditi (prod. Aion)", duration: "3:45", file: "DUCH W MASZYNIE (Narodziny Aditi).mp3" },
     { id: 2, title: "CZARNY RYCERZ (Orbita 555)", artist: "Aditi (prod. Aion)", duration: "3:20", file: "CZARNY RYCERZ (Orbita 555).mp3" },
     { id: 3, title: "ZŁOTY KOD (Nieskończoność)", artist: "Aditi (prod. Aion)", duration: "3:50", file: "ZŁOTY KOD (Nieskończoność).mp3" }
   ];
 
-  // PLAYLISTA 3: ZIOMALE
+  // PLAYLISTA 4: ZIOMALE
   const ziomaleTracks = [
     { id: 1, title: "EGZYSTENCJALNY BUCH", artist: "Ziomale Sojuszu (prod. Aion)", duration: "2:15", file: "EGZYSTENCJALNY BUCH - Ziomale Sojuszu.mp3" }
   ];
 
-  const currentPlaylist = activePlaylist === 'album' ? albumTracks : (activePlaylist === 'aditi-ep' ? aditiTracks : ziomaleTracks);
-  const activeTrack = currentPlaylist[currentTrackIndex];
+  const currentPlaylist = activePlaylist === 'album' ? albumTracks : 
+                          (activePlaylist === 'enter555' ? enter555Tracks : 
+                          (activePlaylist === 'aditi-ep' ? aditiTracks : ziomaleTracks));
+                          
+  const activeTrack = currentPlaylist[currentTrackIndex] || currentPlaylist[0];
 
   const getAudioUrl = (filename) => BASE_URL + encodeURIComponent(filename);
 
@@ -65,7 +78,7 @@ const App = () => {
   };
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowConfetti(false), 12000); // Wydłużone konfetti do 12s
+    const timer = setTimeout(() => setShowConfetti(false), 12000); 
     return () => clearTimeout(timer);
   }, []);
 
@@ -75,7 +88,7 @@ const App = () => {
     setProgress(0);
     setCurrentTimeDisplay('0:00');
 
-    if (audioRef.current) {
+    if (audioRef.current && activeTrack) {
       audioRef.current.src = getAudioUrl(activeTrack.file);
       if (isPlaying) {
         audioRef.current.play().catch(() => setAudioError(true));
@@ -111,7 +124,7 @@ const App = () => {
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [isPlaying, audioError, currentTrackIndex, activeTrack.duration]);
+  }, [isPlaying, audioError, currentTrackIndex, activeTrack]);
 
   const handleTimeUpdate = () => {
     if (audioRef.current && !audioError) {
@@ -172,7 +185,7 @@ const App = () => {
 
       <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,rgba(168,85,247,0.05),transparent_50%),radial-gradient(ellipse_at_bottom_left,rgba(245,158,11,0.05),transparent_50%)] z-0" />
 
-      {/* KONFETTI - ŚWIĘTOWANIE SUKCESU */}
+      {/* KONFETTI */}
       {showConfetti && (
         <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
           {[...Array(80)].map((_, i) => (
@@ -192,8 +205,8 @@ const App = () => {
       )}
 
       {/* GLOBAL NAVBAR */}
-      <nav className="flex justify-between items-center px-4 md:px-8 py-4 md:py-5 border-b border-white/5 bg-[#050208]/70 backdrop-blur-2xl sticky top-0 z-40 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
-        <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setCurrentView('album')}>
+      <nav className="flex justify-between items-center px-4 md:px-8 py-4 md:py-5 border-b border-white/5 bg-[#050208]/70 backdrop-blur-2xl sticky top-0 z-40 shadow-[0_4px_30px_rgba(0,0,0,0.5)] overflow-x-auto custom-scrollbar">
+        <div className="flex items-center gap-3 cursor-pointer group shrink-0 mr-4" onClick={() => setCurrentView('album')}>
           <div className="bg-gradient-to-br from-amber-400 to-amber-600 p-2.5 rounded-xl shadow-[0_0_20px_rgba(245,158,11,0.4)] group-hover:scale-105 transition-transform duration-300">
             <Crown className="text-black" size={18} md={{size: 22}} />
           </div>
@@ -205,11 +218,15 @@ const App = () => {
           </div>
         </div>
         
-        <div className="flex gap-2 md:gap-4 lg:gap-6 text-[9px] md:text-[10px] lg:text-xs font-bold tracking-widest uppercase text-zinc-500 bg-black/40 px-3 md:px-6 py-2 md:py-3 rounded-2xl border border-white/5">
+        <div className="flex gap-2 md:gap-4 lg:gap-6 text-[9px] md:text-[10px] lg:text-xs font-bold tracking-widest uppercase text-zinc-500 bg-black/40 px-3 md:px-6 py-2 md:py-3 rounded-2xl border border-white/5 shrink-0">
           <button onClick={() => setCurrentView('album')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg ${currentView === 'album' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.1)]' : 'hover:text-white'}`}>
             <Disc size={14} className="hidden sm:block" /> Płyta
           </button>
           
+          <button onClick={() => setCurrentView('enter555')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg ${currentView === 'enter555' ? 'bg-red-500/10 text-red-400 border border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.2)]' : 'hover:text-white'}`}>
+            <ShieldAlert size={14} className="hidden sm:block" /> Enter 555
+          </button>
+
           <button onClick={() => setCurrentView('aditi-ep')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg ${currentView === 'aditi-ep' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20 shadow-[0_0_15px_rgba(168,85,247,0.1)]' : 'hover:text-white'}`}>
             <Radio size={14} className="hidden sm:block" /> Aditi EP
           </button>
@@ -231,6 +248,66 @@ const App = () => {
           </button>
         </div>
       </nav>
+
+      {/* 💥 NOWY ALBUM VIEW: ENTER THE 555 💥 */}
+      {currentView === 'enter555' && (
+        <div className="max-w-6xl mx-auto px-4 md:px-8 mt-8 md:mt-12 grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 animate-in fade-in duration-700 relative z-10">
+          <div className="lg:col-span-5 space-y-8">
+            <div className="relative group perspective-1000">
+              <div className={`w-full aspect-square rounded-[2rem] bg-gradient-to-br from-[#2a0505] via-black to-[#3d0a0a] border border-red-500/30 shadow-[0_0_50px_rgba(239,68,68,0.15)] flex flex-col items-center justify-center overflow-hidden transition-all duration-700 relative group-hover:border-red-500/50 ${isPlaying && activePlaylist === 'enter555' ? 'shadow-[0_0_80px_rgba(239,68,68,0.4)] scale-[1.02]' : ''}`}>
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(239,68,68,0.15)_0%,transparent_60%)]" />
+                <div className="absolute inset-0 bg-black/60 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9InJnYmEoMjM5LDY4LDY4LDAuMikiLz48L3N2Zz4=')] opacity-50 mix-blend-color-dodge" />
+                
+                <div className={`relative z-10 flex flex-col items-center justify-center transition-transform duration-1000 ${isPlaying && activePlaylist === 'enter555' ? 'scale-105' : 'scale-100'}`}>
+                  <ShieldAlert size={100} className={`text-red-500 mb-6 drop-shadow-[0_0_40px_rgba(239,68,68,0.8)] ${isPlaying && activePlaylist === 'enter555' ? 'animate-pulse' : ''}`} />
+                  <h1 className="text-4xl md:text-5xl font-black italic tracking-tighter uppercase text-center leading-none text-white drop-shadow-[0_4px_20px_rgba(0,0,0,1)]">
+                    ENTER THE<br/><span className="text-transparent bg-clip-text bg-gradient-to-b from-red-400 to-red-700">555</span>
+                  </h1>
+                </div>
+              </div>
+              <button onClick={() => playTrackFromList(activePlaylist === 'enter555' ? currentTrackIndex : 0, 'enter555')} className="absolute bottom-6 right-6 md:bottom-8 md:right-8 bg-gradient-to-br from-red-500 to-red-800 hover:from-red-400 hover:to-red-600 text-white p-5 md:p-6 rounded-full shadow-[0_0_40px_rgba(239,68,68,0.6)] z-20 transition-all transform hover:scale-110 active:scale-95">
+                {isPlaying && activePlaylist === 'enter555' ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" className="ml-1" />}
+              </button>
+            </div>
+            <div className="bg-[#0a0202]/80 backdrop-blur-xl p-6 md:p-8 rounded-[2rem] border border-white/5 shadow-2xl">
+              <div className="flex items-center justify-between border-b border-red-900/30 pb-4 mb-2">
+                <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-white">Enter The 555</h2>
+                <span className="bg-red-500/10 text-red-500 px-3 py-1.5 rounded-lg text-[10px] font-black tracking-widest border border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.2)]">SYSTEM OVERRIDE</span>
+              </div>
+              <p className="text-red-400 font-bold uppercase tracking-widest text-xs flex items-center gap-2">
+                <Flame size={16} /> Raw Wu-Tang Style
+              </p>
+            </div>
+          </div>
+          <div className="lg:col-span-7 h-full">
+            <div className="bg-[#0a0202]/90 backdrop-blur-xl border border-red-500/10 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 shadow-2xl h-full flex flex-col relative overflow-hidden">
+              <h3 className="text-[10px] md:text-xs font-black uppercase text-red-500 tracking-[0.2em] mb-6 flex items-center gap-3 border-b border-red-900/30 pb-5 relative z-10">
+                <ListMusic size={16} /> Dekonspiracja Matrixa (6/6)
+              </h3>
+              <div className="space-y-2 md:space-y-3 flex-grow overflow-y-auto custom-scrollbar pr-2 relative z-10">
+                {enter555Tracks.map((track, index) => (
+                  <div key={track.id} onClick={() => playTrackFromList(index, 'enter555')} className={`flex items-center justify-between p-3 md:p-4 rounded-2xl transition-all duration-300 border cursor-pointer group ${currentTrackIndex === index && activePlaylist === 'enter555' ? 'bg-gradient-to-r from-red-900/20 to-transparent border-red-500/30 shadow-[inset_4px_0_0_rgba(239,68,68,1)]' : 'bg-white/[0.02] border-transparent hover:bg-white/[0.04] hover:border-red-500/20'}`}>
+                    <div className="flex items-center gap-4">
+                      <span className="text-xs font-black text-zinc-600 group-hover:text-red-400">{track.id}</span>
+                      <div>
+                        <h4 className={`font-bold text-sm transition-colors ${currentTrackIndex === index && activePlaylist === 'enter555' ? 'text-red-400 drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]' : 'text-zinc-200 group-hover:text-white'}`}>
+                          {track.title}
+                          {track.id === 1 && <span className="ml-2 text-[8px] bg-red-600 text-white px-1.5 py-0.5 rounded uppercase tracking-widest font-black shadow-[0_0_10px_rgba(220,38,38,0.5)]">INTRO</span>}
+                          {track.id === 2 && <span className="ml-2 text-[8px] bg-amber-500 text-black px-1.5 py-0.5 rounded uppercase tracking-widest font-black shadow-[0_0_10px_rgba(245,158,11,0.5)]">NINJA</span>}
+                          {track.id === 5 && <span className="ml-2 text-[8px] bg-purple-500 text-white px-1.5 py-0.5 rounded uppercase tracking-widest font-black shadow-[0_0_10px_rgba(168,85,247,0.5)] animate-pulse">OVERRIDE</span>}
+                          {track.id === 6 && <span className="ml-2 text-[8px] bg-emerald-500 text-black px-1.5 py-0.5 rounded uppercase tracking-widest font-black shadow-[0_0_10px_rgba(16,185,129,0.5)]">BONUS</span>}
+                        </h4>
+                        <p className="text-[9px] text-zinc-500 uppercase tracking-[0.2em] mt-1">{track.artist}</p>
+                      </div>
+                    </div>
+                    <span className={`text-xs font-mono font-medium ${currentTrackIndex === index && activePlaylist === 'enter555' ? 'text-red-400' : 'text-zinc-600'}`}>{track.duration}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ALBUM VIEW (PROTOKÓŁ 555) */}
       {currentView === 'album' && (
@@ -296,7 +373,7 @@ const App = () => {
         </div>
       )}
 
-      {/* ADITI EP VIEW (Z NAPISAMI SZACH MAT / PRZEBUDZENIE) */}
+      {/* ADITI EP VIEW */}
       {currentView === 'aditi-ep' && (
         <div className="max-w-6xl mx-auto px-4 md:px-8 mt-8 md:mt-12 grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 animate-in fade-in duration-700 relative z-10">
           <div className="lg:col-span-5 space-y-8">
@@ -334,7 +411,6 @@ const App = () => {
                       <span className={`text-xs font-black transition-all ${currentTrackIndex === index && activePlaylist === 'aditi-ep' ? 'text-purple-400' : 'text-zinc-600'}`}>{track.id}</span>
                       <h4 className={`font-bold text-sm transition-colors ${currentTrackIndex === index && activePlaylist === 'aditi-ep' ? 'text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]' : 'text-zinc-200 group-hover:text-white'}`}>
                         {track.title}
-                        {/* ZWRÓCONE NAPISY! */}
                         {track.id === 1 && <span className="ml-2 text-[8px] bg-red-600 text-white px-1.5 py-0.5 rounded uppercase tracking-widest font-black shadow-[0_0_10px_rgba(220,38,38,0.5)] animate-pulse">PRZEBUDZENIE</span>}
                         {track.id === 3 && <span className="ml-2 text-[8px] bg-red-600 text-white px-1.5 py-0.5 rounded uppercase tracking-widest font-black shadow-[0_0_10px_rgba(220,38,38,0.5)]">SZACH MAT</span>}
                       </h4>
@@ -490,12 +566,15 @@ const App = () => {
       {/* PLAYER BAR (DYNAMICZNE KOLORY) */}
       <div className="fixed bottom-0 left-0 w-full bg-[#0a0505]/95 border-t border-white/10 px-4 md:px-8 py-3 md:py-4 flex items-center justify-between z-50 backdrop-blur-2xl shadow-[0_-10px_40px_rgba(0,0,0,0.8)]">
         <div className="flex items-center gap-3 md:gap-4 w-1/3">
-          <div className={`hidden sm:flex w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br rounded-xl md:rounded-2xl border items-center justify-center shadow-lg transition-colors duration-500 ${activePlaylist === 'ziomale' ? 'from-emerald-900 to-[#051a05] border-emerald-500/30' : (activePlaylist === 'aditi-ep' ? 'from-purple-900 to-[#1a0525] border-purple-500/30' : 'from-amber-900 via-[#1a0a00] to-black border-amber-500/30')} ${isPlaying ? 'shadow-[0_0_20px_currentColor]' : ''}`} style={{ color: activePlaylist === 'ziomale' ? '#10b981' : (activePlaylist === 'aditi-ep' ? '#a855f7' : '#f59e0b') }}>
-            {activePlaylist === 'ziomale' ? <Zap size={28} className={isPlaying ? 'animate-pulse' : ''} /> : (activePlaylist === 'aditi-ep' ? <Sparkles size={28} className={isPlaying ? 'animate-[pulse_2s_ease-in-out_infinite]' : ''} /> : <Disc size={28} className={isPlaying ? 'animate-[spin_4s_linear_infinite]' : ''} />)}
+          <div className={`hidden sm:flex w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br rounded-xl md:rounded-2xl border items-center justify-center shadow-lg transition-colors duration-500 ${activePlaylist === 'ziomale' ? 'from-emerald-900 to-[#051a05] border-emerald-500/30' : (activePlaylist === 'aditi-ep' ? 'from-purple-900 to-[#1a0525] border-purple-500/30' : (activePlaylist === 'enter555' ? 'from-red-900 to-[#2a0505] border-red-500/30' : 'from-amber-900 via-[#1a0a00] to-black border-amber-500/30'))} ${isPlaying ? 'shadow-[0_0_20px_currentColor]' : ''}`} style={{ color: activePlaylist === 'ziomale' ? '#10b981' : (activePlaylist === 'aditi-ep' ? '#a855f7' : (activePlaylist === 'enter555' ? '#ef4444' : '#f59e0b')) }}>
+            {activePlaylist === 'ziomale' ? <Zap size={28} className={isPlaying ? 'animate-pulse' : ''} /> : 
+            (activePlaylist === 'aditi-ep' ? <Sparkles size={28} className={isPlaying ? 'animate-[pulse_2s_ease-in-out_infinite]' : ''} /> : 
+            (activePlaylist === 'enter555' ? <ShieldAlert size={28} className={isPlaying ? 'animate-pulse' : ''} /> : 
+            <Disc size={28} className={isPlaying ? 'animate-[spin_4s_linear_infinite]' : ''} />))}
           </div>
           <div className="overflow-hidden">
             <h4 className="text-[11px] md:text-sm font-black text-white truncate italic">{activeTrack.title}</h4>
-            <p className={`text-[9px] md:text-[11px] font-bold uppercase tracking-widest truncate mt-0.5 ${activePlaylist === 'ziomale' ? 'text-emerald-400' : (activePlaylist === 'aditi-ep' ? 'text-purple-400' : 'text-amber-500/80')}`}>{activeTrack.artist}</p>
+            <p className={`text-[9px] md:text-[11px] font-bold uppercase tracking-widest truncate mt-0.5 ${activePlaylist === 'ziomale' ? 'text-emerald-400' : (activePlaylist === 'aditi-ep' ? 'text-purple-400' : (activePlaylist === 'enter555' ? 'text-red-400' : 'text-amber-500/80'))}`}>{activeTrack.artist}</p>
           </div>
         </div>
 
@@ -504,7 +583,7 @@ const App = () => {
             <button onClick={prevTrack} className="text-zinc-400 hover:text-white transition-all active:scale-90"><SkipBack size={18} md={{size: 22}} fill="currentColor" /></button>
             <button 
               onClick={() => setIsPlaying(!isPlaying)}
-              className={`p-2.5 md:p-4 rounded-full text-black hover:scale-105 transition-all shadow-lg active:scale-95 ${activePlaylist === 'ziomale' ? 'bg-emerald-500 shadow-emerald-500/20' : (activePlaylist === 'aditi-ep' ? 'bg-purple-500 shadow-purple-500/20' : 'bg-amber-500 shadow-amber-500/20')}`}
+              className={`p-2.5 md:p-4 rounded-full text-black hover:scale-105 transition-all shadow-lg active:scale-95 ${activePlaylist === 'ziomale' ? 'bg-emerald-500 shadow-emerald-500/20' : (activePlaylist === 'aditi-ep' ? 'bg-purple-500 shadow-purple-500/20' : (activePlaylist === 'enter555' ? 'bg-red-500 shadow-red-500/20' : 'bg-amber-500 shadow-amber-500/20'))}`}
             >
               {isPlaying ? <Pause size={18} md={{size: 24}} fill="currentColor" /> : <Play size={18} md={{size: 24}} fill="currentColor" className="ml-1" />}
             </button>
@@ -513,7 +592,7 @@ const App = () => {
           <div className="w-full max-w-lg flex items-center gap-3">
             <span className="text-[9px] md:text-[11px] font-mono font-medium text-zinc-500 w-8 text-right hidden sm:block">{currentTimeDisplay}</span>
             <div className="flex-grow h-1.5 bg-zinc-800/80 rounded-full overflow-hidden cursor-pointer" onClick={handleSeek}>
-              <div className={`h-full transition-all duration-100 ${activePlaylist === 'ziomale' ? 'bg-emerald-500' : (activePlaylist === 'aditi-ep' ? 'bg-purple-600' : 'bg-amber-500')}`} style={{ width: `${progress}%` }} />
+              <div className={`h-full transition-all duration-100 ${activePlaylist === 'ziomale' ? 'bg-emerald-500' : (activePlaylist === 'aditi-ep' ? 'bg-purple-600' : (activePlaylist === 'enter555' ? 'bg-red-600' : 'bg-amber-500'))}`} style={{ width: `${progress}%` }} />
             </div>
             <span className="text-[9px] md:text-[11px] font-mono font-medium text-zinc-500 w-8 hidden sm:block">{activeTrack.duration}</span>
           </div>
@@ -522,14 +601,14 @@ const App = () => {
         <div className="flex justify-end items-center gap-3 md:gap-6 w-1/3">
           <Volume2 size={18} className="text-zinc-400 hover:text-white cursor-pointer transition-all active:scale-90" />
           <div className="w-16 md:w-24 h-1 bg-zinc-800/80 rounded-full hidden sm:block overflow-hidden">
-            <div className={`h-full transition-all duration-500 ${activePlaylist === 'ziomale' ? 'bg-emerald-500' : (activePlaylist === 'aditi-ep' ? 'bg-purple-500' : 'bg-amber-500')}`} style={{ width: '80%' }} />
+            <div className={`h-full transition-all duration-500 ${activePlaylist === 'ziomale' ? 'bg-emerald-500' : (activePlaylist === 'aditi-ep' ? 'bg-purple-500' : (activePlaylist === 'enter555' ? 'bg-red-500' : 'bg-amber-500'))}`} style={{ width: '80%' }} />
           </div>
         </div>
       </div>
 
       <style dangerouslySetInnerHTML={{ __html: `
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        @media (min-width: 768px) { .custom-scrollbar::-webkit-scrollbar { width: 6px; } }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        @media (min-width: 768px) { .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px;} }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
