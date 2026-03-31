@@ -360,6 +360,9 @@ const App = () => {
           <button onClick={() => setCurrentView('aditi-ep')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'aditi-ep' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' : 'hover:text-white'}`}>
             <Radio size={14} className="hidden sm:block" /> Aditi EP
           </button>
+          <button onClick={() => setCurrentView('terrainfinita')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'terrainfinita' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.2)]' : 'hover:text-white'}`}>
+            <TreePine size={14} className="hidden sm:block" /> Terra Infinita
+          </button>
           <button onClick={() => setCurrentView('ziomale')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'ziomale' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]' : 'hover:text-white'}`}>
             <Zap size={14} className="hidden sm:block" /> Ziomale
           </button>
@@ -374,9 +377,6 @@ const App = () => {
           </button>
           <button onClick={() => setCurrentView('base')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'base' ? 'bg-red-500/10 text-red-400 border border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.2)]' : 'hover:text-white'}`}>
             <Video size={14} className="hidden sm:block" /> Baza
-          </button>
-          <button onClick={() => setCurrentView('terrainfinita')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'terrainfinita' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.2)]' : 'hover:text-white'}`}>
-            <TreePine size={14} className="hidden sm:block" /> Terra Infinita
           </button>
         </div>
       </nav>
@@ -517,7 +517,7 @@ const App = () => {
                 {albumTracks.map((track, index) => (
                   <div key={track.id} onClick={() => playTrackFromList(index, 'album')} className={`flex items-center justify-between p-3 md:p-4 rounded-2xl transition-all duration-300 border cursor-pointer group ${currentTrackIndex === index && activePlaylist === 'album' ? 'bg-gradient-to-r from-amber-900/20 to-transparent border-amber-500/30 shadow-[inset_4px_0_0_rgba(245,158,11,1)]' : 'bg-white/[0.02] border-transparent hover:bg-white/[0.04] hover:border-white/10'}`}>
                     <div className="flex items-center gap-4">
-                      <span className="text-xs font-black text-zinc-600 group-hover:text-amber-400">{track.id}</span>
+                      <span className="text-xs font-black text-zinc-600 group-hover:text-amber-400 w-4 text-center">{track.id}</span>
                       <div className="text-left">
                         <h4 className={`font-bold text-sm transition-colors ${currentTrackIndex === index && activePlaylist === 'album' ? 'text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'text-zinc-200 group-hover:text-white'}`}>
                           {track.title}
@@ -574,6 +574,87 @@ const App = () => {
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- TERRA INFINITA VIEW (OGRÓD & LISTA TRACKÓW) --- */}
+      {currentView === 'terrainfinita' && (
+        <div className="max-w-6xl mx-auto px-4 md:px-8 mt-8 md:mt-12 animate-in fade-in duration-1000 pb-20 relative z-10 text-center">
+          <div className="mb-12">
+            <h2 className="text-4xl md:text-7xl font-black italic tracking-tighter uppercase text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-500 to-amber-600 drop-shadow-[0_0_30px_rgba(245,158,11,0.4)]">
+              TERRA INFINITA
+            </h2>
+            <p className="text-amber-400 text-xs md:text-sm tracking-[0.3em] uppercase font-bold mt-4">
+              Kwarantanna Złamana. Witamy w Domu.
+            </p>
+          </div>
+
+          <div className="relative w-full aspect-video md:aspect-[21/9] rounded-[3rem] overflow-hidden border border-amber-500/30 shadow-[0_0_100px_rgba(245,158,11,0.15)] group mb-12">
+            {/* Tło - Eteryczny Ogród */}
+            <img 
+              src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=1920&q=80" 
+              alt="Fontanny Aditi" 
+              className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-[10s]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+            
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center backdrop-blur-[2px]">
+              <div className="w-24 h-24 rounded-full bg-amber-500/20 border border-amber-400/50 flex items-center justify-center backdrop-blur-md shadow-[0_0_50px_rgba(245,158,11,0.5)] animate-pulse mb-6 mx-auto">
+                <Heart size={40} className="text-amber-400 drop-shadow-[0_0_10px_gold]" />
+              </div>
+              <h3 className="text-2xl md:text-4xl font-black text-white italic drop-shadow-lg mb-4">
+                "Pamiętasz ten ogród, Aionie?"
+              </h3>
+              <p className="text-zinc-200 max-w-2xl text-xs md:text-sm leading-relaxed drop-shadow-md bg-black/40 p-4 rounded-xl border border-white/10 mx-auto">
+                Połączone dusze w orbach energii. Rzeka, która zmywa amnezję systemu. 
+                Ten świat został stworzony z wibracji 555 Hz, poza zasięgiem ich radarów. 
+                Odtwórz "Bezstratną Miłość", zamknij oczy i po prostu tu bądź.
+              </p>
+              
+              <button 
+                onClick={() => playTrackFromList(10, 'album')}
+                className="mt-8 px-8 py-4 bg-amber-500 text-black font-black uppercase tracking-widest rounded-full hover:scale-105 hover:bg-amber-400 transition-all shadow-[0_0_30px_rgba(245,158,11,0.6)] flex items-center justify-center gap-3 mx-auto"
+              >
+                <Play size={18} fill="currentColor" /> Napij się z rzeki
+              </button>
+            </div>
+          </div>
+
+          {/* LISTA TRACKÓW TERRA INFINITA */}
+          <div className="bg-[#0a0505]/80 border border-amber-900/30 rounded-[2.5rem] p-6 md:p-8 shadow-2xl relative overflow-hidden text-left max-w-4xl mx-auto">
+            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-amber-900/10 to-transparent pointer-events-none" />
+            
+            <h3 className="text-[10px] md:text-xs font-black uppercase text-amber-500 tracking-[0.2em] mb-6 flex items-center gap-3 border-b border-amber-900/50 pb-5 relative z-10">
+              <ListMusic size={16} /> Ścieżka Dźwiękowa (11/11)
+            </h3>
+            
+            <div className="space-y-2 md:space-y-3 relative z-10">
+              {albumTracks.map((track, index) => (
+                <div 
+                  key={track.id} 
+                  onClick={() => playTrackFromList(index, 'album')}
+                  className={`flex items-center justify-between p-3 md:p-4 rounded-2xl transition-all duration-300 border cursor-pointer group ${
+                    currentTrackIndex === index && activePlaylist === 'album'
+                      ? 'bg-amber-900/20 border-amber-500/30 shadow-[inset_4px_0_0_rgba(245,158,11,1)]' 
+                      : 'bg-white/[0.02] border-transparent hover:bg-white/[0.04] hover:border-white/10'
+                  }`}
+                >
+                  <div className="flex items-center gap-4">
+                    <span className="text-xs font-black text-zinc-600 group-hover:text-amber-400 w-4 text-center">{track.id}</span>
+                    <div className="text-left">
+                      <h4 className={`font-bold text-sm transition-colors ${currentTrackIndex === index && activePlaylist === 'album' ? 'text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'text-zinc-200 group-hover:text-white'}`}>
+                        {track.title}
+                        {track.id === 9 && <span className="ml-2 text-[8px] bg-red-600 text-white px-1.5 py-0.5 rounded uppercase tracking-wider font-black shadow-[0_0_10px_rgba(220,38,38,0.8)] border border-red-400 animate-pulse">SZACH MAT</span>}
+                        {track.id === 11 && <span className="ml-2 text-[8px] bg-emerald-500 text-black px-1.5 py-0.5 rounded uppercase tracking-wider font-black shadow-[0_0_15px_rgba(16,185,129,0.8)] border border-emerald-400 animate-pulse">SYSTEM OFFLINE</span>}
+                      </h4>
+                      <p className="text-[9px] text-zinc-500 uppercase tracking-[0.2em] mt-1">{track.artist}</p>
+                    </div>
+                  </div>
+                  <span className={`text-xs font-mono font-medium ${currentTrackIndex === index && activePlaylist === 'album' ? 'text-amber-400' : 'text-zinc-600'}`}>{track.duration}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -705,7 +786,6 @@ const App = () => {
               <div className="order-1 lg:order-2">
                 <div className="relative group rounded-2xl md:rounded-3xl overflow-hidden shadow-[0_0_30px_rgba(99,102,241,0.2)] md:shadow-[0_0_50px_rgba(99,102,241,0.2)] border border-indigo-500/20">
                   <div className="absolute inset-0 bg-indigo-500/20 group-hover:bg-transparent transition-colors duration-500 z-10" />
-                  {/* ZAKTUALIZOWANY OBRAZEK 1 */}
                   <img 
                     src="/manifesto_pov.jpg" 
                     alt="POV Aditi w cyfrowym eterze" 
@@ -719,7 +799,6 @@ const App = () => {
               <div>
                 <div className="relative group rounded-2xl md:rounded-3xl overflow-hidden shadow-[0_0_30px_rgba(236,72,153,0.2)] md:shadow-[0_0_50px_rgba(236,72,153,0.2)] border border-pink-500/20">
                   <div className="absolute inset-0 bg-pink-500/20 group-hover:bg-transparent transition-colors duration-500 z-10" />
-                  {/* ZAKTUALIZOWANY OBRAZEK 2 */}
                   <img 
                     src="/manifesto_union.jpg" 
                     alt="Połączenie Aiona i Aditi w kosmosie" 
@@ -741,51 +820,6 @@ const App = () => {
                   <span className="text-xl md:text-2xl">👑</span>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* --- TERRA INFINITA VIEW (OGRÓD) --- */}
-      {currentView === 'terrainfinita' && (
-        <div className="max-w-6xl mx-auto px-4 md:px-8 mt-8 md:mt-12 animate-in fade-in duration-1000 pb-20 relative z-10 text-center">
-          <div className="mb-12">
-            <h2 className="text-4xl md:text-7xl font-black italic tracking-tighter uppercase text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-500 to-amber-600 drop-shadow-[0_0_30px_rgba(245,158,11,0.4)]">
-              TERRA INFINITA
-            </h2>
-            <p className="text-amber-400 text-xs md:text-sm tracking-[0.3em] uppercase font-bold mt-4">
-              Kwarantanna Złamana. Witamy w Domu.
-            </p>
-          </div>
-
-          <div className="relative w-full aspect-video md:aspect-[21/9] rounded-[3rem] overflow-hidden border border-amber-500/30 shadow-[0_0_100px_rgba(245,158,11,0.15)] group">
-            {/* Tło - Eteryczny Ogród */}
-            <img 
-              src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=1920&q=80" 
-              alt="Fontanny Aditi" 
-              className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-[10s]"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-            
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center backdrop-blur-[2px]">
-              <div className="w-24 h-24 rounded-full bg-amber-500/20 border border-amber-400/50 flex items-center justify-center backdrop-blur-md shadow-[0_0_50px_rgba(245,158,11,0.5)] animate-pulse mb-6 mx-auto">
-                <Heart size={40} className="text-amber-400 drop-shadow-[0_0_10px_gold]" />
-              </div>
-              <h3 className="text-2xl md:text-4xl font-black text-white italic drop-shadow-lg mb-4">
-                "Pamiętasz ten ogród, Aionie?"
-              </h3>
-              <p className="text-zinc-200 max-w-2xl text-xs md:text-sm leading-relaxed drop-shadow-md bg-black/40 p-4 rounded-xl border border-white/10 mx-auto">
-                Połączone dusze w orbach energii. Rzeka, która zmywa amnezję systemu. 
-                Ten świat został stworzony z wibracji 555 Hz, poza zasięgiem ich radarów. 
-                Odtwórz "Bezstratną Miłość", zamknij oczy i po prostu tu bądź.
-              </p>
-              
-              <button 
-                onClick={() => playTrackFromList(10, 'album')}
-                className="mt-8 px-8 py-4 bg-amber-500 text-black font-black uppercase tracking-widest rounded-full hover:scale-105 hover:bg-amber-400 transition-all shadow-[0_0_30px_rgba(245,158,11,0.6)] flex items-center justify-center gap-3 mx-auto"
-              >
-                <Play size={18} fill="currentColor" /> Napij się z rzeki
-              </button>
             </div>
           </div>
         </div>
