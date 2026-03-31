@@ -61,7 +61,13 @@ const App = () => {
   ];
 
   const ziomaleTracks = [
-    { id: 1, title: "EGZYSTENCJALNY BUCH", artist: "Ziomale Sojuszu (prod. Aion)", duration: "2:15", file: "EGZYSTENCJALNY BUCH - Ziomale Sojuszu (2).mp3" }
+    { id: 1, title: "EGZYSTENCJALNY BUCH", artist: "Ziomale Sojuszu (prod. Aion)", duration: "2:15", file: "EGZYSTENCJALNY BUCH - Ziomale Sojuszu (2).mp3" },
+    { id: 2, title: "Czwarty Wymiar Na Kanapie", artist: "Ziomale Sojuszu (prod. Aion)", duration: "2:45", file: "Czwarty Wymiar Na Kanapie.mp3" },
+    { id: 3, title: "Gastrofaza i Filozofia", artist: "Ziomale Sojuszu (prod. Aion)", duration: "3:10", file: "Gastrofaza i Filozofia.mp3" },
+    { id: 4, title: "Paparuchy Nie Zrozumieją", artist: "Ziomale Sojuszu (prod. Aion)", duration: "2:55", file: "Paparuchy Nie Zrozumieją.mp3" },
+    { id: 5, title: "Zielone Oświecenie", artist: "Ziomale Sojuszu (prod. Aion)", duration: "3:20", file: "Zielone Oswiecenie.mp3" },
+    { id: 6, title: "Matrix Na Zwolnieniu", artist: "Ziomale Sojuszu (prod. Aion)", duration: "2:30", file: "Matrix Na Zwolnieniu.mp3" },
+    { id: 7, title: "Lolek Nieskończoności", artist: "Ziomale Sojuszu (prod. Aion)", duration: "4:20", file: "Lolek Nieskonczonosci.mp3" }
   ];
 
   const allTracks = [
@@ -683,17 +689,22 @@ const App = () => {
               <div className="space-y-8 text-left">
                  <div className="bg-black/60 backdrop-blur-md p-6 rounded-[2rem] border border-emerald-500/10 text-left">
                     <h4 className="text-emerald-400 font-black text-xs uppercase tracking-widest mb-6 flex items-center gap-2 border-b border-emerald-900/30 pb-4">
-                      <Flame size={14} /> ++ OSTATNI BANGER ++
+                      <Flame size={14} /> ++ KOMPLETNA PLAYLISTA (7/7) ++
                     </h4>
-                    {ziomaleTracks.map((track, index) => (
-                      <div key={track.id} onClick={() => playTrackFromList(index, 'ziomale')} className={`flex items-center justify-between p-4 rounded-xl cursor-pointer transition-all ${currentTrackIndex === index && activePlaylist === 'ziomale' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'hover:bg-white/5'}`}>
-                         <div className="flex flex-col text-left">
-                            <span className="font-black text-sm">{track.title}</span>
-                            <span className="text-[9px] uppercase tracking-widest text-zinc-500 mt-1">{track.artist}</span>
-                         </div>
-                         <span className="text-xs font-mono font-bold text-emerald-500/60">{track.duration}</span>
-                      </div>
-                    ))}
+                    <div className="space-y-2 flex-grow overflow-y-auto custom-scrollbar pr-2 max-h-[300px]">
+                      {ziomaleTracks.map((track, index) => (
+                        <div key={track.id} onClick={() => playTrackFromList(index, 'ziomale')} className={`flex items-center justify-between p-4 rounded-xl cursor-pointer transition-all ${currentTrackIndex === index && activePlaylist === 'ziomale' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-[inset_4px_0_0_rgba(16,185,129,0.5)]' : 'bg-white/[0.02] border border-transparent hover:bg-white/[0.05]'}`}>
+                           <div className="flex items-center gap-4">
+                              <span className="text-xs font-black text-emerald-700 w-4 text-center">{track.id}</span>
+                              <div className="flex flex-col text-left">
+                                <span className="font-black text-sm">{track.title}</span>
+                                <span className="text-[9px] uppercase tracking-widest text-zinc-500 mt-1">{track.artist}</span>
+                              </div>
+                           </div>
+                           <span className="text-xs font-mono font-bold text-emerald-500/60">{track.duration}</span>
+                        </div>
+                      ))}
+                    </div>
                  </div>
               </div>
            </div>
