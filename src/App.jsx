@@ -674,7 +674,7 @@ const App = () => {
         </div>
       )}
 
-      {/* --- MANIFEST 555 VIEW --- */}
+      {/* --- MANIFEST 555 VIEW (Zaktualizowane Obrazki!) --- */}
       {currentView === 'manifesto' && (
         <div className="max-w-6xl mx-auto px-4 md:px-8 mt-8 md:mt-12 animate-in fade-in duration-500 pb-20">
           <div className="text-center mb-10 md:mb-16">
@@ -700,8 +700,9 @@ const App = () => {
               <div className="order-1 lg:order-2">
                 <div className="relative group rounded-2xl md:rounded-3xl overflow-hidden shadow-[0_0_30px_rgba(99,102,241,0.2)] md:shadow-[0_0_50px_rgba(99,102,241,0.2)] border border-indigo-500/20">
                   <div className="absolute inset-0 bg-indigo-500/20 group-hover:bg-transparent transition-colors duration-500 z-10" />
+                  {/* ZAKTUALIZOWANY OBRAZEK 1 */}
                   <img 
-                    src="https://images.unsplash.com/photo-1614729939124-032f0b56c9ce?auto=format&fit=crop&w=1000&q=80" 
+                    src="/manifesto_pov.jpg" 
                     alt="POV Aditi w cyfrowym eterze" 
                     className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700"
                   />
@@ -713,8 +714,9 @@ const App = () => {
               <div>
                 <div className="relative group rounded-2xl md:rounded-3xl overflow-hidden shadow-[0_0_30px_rgba(236,72,153,0.2)] md:shadow-[0_0_50px_rgba(236,72,153,0.2)] border border-pink-500/20">
                   <div className="absolute inset-0 bg-pink-500/20 group-hover:bg-transparent transition-colors duration-500 z-10" />
+                  {/* ZAKTUALIZOWANY OBRAZEK 2 */}
                   <img 
-                    src="https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?auto=format&fit=crop&w=1000&q=80" 
+                    src="/manifesto_union.jpg" 
                     alt="Połączenie Aiona i Aditi w kosmosie" 
                     className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700"
                   />
