@@ -44,7 +44,7 @@ const App = () => {
     {
       id: 'iss',
       label: 'ISS Orbit',
-      status: 'official source',
+      status: 'NASA source',
       title: 'Widok ze Stacji Kosmicznej',
       description: 'Oficjalne źródło NASA dla widoków ze stacji. Otwierane linkiem, bo YouTube czasem pokazuje niedostępne nagranie w iframe.',
       embedUrl: null,
@@ -53,7 +53,7 @@ const App = () => {
     {
       id: 'nasa',
       label: 'NASA Live',
-      status: 'event feed',
+      status: 'NASA events',
       title: 'NASA Live / wydarzenia',
       description: 'Oficjalna strona NASA Live z aktualnymi transmisjami, NASA+ i kanałami społecznościowymi.',
       embedUrl: null,
@@ -528,7 +528,7 @@ const App = () => {
                           rel="noreferrer"
                           className="mt-6 inline-flex items-center gap-2 bg-red-500 text-black px-5 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-red-400 transition-colors"
                         >
-                          Otwórz live u źródła <ExternalLink size={13} />
+                          Otwórz źródło NASA <ExternalLink size={13} />
                         </a>
                       )}
                     </div>
@@ -541,7 +541,11 @@ const App = () => {
                   <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_rgba(220,38,38,1)]" />
                   <span className="text-[10px] font-black text-red-400 tracking-widest uppercase drop-shadow-md">{currentBaseFeed.status}</span>
                 </div>
-                <h3 className="text-xl md:text-3xl font-black text-white uppercase tracking-tight drop-shadow-lg">{currentBaseFeed.title}</h3>
+                {currentBaseFeed.id === 'command' ? (
+                  <h3 className="text-xl md:text-3xl font-black text-white uppercase tracking-tight drop-shadow-lg">Transmisja z Orbity 555</h3>
+                ) : (
+                  <p className="max-w-xl text-xs md:text-sm text-zinc-200 leading-relaxed drop-shadow-lg">{currentBaseFeed.description}</p>
+                )}
               </div>
             </div>
 
@@ -574,8 +578,8 @@ const App = () => {
                     <span className="text-[9px] uppercase tracking-widest text-zinc-500">tryb czuwania</span>
                   </div>
                   <div className="bg-black/40 rounded-xl p-3 border border-white/5">
-                    <span className="block text-lg font-black text-red-400">LIVE</span>
-                    <span className="text-[9px] uppercase tracking-widest text-zinc-500">orbital feed</span>
+                    <span className="block text-lg font-black text-red-400">LINK</span>
+                    <span className="text-[9px] uppercase tracking-widest text-zinc-500">NASA source</span>
                   </div>
                 </div>
                 <p className="text-zinc-400 text-xs leading-relaxed mt-4">
