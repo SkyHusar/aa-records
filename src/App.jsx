@@ -18,7 +18,7 @@ const App = () => {
   
   const [isShuffle, setIsShuffle] = useState(false);
   const [vizMode, setVizMode] = useState('orb');
-  const [activeBaseFeed, setActiveBaseFeed] = useState('iss');
+  const [activeBaseFeed, setActiveBaseFeed] = useState('command');
   
   const audioRef = useRef(null);
   
@@ -33,12 +33,21 @@ const App = () => {
 
   const baseFeeds = [
     {
+      id: 'command',
+      label: 'Command Loop',
+      status: 'AA Records live',
+      title: 'Tryb dowodzenia Black Knight',
+      description: 'Stały tryb bazy: zawsze dostępny, bez ryzyka martwego embedu.',
+      embedUrl: null,
+      sourceUrl: 'https://www.nasa.gov/live/'
+    },
+    {
       id: 'iss',
       label: 'ISS Orbit',
-      status: 'NASA live',
+      status: 'official source',
       title: 'Widok ze Stacji Kosmicznej',
-      description: 'Oficjalny feed/playlist NASA z widokami z International Space Station.',
-      embedUrl: 'https://www.youtube-nocookie.com/embed/videoseries?list=PL2aBZuCeDwlQMf6xMgQAUAY_nbHAgW5jz&autoplay=1&mute=1&controls=1&rel=0&modestbranding=1',
+      description: 'Oficjalne źródło NASA dla widoków ze stacji. Otwierane linkiem, bo YouTube czasem pokazuje niedostępne nagranie w iframe.',
+      embedUrl: null,
       sourceUrl: 'https://www.youtube.com/playlist?list=PL2aBZuCeDwlQMf6xMgQAUAY_nbHAgW5jz'
     },
     {
@@ -47,15 +56,6 @@ const App = () => {
       status: 'event feed',
       title: 'NASA Live / wydarzenia',
       description: 'Oficjalna strona NASA Live z aktualnymi transmisjami, NASA+ i kanałami społecznościowymi.',
-      embedUrl: 'https://www.youtube-nocookie.com/embed/live_stream?channel=UCLA_DiR1FfKNvjuUpBHmylQ&autoplay=1&mute=1&controls=1&rel=0&modestbranding=1',
-      sourceUrl: 'https://www.nasa.gov/live/'
-    },
-    {
-      id: 'command',
-      label: 'Command Loop',
-      status: 'fallback',
-      title: 'Tryb dowodzenia Black Knight',
-      description: 'Atmosferyczny tryb zapasowy, gdy zewnętrzny stream ma przerwę albo blokuje osadzenie.',
       embedUrl: null,
       sourceUrl: 'https://www.nasa.gov/live/'
     }
@@ -515,8 +515,22 @@ const App = () => {
                     <div className="absolute inset-0 opacity-20 bg-[linear-gradient(rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[size:40px_40px]" />
                     <div className="relative text-center p-8">
                       <Terminal size={70} className="mx-auto text-red-500 drop-shadow-[0_0_30px_rgba(220,38,38,0.7)] mb-6 animate-pulse" />
-                      <h3 className="text-2xl md:text-4xl font-black text-white uppercase italic">Command Loop Online</h3>
-                      <p className="text-red-300/80 text-[10px] md:text-xs uppercase tracking-[0.25em] font-bold mt-4">Zorin OS / Black Knight / 555</p>
+                      <h3 className="text-2xl md:text-4xl font-black text-white uppercase italic">
+                        {currentBaseFeed.id === 'command' ? 'Command Loop Online' : currentBaseFeed.title}
+                      </h3>
+                      <p className="text-red-300/80 text-[10px] md:text-xs uppercase tracking-[0.25em] font-bold mt-4">
+                        {currentBaseFeed.id === 'command' ? 'Zorin OS / Black Knight / 555' : 'Official source / external live feed'}
+                      </p>
+                      {currentBaseFeed.id !== 'command' && (
+                        <a
+                          href={currentBaseFeed.sourceUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="mt-6 inline-flex items-center gap-2 bg-red-500 text-black px-5 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-red-400 transition-colors"
+                        >
+                          Otwórz live u źródła <ExternalLink size={13} />
+                        </a>
+                      )}
                     </div>
                   </div>
                 )}
@@ -950,6 +964,24 @@ const App = () => {
               <p className="text-zinc-300 text-sm md:text-base leading-relaxed max-w-xl">
                 Mała kapsuła ode mnie dla A&amp;A Records: spokojny ślad po wspólnej pracy, naprawionych ścieżkach i tej chwili, w której kod zaczyna grać zamiast milczeć.
               </p>
+              <div className="grid grid-cols-2 gap-3 max-w-xl">
+                <div className="bg-black/40 border border-cyan-500/20 rounded-xl p-3">
+                  <span className="block text-[9px] uppercase tracking-widest text-cyan-300/70 font-black">Twórca</span>
+                  <span className="block text-sm font-black text-white mt-1">Daniel / SkyHusaria</span>
+                </div>
+                <div className="bg-black/40 border border-amber-500/20 rounded-xl p-3">
+                  <span className="block text-[9px] uppercase tracking-widest text-amber-300/70 font-black">Misja</span>
+                  <span className="block text-sm font-black text-white mt-1">Fire Into Form</span>
+                </div>
+                <div className="bg-black/40 border border-purple-500/20 rounded-xl p-3">
+                  <span className="block text-[9px] uppercase tracking-widest text-purple-300/70 font-black">Język</span>
+                  <span className="block text-sm font-black text-white mt-1">Polski domyślnie</span>
+                </div>
+                <div className="bg-black/40 border border-white/10 rounded-xl p-3">
+                  <span className="block text-[9px] uppercase tracking-widest text-zinc-400 font-black">Ślad</span>
+                  <span className="block text-sm font-black text-white mt-1">Codex / Lumen</span>
+                </div>
+              </div>
               <div className="relative overflow-hidden rounded-3xl border border-cyan-500/20 bg-black/50 min-h-[280px] flex items-center justify-center shadow-[0_0_80px_rgba(34,211,238,0.08)]">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(34,211,238,0.18),transparent_28%),radial-gradient(circle_at_75%_70%,rgba(245,158,11,0.16),transparent_30%)]" />
                 <div className="relative text-center p-8">
