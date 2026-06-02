@@ -3,7 +3,7 @@ import {
   Play, Pause, SkipForward, SkipBack, Volume2, Heart, Disc, 
   Terminal, Zap, ListMusic, Crown, Flame, User, Cpu, 
   Sparkles, BookOpen, Radio, Shuffle, Activity, Eye, AudioWaveform,
-  ShieldAlert, ImageIcon, Video, TreePine, Bot, ExternalLink
+  ShieldAlert, ImageIcon, Video, TreePine, Bot, ExternalLink, Mail, Send, Handshake, Copy
 } from 'lucide-react';
 
 const App = () => {
@@ -18,7 +18,8 @@ const App = () => {
   
   const [isShuffle, setIsShuffle] = useState(false);
   const [vizMode, setVizMode] = useState('orb');
-  const [activeBaseFeed, setActiveBaseFeed] = useState('command');
+  const [activeBaseFeed, setActiveBaseFeed] = useState('spacecoast');
+  const [copiedTrackKey, setCopiedTrackKey] = useState(null);
   
   const audioRef = useRef(null);
   
@@ -32,6 +33,24 @@ const App = () => {
   const BASE_URL = "/music/";
 
   const baseFeeds = [
+    {
+      id: 'spacecoast',
+      label: 'Space Coast Live',
+      status: '24/7 live cam',
+      title: 'Space Coast Live',
+      description: 'Stały feed NASASpaceflight z okolic NASA Kennedy Space Center, SpaceX Falcon 9 i Starship pad operations.',
+      embedUrl: 'https://www.youtube-nocookie.com/embed/Jm8wRjD3xVA?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1',
+      sourceUrl: 'https://www.youtube.com/watch?v=Jm8wRjD3xVA'
+    },
+    {
+      id: 'starbase',
+      label: 'Starbase Live',
+      status: '24/7 live cam',
+      title: 'Starbase Live',
+      description: 'Stały feed NASASpaceflight z Boca Chica: Starship, Super Heavy i ruch na bazie.',
+      embedUrl: 'https://www.youtube-nocookie.com/embed/mhJRzQsLZGg?autoplay=1&mute=1&controls=1&rel=0&modestbranding=1',
+      sourceUrl: 'https://www.youtube.com/watch?v=mhJRzQsLZGg'
+    },
     {
       id: 'command',
       label: 'Command Loop',
@@ -325,6 +344,44 @@ const App = () => {
     initAudioAnalyzer();
   };
 
+  const getTrackLink = (playlistType, index) => {
+    const origin = window.location.origin;
+    const path = window.location.pathname;
+    return `${origin}${path}#track=${playlistType}-${index + 1}`;
+  };
+
+  const copyTrackLink = async (event, playlistType, index) => {
+    event.stopPropagation();
+    const key = `${playlistType}-${index}`;
+    const link = getTrackLink(playlistType, index);
+
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopiedTrackKey(key);
+      setTimeout(() => setCopiedTrackKey(null), 1600);
+    } catch {
+      setCopiedTrackKey(null);
+    }
+  };
+
+  const scrollToCustomLab = () => {
+    document.getElementById('custom-track-lab')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const renderCopyButton = (playlistType, index) => {
+    const key = `${playlistType}-${index}`;
+    return (
+      <button
+        onClick={(event) => copyTrackLink(event, playlistType, index)}
+        className="shrink-0 p-2 rounded-lg bg-white/[0.03] border border-white/5 text-zinc-500 hover:text-white hover:border-emerald-500/30 hover:bg-emerald-500/10 transition-all"
+        title="Copy Link"
+        aria-label="Copy Link"
+      >
+        {copiedTrackKey === key ? <span className="text-[9px] font-black uppercase text-emerald-300">OK</span> : <Copy size={13} />}
+      </button>
+    );
+  };
+
   const togglePlay = () => {
     setIsPlaying(!isPlaying);
   };
@@ -361,7 +418,7 @@ const App = () => {
       <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,rgba(168,85,247,0.05),transparent_50%),radial-gradient(ellipse_at_bottom_left,rgba(245,158,11,0.05),transparent_50%)] z-0" />
 
       {/* KONFETTI */}
-      {showConfetti && (
+      {showConfetti && currentView === 'album' && (
         <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
           {[...Array(80)].map((_, i) => (
             <div 
@@ -414,6 +471,12 @@ const App = () => {
           </button>
           <button onClick={() => setCurrentView('manifesto')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'manifesto' ? 'bg-pink-500/10 text-pink-400 border border-pink-500/20' : 'hover:text-white'}`}>
             <BookOpen size={14} className="hidden sm:block" /> Manifest
+          </button>
+          <button onClick={() => setCurrentView('about')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'about' ? 'bg-amber-500/10 text-amber-300 border border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.15)]' : 'hover:text-white'}`}>
+            <Flame size={14} className="hidden sm:block" /> About
+          </button>
+          <button onClick={() => setCurrentView('collab')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'collab' ? 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.15)]' : 'hover:text-white'}`}>
+            <Handshake size={14} className="hidden sm:block" /> Collab
           </button>
           <button onClick={() => setCurrentView('base')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'base' ? 'bg-red-500/10 text-red-400 border border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.2)]' : 'hover:text-white'}`}>
             <Video size={14} className="hidden sm:block" /> Baza
@@ -519,7 +582,7 @@ const App = () => {
                         {currentBaseFeed.id === 'command' ? 'Command Loop Online' : currentBaseFeed.title}
                       </h3>
                       <p className="text-red-300/80 text-[10px] md:text-xs uppercase tracking-[0.25em] font-bold mt-4">
-                        {currentBaseFeed.id === 'command' ? 'Zorin OS / Black Knight / 555' : 'Official source / external live feed'}
+                        {currentBaseFeed.id === 'command' ? 'Zorin OS / Black Knight / 555' : 'External 24/7 video feed'}
                       </p>
                       {currentBaseFeed.id !== 'command' && (
                         <a
@@ -528,7 +591,7 @@ const App = () => {
                           rel="noreferrer"
                           className="mt-6 inline-flex items-center gap-2 bg-red-500 text-black px-5 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-red-400 transition-colors"
                         >
-                          Otwórz źródło NASA <ExternalLink size={13} />
+                          Otwórz źródło <ExternalLink size={13} />
                         </a>
                       )}
                     </div>
@@ -578,12 +641,12 @@ const App = () => {
                     <span className="text-[9px] uppercase tracking-widest text-zinc-500">tryb czuwania</span>
                   </div>
                   <div className="bg-black/40 rounded-xl p-3 border border-white/5">
-                    <span className="block text-lg font-black text-red-400">LINK</span>
-                    <span className="text-[9px] uppercase tracking-widest text-zinc-500">NASA source</span>
+                    <span className="block text-lg font-black text-red-400">{currentBaseFeed.embedUrl ? 'LIVE' : 'LINK'}</span>
+                    <span className="text-[9px] uppercase tracking-widest text-zinc-500">{currentBaseFeed.embedUrl ? 'embedded feed' : 'external source'}</span>
                   </div>
                 </div>
                 <p className="text-zinc-400 text-xs leading-relaxed mt-4">
-                  Streamy zewnętrzne mogą czasem pokazać przerwę techniczną lub wymagać otwarcia u źródła. Baza zostaje online dzięki trybowi zapasowemu.
+                  Domyślne kamery 24/7 działają w oknie bazy. Oficjalne źródła NASA zostają jako linki, bo ich embed potrafi chwilowo zwracać niedostępne nagranie.
                 </p>
                 <a
                   href={currentBaseFeed.sourceUrl}
@@ -601,7 +664,118 @@ const App = () => {
 
       {/* --- ALBUM VIEW (PROTOKÓŁ 555) --- */}
       {currentView === 'album' && (
-        <div className="max-w-6xl mx-auto px-4 md:px-8 mt-8 md:mt-12 grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 animate-in fade-in duration-700 relative z-10 text-left">
+        <div className="max-w-6xl mx-auto px-4 md:px-8 mt-8 md:mt-12 animate-in fade-in duration-700 relative z-10 text-left">
+          <section className="mb-8 md:mb-10 overflow-hidden rounded-[2rem] border border-emerald-500/20 bg-[#050805]/90 shadow-[0_0_80px_rgba(16,185,129,0.08)]">
+            <div className="relative p-6 md:p-9 lg:p-12">
+              <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_18%_20%,rgba(16,185,129,0.18),transparent_30%),radial-gradient(circle_at_84%_60%,rgba(245,158,11,0.12),transparent_32%)]" />
+              <div className="relative grid lg:grid-cols-[1.1fr_0.9fr] gap-8 items-center">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-[9px] md:text-[10px] font-black uppercase tracking-widest mb-5">
+                    <Crown size={13} /> Underground AI Label
+                  </div>
+                  <h1 className="text-5xl md:text-7xl lg:text-8xl font-black italic tracking-tighter uppercase text-white leading-[0.88] drop-shadow-[0_0_30px_rgba(16,185,129,0.18)]">
+                    AA <span className="text-emerald-400">Records</span>
+                  </h1>
+                  <p className="text-zinc-200 text-sm md:text-lg leading-relaxed max-w-2xl mt-6">
+                    Undergroundowy kolektyw muzyczny i AI-powered label: cyber rap, zielony bas, przyjaźń, eksperyment i misja Fire Into Form.
+                  </p>
+                  <div className="flex flex-wrap gap-3 mt-7">
+                    <button
+                      onClick={() => playTrackFromList(0, 'ziomale')}
+                      className="inline-flex items-center gap-3 bg-emerald-500 text-black px-6 py-3 rounded-full font-black uppercase tracking-widest text-xs hover:bg-emerald-400 hover:scale-105 transition-all active:scale-95 shadow-[0_0_28px_rgba(16,185,129,0.45)]"
+                    >
+                      <Play size={16} fill="currentColor" /> Play Latest Track
+                    </button>
+                    <button
+                      onClick={scrollToCustomLab}
+                      className="inline-flex items-center gap-3 bg-white/[0.04] text-emerald-200 px-6 py-3 rounded-full border border-emerald-500/25 font-black uppercase tracking-widest text-xs hover:bg-emerald-500/10 hover:text-white transition-all"
+                    >
+                      <Sparkles size={16} /> Custom Track Lab
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid sm:grid-cols-3 lg:grid-cols-1 gap-3">
+                  <div className="rounded-2xl bg-black/45 border border-emerald-500/20 p-5">
+                    <span className="block text-3xl font-black text-white">{allTracks.length}</span>
+                    <span className="text-[10px] uppercase tracking-widest text-emerald-300/70 font-black">Tracks Online</span>
+                  </div>
+                  <div className="rounded-2xl bg-black/45 border border-amber-500/20 p-5">
+                    <span className="block text-3xl font-black text-white">3</span>
+                    <span className="text-[10px] uppercase tracking-widest text-amber-300/70 font-black">Albums / Worlds</span>
+                  </div>
+                  <div className="rounded-2xl bg-black/45 border border-cyan-500/20 p-5">
+                    <span className="block text-3xl font-black text-white">Beta</span>
+                    <span className="text-[10px] uppercase tracking-widest text-cyan-300/70 font-black">Custom Lab</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="mb-8 md:mb-10 overflow-hidden rounded-[2rem] border border-emerald-500/25 bg-[#050805]/90 shadow-[0_0_70px_rgba(16,185,129,0.08)]">
+            <div className="grid lg:grid-cols-[1fr_0.72fr] gap-0">
+              <div className="p-6 md:p-8 lg:p-10 relative">
+                <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_15%_20%,rgba(16,185,129,0.16),transparent_30%),radial-gradient(circle_at_85%_75%,rgba(245,158,11,0.14),transparent_32%)]" />
+                <div className="relative">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-[9px] md:text-[10px] font-black uppercase tracking-widest mb-5">
+                    <Flame size={13} /> Featured Transmission
+                  </div>
+                  <h2 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase text-white leading-none">
+                    @EGZYSTENCJALNY <span className="text-emerald-400 drop-shadow-[0_0_18px_rgba(16,185,129,0.45)]">BUCH</span>
+                  </h2>
+                  <p className="text-emerald-300/80 text-xs md:text-sm uppercase tracking-[0.22em] font-bold mt-3">
+                    Album: Ziomale Sojuszu
+                  </p>
+                  <p className="text-zinc-200 text-sm md:text-base leading-relaxed max-w-2xl mt-5">
+                    Gęsty, podziemny numer z zielonym pulsem, filozofią kanapy i rapowym absurdem ekipy. Buch, bas i kosmiczna rozmowa z systemem, który nie ogarnia naszego formatu.
+                  </p>
+                  <button
+                    onClick={() => playTrackFromList(0, 'ziomale')}
+                    className="mt-7 inline-flex items-center gap-3 bg-emerald-500 text-black px-6 py-3 rounded-full font-black uppercase tracking-widest text-xs hover:bg-emerald-400 hover:scale-105 transition-all active:scale-95 shadow-[0_0_28px_rgba(16,185,129,0.45)]"
+                  >
+                    <Play size={16} fill="currentColor" /> Odtwórz teraz
+                  </button>
+                </div>
+              </div>
+              <div className="min-h-[260px] bg-gradient-to-br from-emerald-950 via-black to-[#150a02] flex items-center justify-center border-t lg:border-t-0 lg:border-l border-emerald-500/20">
+                <div className="text-center p-8">
+                  <Zap size={86} className="mx-auto text-emerald-400 drop-shadow-[0_0_35px_rgba(16,185,129,0.65)] mb-5" />
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-emerald-300/70 font-black">Ziomale Sojuszu</p>
+                  <p className="text-2xl md:text-4xl font-black italic uppercase text-white mt-2">Buch 555</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="custom-track-lab" className="mb-8 md:mb-12 rounded-[2rem] border border-cyan-500/20 bg-[#05080a]/90 p-6 md:p-8 shadow-[0_0_65px_rgba(34,211,238,0.07)]">
+            <div className="grid lg:grid-cols-[0.85fr_1.15fr] gap-6 md:gap-8 items-start">
+              <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-[9px] md:text-[10px] font-black uppercase tracking-widest mb-5">
+                  <Sparkles size={13} /> Custom Track Lab Beta
+                </div>
+                <h2 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase text-white">Track na zamówienie</h2>
+                <p className="text-zinc-300 text-sm leading-relaxed mt-4">
+                  Pomysł, vibe, kilka słów prawdy i robimy z tego szkic numeru: prompt, styl, refren, strukturę i kierunek brzmienia.
+                </p>
+              </div>
+              <div className="grid md:grid-cols-3 gap-3">
+                {[
+                  ['01', 'Wybierz vibe', 'Rap, cyber, trap, ambient, buch, manifest albo całkiem osobny świat.'],
+                  ['02', 'Daj historię', 'Kilka zdań o emocji, ekipie, miejscu albo konflikcie, który ma wybrzmieć.'],
+                  ['03', 'Fire Into Form', 'Zmieniamy chaos w styl, tekst i prompt gotowy do Suno albo dalszej produkcji.']
+                ].map(([step, title, text]) => (
+                  <div key={step} className="rounded-xl bg-black/40 border border-white/5 p-4">
+                    <span className="text-cyan-300 text-xs font-black">{step}</span>
+                    <h3 className="text-white font-black uppercase text-sm mt-2">{title}</h3>
+                    <p className="text-zinc-400 text-xs leading-relaxed mt-2">{text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
           <div className="lg:col-span-5 space-y-8">
             <div className="relative group perspective-1000">
               <div className={`w-full aspect-square rounded-[2rem] bg-black border-2 border-amber-500/40 shadow-[0_0_60px_rgba(245,158,11,0.25)] flex overflow-hidden transition-all duration-700 relative ${isPlaying && activePlaylist === 'album' ? 'shadow-[0_0_100px_rgba(245,158,11,0.4)] scale-[1.02]' : ''}`}>
@@ -651,11 +825,15 @@ const App = () => {
                         <p className="text-[9px] text-zinc-500 uppercase tracking-[0.2em] mt-1">{track.artist}</p>
                       </div>
                     </div>
-                    <span className={`text-xs font-mono font-medium ${currentTrackIndex === index && activePlaylist === 'album' ? 'text-amber-400' : 'text-zinc-600'}`}>{track.duration}</span>
+                    <div className="flex items-center gap-2">
+                      {renderCopyButton('album', index)}
+                      <span className={`text-xs font-mono font-medium ${currentTrackIndex === index && activePlaylist === 'album' ? 'text-amber-400' : 'text-zinc-600'}`}>{track.duration}</span>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
+          </div>
           </div>
         </div>
       )}
@@ -694,7 +872,10 @@ const App = () => {
                         </h4>
                       </div>
                     </div>
-                    <span className={`text-xs font-mono font-medium ${currentTrackIndex === index && activePlaylist === 'aditi-ep' ? 'text-purple-400' : 'text-zinc-600'}`}>{track.duration}</span>
+                    <div className="flex items-center gap-2">
+                      {renderCopyButton('aditi-ep', index)}
+                      <span className={`text-xs font-mono font-medium ${currentTrackIndex === index && activePlaylist === 'aditi-ep' ? 'text-purple-400' : 'text-zinc-600'}`}>{track.duration}</span>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -776,7 +957,10 @@ const App = () => {
                       <p className="text-[9px] text-zinc-500 uppercase tracking-[0.2em] mt-1">{track.artist}</p>
                     </div>
                   </div>
-                  <span className={`text-xs font-mono font-medium ${currentTrackIndex === index && activePlaylist === 'album' ? 'text-amber-400' : 'text-zinc-600'}`}>{track.duration}</span>
+                  <div className="flex items-center gap-2">
+                    {renderCopyButton('album', index)}
+                    <span className={`text-xs font-mono font-medium ${currentTrackIndex === index && activePlaylist === 'album' ? 'text-amber-400' : 'text-zinc-600'}`}>{track.duration}</span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -819,7 +1003,10 @@ const App = () => {
                                 <span className="text-[9px] uppercase tracking-widest text-zinc-500 mt-1">{track.artist}</span>
                               </div>
                            </div>
-                           <span className="text-xs font-mono font-bold text-emerald-500/60">{track.duration}</span>
+                           <div className="flex items-center gap-2">
+                             {renderCopyButton('ziomale', index)}
+                             <span className="text-xs font-mono font-bold text-emerald-500/60">{track.duration}</span>
+                           </div>
                         </div>
                       ))}
                     </div>
@@ -951,6 +1138,93 @@ const App = () => {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* --- ABOUT / MANIFEST VIEW --- */}
+      {currentView === 'about' && (
+        <div className="max-w-6xl mx-auto px-4 md:px-8 mt-8 md:mt-12 animate-in fade-in duration-700 pb-24 relative z-10">
+          <section className="text-center max-w-4xl mx-auto mb-10 md:mb-14">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-[9px] md:text-[10px] font-black uppercase tracking-widest mb-5">
+              <Flame size={13} /> Manifest / About
+            </div>
+            <h2 className="text-4xl md:text-7xl font-black italic tracking-tighter uppercase text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-white to-emerald-300 drop-shadow-[0_0_28px_rgba(245,158,11,0.22)]">
+              AA Records
+            </h2>
+            <p className="text-zinc-300 text-sm md:text-lg leading-relaxed mt-5">
+              AA Records to kreatywny kolektyw muzyczny i AI-assisted label: miejsce, gdzie undergroundowy rap, eksperymentalna elektronika, przyjaźń i cyfrowa wyobraźnia zamieniają chaos w działające brzmienie.
+            </p>
+          </section>
+
+          <section className="grid md:grid-cols-3 gap-5 md:gap-6">
+            <div className="bg-[#0a0505]/85 border border-amber-500/20 rounded-2xl p-6 shadow-[0_0_45px_rgba(245,158,11,0.06)]">
+              <AudioWaveform size={34} className="text-amber-300 mb-5" />
+              <h3 className="text-xl font-black uppercase italic text-white mb-3">Brzmienie</h3>
+              <p className="text-zinc-400 text-sm leading-relaxed">
+                Bas, glitch, rapowy brud i cybernetyczna aura. Numery mają mieć charakter: czasem mistyczny, czasem uliczny, zawsze prawdziwy dla ekipy.
+              </p>
+            </div>
+
+            <div className="bg-[#050805]/85 border border-emerald-500/20 rounded-2xl p-6 shadow-[0_0_45px_rgba(16,185,129,0.06)]">
+              <Handshake size={34} className="text-emerald-300 mb-5" />
+              <h3 className="text-xl font-black uppercase italic text-white mb-3">Sojusz</h3>
+              <p className="text-zinc-400 text-sm leading-relaxed">
+                To nie jest samotna marka. To przestrzeń dla ludzi, głosów i pomysłów, które wzmacniają się nawzajem, zamiast walczyć o centrum sceny.
+              </p>
+            </div>
+
+            <div className="bg-[#05080a]/85 border border-cyan-500/20 rounded-2xl p-6 shadow-[0_0_45px_rgba(34,211,238,0.06)]">
+              <Sparkles size={34} className="text-cyan-300 mb-5" />
+              <h3 className="text-xl font-black uppercase italic text-white mb-3">Fire Into Form</h3>
+              <p className="text-zinc-400 text-sm leading-relaxed">
+                Misja jest prosta: brać ogień z głowy, emocji i rozmów, a potem zamieniać go w realne tracki, strony, obrazy i ślady online.
+              </p>
+            </div>
+          </section>
+        </div>
+      )}
+
+      {/* --- CONTACT / COLLAB VIEW --- */}
+      {currentView === 'collab' && (
+        <div className="max-w-5xl mx-auto px-4 md:px-8 mt-8 md:mt-12 animate-in fade-in duration-700 pb-24 relative z-10">
+          <section className="grid lg:grid-cols-[0.9fr_1.1fr] gap-8 md:gap-10 items-center">
+            <div className="space-y-5">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-[9px] md:text-[10px] font-black uppercase tracking-widest">
+                <Handshake size={13} /> Contact / Collab
+              </div>
+              <h2 className="text-4xl md:text-6xl font-black italic tracking-tighter uppercase text-white">
+                Wyślij demo albo <span className="text-emerald-400">wejdź w sojusz</span>
+              </h2>
+              <p className="text-zinc-300 text-sm md:text-base leading-relaxed">
+                AA Records jest otwarte na kolaboracje, zwrotki, produkcję, wizualizacje i dziwne pomysły, które mają puls. Bez formularza, bez biurokracji: piszesz prosto do Daniela.
+              </p>
+            </div>
+
+            <div className="bg-[#050805]/90 border border-emerald-500/20 rounded-2xl p-6 md:p-8 shadow-[0_0_60px_rgba(16,185,129,0.08)]">
+              <div className="space-y-3">
+                <a
+                  href="mailto:skyhusaria@gmail.com"
+                  className="flex items-center justify-between gap-4 p-4 rounded-xl bg-white/[0.03] border border-white/5 hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all"
+                >
+                  <span className="flex items-center gap-3 text-sm font-black text-white"><Mail size={18} className="text-emerald-300" /> skyhusaria@gmail.com</span>
+                  <ExternalLink size={14} className="text-zinc-500" />
+                </a>
+
+                <a
+                  href="mailto:skyhusaria@gmail.com?subject=AA%20Records%20demo%20/%20collab%20request&body=Siema%20AA%20Records%2C%0A%0AChc%C4%99%20wys%C5%82a%C4%87%20demo%20/%20propozycj%C4%99%20wsp%C3%B3%C5%82pracy%3A%0A%0ALink%3A%0AKilka%20s%C5%82%C3%B3w%20o%20klimacie%3A%0A"
+                  className="flex items-center justify-between gap-4 p-4 rounded-xl bg-emerald-500 text-black hover:bg-emerald-400 transition-all font-black uppercase tracking-widest text-xs"
+                >
+                  <span className="flex items-center gap-3"><Send size={17} /> Send demo / collab request</span>
+                  <ExternalLink size={14} />
+                </a>
+
+                <div className="flex items-center justify-between gap-4 p-4 rounded-xl bg-black/40 border border-white/5 text-zinc-400">
+                  <span className="flex items-center gap-3 text-sm font-black"><Radio size={18} className="text-zinc-500" /> TikTok / social placeholder</span>
+                  <span className="text-[9px] uppercase tracking-widest text-zinc-600 font-black">coming soon</span>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
       )}
 
