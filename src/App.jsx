@@ -3,7 +3,7 @@ import {
   Play, Pause, SkipForward, SkipBack, Volume2, Heart, Disc, 
   Terminal, Zap, ListMusic, Crown, Flame, User, Cpu, 
   Sparkles, BookOpen, Radio, Shuffle, Activity, Eye, AudioWaveform,
-  ShieldAlert, ImageIcon, Video, TreePine, Bot, ExternalLink, Mail, Send, Handshake, Copy
+  ShieldAlert, ImageIcon, Video, TreePine, Bot, ExternalLink, Mail, Send, Handshake, Copy, Share2
 } from 'lucide-react';
 
 const App = () => {
@@ -170,6 +170,30 @@ const App = () => {
     }, 12000);
     return () => { clearTimeout(timer); clearInterval(quoteTimer); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const playlistLimits = { album: 11, 'aditi-ep': 3, ziomale: 7 };
+    const playlistViews = { album: 'album', 'aditi-ep': 'aditi-ep', ziomale: 'ziomale' };
+
+    const applyTrackHash = () => {
+      const match = window.location.hash.match(/^#track=(album|aditi-ep|ziomale)-(\d+)$/);
+      if (!match) return;
+
+      const playlistType = match[1];
+      const trackIndex = Number(match[2]) - 1;
+      if (!Number.isInteger(trackIndex) || trackIndex < 0 || trackIndex >= playlistLimits[playlistType]) return;
+
+      setActivePlaylist(playlistType);
+      setCurrentTrackIndex(trackIndex);
+      setCurrentView(playlistViews[playlistType]);
+      setIsPlaying(false);
+      setAudioError(false);
+    };
+
+    applyTrackHash();
+    window.addEventListener('hashchange', applyTrackHash);
+    return () => window.removeEventListener('hashchange', applyTrackHash);
   }, []);
 
   useEffect(() => {
@@ -350,36 +374,127 @@ const App = () => {
     return `${origin}${path}#track=${playlistType}-${index + 1}`;
   };
 
+  const copyTextToClipboard = async (text) => {
+    if (navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch {
+        // Fall back below for browsers that block clipboard writes.
+      }
+    }
+
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.setAttribute('readonly', '');
+    textArea.style.position = 'fixed';
+    textArea.style.opacity = '0';
+    textArea.style.pointerEvents = 'none';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    const copied = document.execCommand('copy');
+    document.body.removeChild(textArea);
+    return copied;
+  };
+
+  const markTrackAction = (key) => {
+    setCopiedTrackKey(key);
+    window.setTimeout(() => setCopiedTrackKey(null), 1600);
+  };
+
   const copyTrackLink = async (event, playlistType, index) => {
     event.stopPropagation();
-    const key = `${playlistType}-${index}`;
+    const key = `copy-${playlistType}-${index}`;
     const link = getTrackLink(playlistType, index);
 
     try {
-      await navigator.clipboard.writeText(link);
-      setCopiedTrackKey(key);
-      setTimeout(() => setCopiedTrackKey(null), 1600);
+      const copied = await copyTextToClipboard(link);
+      if (!copied) throw new Error('Clipboard write failed');
+      markTrackAction(key);
     } catch {
       setCopiedTrackKey(null);
     }
+  };
+
+  const shareTrack = async (event, playlistType, index, track) => {
+    event.stopPropagation();
+    const key = `share-${playlistType}-${index}`;
+    const link = getTrackLink(playlistType, index);
+    const shareData = {
+      title: `AA Records - ${track.title}`,
+      text: `${track.title} / ${track.artist}`,
+      url: link
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+        markTrackAction(key);
+        return;
+      }
+
+      const copied = await copyTextToClipboard(`${shareData.text}\n${link}`);
+      if (!copied) throw new Error('Clipboard write failed');
+      markTrackAction(key);
+    } catch (error) {
+      if (error?.name !== 'AbortError') setCopiedTrackKey(null);
+    }
+  };
+
+  const orderSimilarTrack = (event, playlistType, index, track) => {
+    event.stopPropagation();
+    const subject = encodeURIComponent(`AA Records - podobny track: ${track.title}`);
+    const body = encodeURIComponent(
+      `Siema AA Records,\n\nChce zamowic podobny track do: ${track.title}\nArtist / vibe: ${track.artist}\nLink referencyjny: ${getTrackLink(playlistType, index)}\n\nMoj pomysl / klimat:\n`
+    );
+    window.location.href = `mailto:skyhusaria@gmail.com?subject=${subject}&body=${body}`;
   };
 
   const scrollToCustomLab = () => {
     document.getElementById('custom-track-lab')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  const renderCopyButton = (playlistType, index) => {
-    const key = `${playlistType}-${index}`;
+  const renderTrackActions = (playlistType, index, track) => {
+    const copyKey = `copy-${playlistType}-${index}`;
+    const shareKey = `share-${playlistType}-${index}`;
     return (
-      <button
-        onClick={(event) => copyTrackLink(event, playlistType, index)}
-        className="shrink-0 p-2 rounded-lg bg-white/[0.03] border border-white/5 text-zinc-500 hover:text-white hover:border-emerald-500/30 hover:bg-emerald-500/10 transition-all"
-        title="Copy Link"
-        aria-label="Copy Link"
-      >
-        {copiedTrackKey === key ? <span className="text-[9px] font-black uppercase text-emerald-300">OK</span> : <Copy size={13} />}
-      </button>
+      <div className="flex items-center justify-end gap-1.5 shrink-0">
+        <button
+          onClick={(event) => copyTrackLink(event, playlistType, index)}
+          className="shrink-0 p-2 rounded-lg bg-white/[0.03] border border-white/5 text-zinc-500 hover:text-white hover:border-emerald-500/30 hover:bg-emerald-500/10 transition-all"
+          title="Copy track link"
+          aria-label="Copy track link"
+        >
+          {copiedTrackKey === copyKey ? <span className="text-[9px] font-black uppercase text-emerald-300">OK</span> : <Copy size={13} />}
+        </button>
+        <button
+          onClick={(event) => shareTrack(event, playlistType, index, track)}
+          className="shrink-0 p-2 rounded-lg bg-white/[0.03] border border-white/5 text-zinc-500 hover:text-white hover:border-cyan-500/30 hover:bg-cyan-500/10 transition-all"
+          title="Share track"
+          aria-label="Share track"
+        >
+          {copiedTrackKey === shareKey ? <span className="text-[9px] font-black uppercase text-cyan-300">OK</span> : <Share2 size={13} />}
+        </button>
+        <button
+          onClick={(event) => orderSimilarTrack(event, playlistType, index, track)}
+          className="shrink-0 p-2 rounded-lg bg-white/[0.03] border border-white/5 text-zinc-500 hover:text-white hover:border-amber-500/30 hover:bg-amber-500/10 transition-all"
+          title="Zamow podobny track"
+          aria-label="Zamow podobny track"
+        >
+          <Sparkles size={13} />
+        </button>
+      </div>
     );
+  };
+
+  const playCodexPick = () => {
+    const pick = allTracks[Math.floor(Math.random() * allTracks.length)];
+    setActivePlaylist(pick.playlist);
+    setCurrentTrackIndex(pick.originalIndex);
+    setCurrentView(pick.playlist === 'aditi-ep' ? 'aditi-ep' : pick.playlist);
+    setIsPlaying(true);
+    initAudioAnalyzer();
   };
 
   const togglePlay = () => {
@@ -411,8 +526,8 @@ const App = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#030105] text-slate-200 font-sans selection:bg-purple-500/30 pb-32 relative overflow-x-hidden">
-      <audio ref={audioRef} crossOrigin="anonymous" onTimeUpdate={handleTimeUpdate} onEnded={nextTrack} onError={() => setAudioError(true)} />
+    <div className="min-h-screen bg-[#030105] text-slate-200 font-sans selection:bg-purple-500/30 pb-44 md:pb-32 relative overflow-x-hidden">
+      <audio ref={audioRef} crossOrigin="anonymous" preload="none" onTimeUpdate={handleTimeUpdate} onEnded={nextTrack} onError={() => setAudioError(true)} />
 
       {/* TŁO GALAXY */}
       <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,rgba(168,85,247,0.05),transparent_50%),radial-gradient(ellipse_at_bottom_left,rgba(245,158,11,0.05),transparent_50%)] z-0" />
@@ -450,7 +565,7 @@ const App = () => {
           </div>
         </div>
         
-        <div className="flex gap-2 md:gap-4 lg:gap-6 text-[8px] md:text-[10px] lg:text-xs font-bold tracking-widest uppercase text-zinc-500 bg-black/40 px-3 md:px-6 py-2 rounded-2xl border border-white/5 overflow-x-auto custom-scrollbar whitespace-nowrap">
+        <div className="flex gap-2 md:gap-4 lg:gap-6 text-[10px] md:text-[11px] lg:text-xs font-bold tracking-widest uppercase text-zinc-400 bg-black/40 px-3 md:px-6 py-2 rounded-2xl border border-white/5 overflow-x-auto custom-scrollbar whitespace-nowrap">
           <button onClick={() => setCurrentView('album')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'album' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'hover:text-white'}`}>
             <Disc size={14} className="hidden sm:block" /> Płyta
           </button>
@@ -570,6 +685,8 @@ const App = () => {
                     title={currentBaseFeed.title}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="strict-origin-when-cross-origin"
                     className="w-full h-full"
                   />
                 ) : (
@@ -692,10 +809,16 @@ const App = () => {
                     >
                       <Sparkles size={16} /> Custom Track Lab
                     </button>
+                    <button
+                      onClick={playCodexPick}
+                      className="inline-flex items-center gap-3 bg-white/[0.04] text-cyan-200 px-6 py-3 rounded-full border border-cyan-500/25 font-black uppercase tracking-widest text-xs hover:bg-cyan-500/10 hover:text-white transition-all"
+                    >
+                      <Shuffle size={16} /> Codex Pick
+                    </button>
                   </div>
                 </div>
 
-                <div className="grid sm:grid-cols-3 lg:grid-cols-1 gap-3">
+                <div className="grid sm:grid-cols-2 lg:grid-cols-1 gap-3">
                   <div className="rounded-2xl bg-black/45 border border-emerald-500/20 p-5">
                     <span className="block text-3xl font-black text-white">{allTracks.length}</span>
                     <span className="text-[10px] uppercase tracking-widest text-emerald-300/70 font-black">Tracks Online</span>
@@ -706,7 +829,11 @@ const App = () => {
                   </div>
                   <div className="rounded-2xl bg-black/45 border border-cyan-500/20 p-5">
                     <span className="block text-3xl font-black text-white">Beta</span>
-                    <span className="text-[10px] uppercase tracking-widest text-cyan-300/70 font-black">Custom Lab</span>
+                    <span className="text-[10px] uppercase tracking-widest text-cyan-300/70 font-black">Custom Track Lab</span>
+                  </div>
+                  <div className="rounded-2xl bg-black/45 border border-emerald-500/20 p-5">
+                    <span className="block text-lg md:text-xl font-black text-white leading-tight">EGZYSTENCJALNY BUCH</span>
+                    <span className="text-[10px] uppercase tracking-widest text-emerald-300/70 font-black">Latest Release</span>
                   </div>
                 </div>
               </div>
@@ -757,6 +884,9 @@ const App = () => {
                 <h2 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase text-white">Track na zamówienie</h2>
                 <p className="text-zinc-300 text-sm leading-relaxed mt-4">
                   Pomysł, vibe, kilka słów prawdy i robimy z tego szkic numeru: prompt, styl, refren, strukturę i kierunek brzmienia.
+                </p>
+                <p className="mt-4 rounded-xl border border-cyan-500/15 bg-black/35 p-4 text-[11px] md:text-xs leading-relaxed text-zinc-400">
+                  Custom tracki tworzymy z pomocą narzędzi AI na aktywnym płatnym planie. Użycie komercyjne zależy od wybranego pakietu i zasad projektu. Nie robimy kopii konkretnych artystów 1:1 i nie używamy cudzych tekstów bez zgody.
                 </p>
               </div>
               <div className="grid md:grid-cols-3 gap-3">
@@ -813,11 +943,11 @@ const App = () => {
               </h3>
               <div className="space-y-2 md:space-y-3 flex-grow overflow-y-auto custom-scrollbar pr-2 relative z-10">
                 {albumTracks.map((track, index) => (
-                  <div key={track.id} onClick={() => playTrackFromList(index, 'album')} className={`flex items-center justify-between p-3 md:p-4 rounded-2xl transition-all duration-300 border cursor-pointer group ${currentTrackIndex === index && activePlaylist === 'album' ? 'bg-gradient-to-r from-amber-900/20 to-transparent border-amber-500/30 shadow-[inset_4px_0_0_rgba(245,158,11,1)]' : 'bg-white/[0.02] border-transparent hover:bg-white/[0.04] hover:border-white/10'}`}>
-                    <div className="flex items-center gap-4">
+                  <div key={track.id} onClick={() => playTrackFromList(index, 'album')} className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 md:p-4 rounded-2xl transition-all duration-300 border cursor-pointer group ${currentTrackIndex === index && activePlaylist === 'album' ? 'bg-gradient-to-r from-amber-900/20 to-transparent border-amber-500/30 shadow-[inset_4px_0_0_rgba(245,158,11,1)]' : 'bg-white/[0.02] border-transparent hover:bg-white/[0.04] hover:border-white/10'}`}>
+                    <div className="flex items-center gap-4 min-w-0">
                       <span className="text-xs font-black text-zinc-600 group-hover:text-amber-400 w-4 text-center">{track.id}</span>
-                      <div className="text-left">
-                        <h4 className={`font-bold text-sm transition-colors ${currentTrackIndex === index && activePlaylist === 'album' ? 'text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'text-zinc-200 group-hover:text-white'}`}>
+                      <div className="text-left min-w-0">
+                        <h4 className={`font-bold text-sm break-words transition-colors ${currentTrackIndex === index && activePlaylist === 'album' ? 'text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'text-zinc-200 group-hover:text-white'}`}>
                           {track.title}
                           {track.id === 9 && <span className="ml-2 text-[8px] bg-red-600 text-white px-1.5 py-0.5 rounded uppercase tracking-wider font-black shadow-[0_0_10px_rgba(220,38,38,0.8)] border border-red-400 animate-pulse">SZACH MAT</span>}
                           {track.id === 11 && <span className="ml-2 text-[8px] bg-emerald-500 text-black px-1.5 py-0.5 rounded uppercase tracking-wider font-black shadow-[0_0_15px_rgba(16,185,129,0.8)] border border-emerald-400 animate-pulse">SYSTEM OFFLINE</span>}
@@ -825,8 +955,8 @@ const App = () => {
                         <p className="text-[9px] text-zinc-500 uppercase tracking-[0.2em] mt-1">{track.artist}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      {renderCopyButton('album', index)}
+                    <div className="flex items-center justify-end gap-2 shrink-0 self-end sm:self-auto">
+                      {renderTrackActions('album', index, track)}
                       <span className={`text-xs font-mono font-medium ${currentTrackIndex === index && activePlaylist === 'album' ? 'text-amber-400' : 'text-zinc-600'}`}>{track.duration}</span>
                     </div>
                   </div>
@@ -863,17 +993,17 @@ const App = () => {
               </h3>
               <div className="space-y-3 flex-grow overflow-y-auto custom-scrollbar pr-1 relative z-10 text-left">
                 {aditiTracks.map((track, index) => (
-                  <div key={track.id} onClick={() => playTrackFromList(index, 'aditi-ep')} className={`flex items-center justify-between p-4 rounded-2xl transition-all duration-300 border cursor-pointer group ${currentTrackIndex === index && activePlaylist === 'aditi-ep' ? 'bg-gradient-to-r from-purple-900/20 to-transparent border-purple-500/30 shadow-[inset_4px_0_0_rgba(168,85,247,1)]' : 'bg-white/[0.02] border-transparent hover:bg-white/[0.04] hover:border-white/10'}`}>
-                    <div className="flex items-center gap-5">
+                  <div key={track.id} onClick={() => playTrackFromList(index, 'aditi-ep')} className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-2xl transition-all duration-300 border cursor-pointer group ${currentTrackIndex === index && activePlaylist === 'aditi-ep' ? 'bg-gradient-to-r from-purple-900/20 to-transparent border-purple-500/30 shadow-[inset_4px_0_0_rgba(168,85,247,1)]' : 'bg-white/[0.02] border-transparent hover:bg-white/[0.04] hover:border-white/10'}`}>
+                    <div className="flex items-center gap-5 min-w-0">
                       <span className={`text-xs font-black transition-all ${currentTrackIndex === index && activePlaylist === 'aditi-ep' ? 'text-purple-400' : 'text-zinc-600'}`}>{track.id}</span>
-                      <div className="text-left">
-                        <h4 className={`font-bold text-sm transition-colors ${currentTrackIndex === index && activePlaylist === 'aditi-ep' ? 'text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]' : 'text-zinc-200 group-hover:text-white'}`}>
+                      <div className="text-left min-w-0">
+                        <h4 className={`font-bold text-sm break-words transition-colors ${currentTrackIndex === index && activePlaylist === 'aditi-ep' ? 'text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]' : 'text-zinc-200 group-hover:text-white'}`}>
                           {track.title}
                         </h4>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      {renderCopyButton('aditi-ep', index)}
+                    <div className="flex items-center justify-end gap-2 shrink-0 self-end sm:self-auto">
+                      {renderTrackActions('aditi-ep', index, track)}
                       <span className={`text-xs font-mono font-medium ${currentTrackIndex === index && activePlaylist === 'aditi-ep' ? 'text-purple-400' : 'text-zinc-600'}`}>{track.duration}</span>
                     </div>
                   </div>
@@ -940,16 +1070,16 @@ const App = () => {
                 <div 
                   key={track.id} 
                   onClick={() => playTrackFromList(index, 'album')}
-                  className={`flex items-center justify-between p-3 md:p-4 rounded-2xl transition-all duration-300 border cursor-pointer group ${
+                  className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 md:p-4 rounded-2xl transition-all duration-300 border cursor-pointer group ${
                     currentTrackIndex === index && activePlaylist === 'album'
                       ? 'bg-amber-900/20 border-amber-500/30 shadow-[inset_4px_0_0_rgba(245,158,11,1)]' 
                       : 'bg-white/[0.02] border-transparent hover:bg-white/[0.04] hover:border-white/10'
                   }`}
                 >
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-4 min-w-0">
                     <span className="text-xs font-black text-zinc-600 group-hover:text-amber-400 w-4 text-center">{track.id}</span>
-                    <div className="text-left">
-                      <h4 className={`font-bold text-sm transition-colors ${currentTrackIndex === index && activePlaylist === 'album' ? 'text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'text-zinc-200 group-hover:text-white'}`}>
+                    <div className="text-left min-w-0">
+                      <h4 className={`font-bold text-sm break-words transition-colors ${currentTrackIndex === index && activePlaylist === 'album' ? 'text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'text-zinc-200 group-hover:text-white'}`}>
                         {track.title}
                         {track.id === 9 && <span className="ml-2 text-[8px] bg-red-600 text-white px-1.5 py-0.5 rounded uppercase tracking-wider font-black shadow-[0_0_10px_rgba(220,38,38,0.8)] border border-red-400 animate-pulse">SZACH MAT</span>}
                         {track.id === 11 && <span className="ml-2 text-[8px] bg-emerald-500 text-black px-1.5 py-0.5 rounded uppercase tracking-wider font-black shadow-[0_0_15px_rgba(16,185,129,0.8)] border border-emerald-400 animate-pulse">SYSTEM OFFLINE</span>}
@@ -957,8 +1087,8 @@ const App = () => {
                       <p className="text-[9px] text-zinc-500 uppercase tracking-[0.2em] mt-1">{track.artist}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    {renderCopyButton('album', index)}
+                  <div className="flex items-center justify-end gap-2 shrink-0 self-end sm:self-auto">
+                    {renderTrackActions('album', index, track)}
                     <span className={`text-xs font-mono font-medium ${currentTrackIndex === index && activePlaylist === 'album' ? 'text-amber-400' : 'text-zinc-600'}`}>{track.duration}</span>
                   </div>
                 </div>
@@ -995,16 +1125,16 @@ const App = () => {
                     </h4>
                     <div className="space-y-2 flex-grow overflow-y-auto custom-scrollbar pr-2 max-h-[300px]">
                       {ziomaleTracks.map((track, index) => (
-                        <div key={track.id} onClick={() => playTrackFromList(index, 'ziomale')} className={`flex items-center justify-between p-4 rounded-xl cursor-pointer transition-all ${currentTrackIndex === index && activePlaylist === 'ziomale' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-[inset_4px_0_0_rgba(16,185,129,0.5)]' : 'bg-white/[0.02] border border-transparent hover:bg-white/[0.05]'}`}>
-                           <div className="flex items-center gap-4">
+                        <div key={track.id} onClick={() => playTrackFromList(index, 'ziomale')} className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl cursor-pointer transition-all ${currentTrackIndex === index && activePlaylist === 'ziomale' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-[inset_4px_0_0_rgba(16,185,129,0.5)]' : 'bg-white/[0.02] border border-transparent hover:bg-white/[0.05]'}`}>
+                           <div className="flex items-center gap-4 min-w-0">
                               <span className="text-xs font-black text-emerald-700 w-4 text-center">{track.id}</span>
-                              <div className="flex flex-col text-left">
-                                <span className="font-black text-sm">{track.title}</span>
+                              <div className="flex flex-col text-left min-w-0">
+                                <span className="font-black text-sm break-words">{track.title}</span>
                                 <span className="text-[9px] uppercase tracking-widest text-zinc-500 mt-1">{track.artist}</span>
                               </div>
                            </div>
-                           <div className="flex items-center gap-2">
-                             {renderCopyButton('ziomale', index)}
+                           <div className="flex items-center justify-end gap-2 shrink-0 self-end sm:self-auto">
+                             {renderTrackActions('ziomale', index, track)}
                              <span className="text-xs font-mono font-bold text-emerald-500/60">{track.duration}</span>
                            </div>
                         </div>
