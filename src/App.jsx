@@ -529,18 +529,22 @@ const App = () => {
         return;
       }
 
+      const shouldResume = !audioRef.current.paused;
       audioRef.current.src = getAudioUrl(activeTrack.file);
-      if (isPlaying) {
+      if (shouldResume) {
         audioRef.current.play().catch(() => setAudioError(true));
       }
     }
-  }, [currentTrackIndex, activePlaylist, activeTrack?.file, isPlaying]);
+  }, [currentTrackIndex, activePlaylist, activeTrack?.file]);
 
   useEffect(() => {
     if (audioRef.current) {
       if (isPlaying) {
         initAudioAnalyzer();
-        audioRef.current.play().catch(() => setAudioError(true));
+        audioRef.current.play().catch(() => {
+          setAudioError(true);
+          setIsPlaying(false);
+        });
       } else {
         audioRef.current.pause();
       }
@@ -861,8 +865,41 @@ const App = () => {
     initAudioAnalyzer();
   };
 
-  const togglePlay = () => {
-    setIsPlaying(!isPlaying);
+  const togglePlay = async () => {
+    const audio = audioRef.current;
+
+    if (!activeTrack?.file) {
+      const firstPlayable = playableTracks[0];
+      if (!firstPlayable) return;
+      setActivePlaylist(firstPlayable.playlist);
+      setCurrentTrackIndex(firstPlayable.originalIndex);
+      setIsPlaying(true);
+      return;
+    }
+
+    if (!audio) {
+      setIsPlaying((playing) => !playing);
+      return;
+    }
+
+    if (audio.paused) {
+      try {
+        if (!audio.currentSrc) {
+          audio.src = getAudioUrl(activeTrack.file);
+        }
+        initAudioAnalyzer();
+        await audio.play();
+        setAudioError(false);
+        setIsPlaying(true);
+      } catch {
+        setAudioError(true);
+        setIsPlaying(false);
+      }
+      return;
+    }
+
+    audio.pause();
+    setIsPlaying(false);
   };
 
   const findPlayableTrackIndex = (direction) => {
@@ -902,7 +939,16 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-[#030105] text-slate-200 font-sans selection:bg-purple-500/30 pb-44 md:pb-32 relative overflow-x-hidden">
-      <audio ref={audioRef} crossOrigin="anonymous" preload="none" onTimeUpdate={handleTimeUpdate} onEnded={nextTrack} onError={() => setAudioError(true)} />
+      <audio
+        ref={audioRef}
+        crossOrigin="anonymous"
+        preload="none"
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
+        onTimeUpdate={handleTimeUpdate}
+        onEnded={nextTrack}
+        onError={() => setAudioError(true)}
+      />
 
       {/* TŁO GALAXY */}
       <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,rgba(168,85,247,0.05),transparent_50%),radial-gradient(ellipse_at_bottom_left,rgba(245,158,11,0.05),transparent_50%)] z-0" />
@@ -2575,8 +2621,8 @@ AA Records
       {/* FIXED PLAYER BAR */}
       <div className="fixed bottom-0 left-0 w-full bg-[#0a0505]/95 border-t border-white/10 px-4 md:px-8 py-3 md:py-4 flex items-center justify-between z-50 backdrop-blur-2xl shadow-[0_-10px_40px_rgba(0,0,0,0.8)]">
         <div className="flex items-center gap-3 md:gap-4 w-1/3">
-          <div className={`hidden sm:flex w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br rounded-xl md:rounded-2xl border items-center justify-center shadow-lg transition-colors duration-500 ${activePlaylist === 'ziomale' ? 'from-emerald-900 to-[#051a05] border-emerald-500/30' : (activePlaylist === 'aditi-ep' ? 'from-purple-900 to-[#1a0525] border-purple-500/30' : 'from-amber-900 via-[#1a0a00] to-black border-amber-500/30')} ${isPlaying ? 'shadow-[0_0_20px_currentColor]' : ''}`} style={{ color: activePlaylist === 'ziomale' ? '#10b981' : (activePlaylist === 'aditi-ep' ? '#a855f7' : '#f59e0b') }}>
-             <img src={activeCover} alt="" onError={(event) => { event.currentTarget.src = COVER_FALLBACK; }} className="absolute w-full h-full object-cover rounded-xl md:rounded-2xl opacity-50 mix-blend-screen" />
+          <div className={`relative hidden sm:flex w-12 h-12 md:w-16 md:h-16 overflow-hidden bg-gradient-to-br rounded-xl md:rounded-2xl border items-center justify-center shadow-lg transition-colors duration-500 ${activePlaylist === 'ziomale' ? 'from-emerald-900 to-[#051a05] border-emerald-500/30' : (activePlaylist === 'aditi-ep' ? 'from-purple-900 to-[#1a0525] border-purple-500/30' : 'from-amber-900 via-[#1a0a00] to-black border-amber-500/30')} ${isPlaying ? 'shadow-[0_0_20px_currentColor]' : ''}`} style={{ color: activePlaylist === 'ziomale' ? '#10b981' : (activePlaylist === 'aditi-ep' ? '#a855f7' : '#f59e0b') }}>
+             <img src={activeCover} alt="" onError={(event) => { event.currentTarget.src = COVER_FALLBACK; }} className="pointer-events-none absolute inset-0 w-full h-full object-cover rounded-xl md:rounded-2xl opacity-50 mix-blend-screen" />
              {activePlaylist === 'album' ? <Disc size={28} className={`relative z-10 ${isPlaying ? 'animate-spin' : ''}`} /> : (activePlaylist === 'aditi-ep' ? <Sparkles size={28} className={`relative z-10 ${isPlaying ? 'animate-pulse' : ''}`} /> : <Zap size={28} className={`relative z-10 ${isPlaying ? 'animate-pulse' : ''}`} />)}
           </div>
           <div className="overflow-hidden text-left">
@@ -2591,9 +2637,11 @@ AA Records
               <Shuffle size={16} />
             </button>
             <button onClick={prevTrack} className="hover:text-white transition-all active:scale-90"><SkipBack size={18} md={{size: 22}} fill="currentColor" /></button>
-            <button 
-              onClick={() => togglePlay()}
-              className={`p-2.5 md:p-4 rounded-full text-black hover:scale-105 transition-all shadow-lg active:scale-95 ${activePlaylist === 'ziomale' ? 'bg-emerald-500 shadow-emerald-500/20' : (activePlaylist === 'aditi-ep' ? 'bg-purple-500 shadow-purple-500/20' : 'bg-amber-500 shadow-amber-500/20')}`}
+            <button
+              type="button"
+              aria-label={isPlaying ? 'Pause' : 'Play'}
+              onClick={togglePlay}
+              className={`relative z-20 p-2.5 md:p-4 rounded-full text-black hover:scale-105 transition-all shadow-lg active:scale-95 ${activePlaylist === 'ziomale' ? 'bg-emerald-500 shadow-emerald-500/20' : (activePlaylist === 'aditi-ep' ? 'bg-purple-500 shadow-purple-500/20' : 'bg-amber-500 shadow-amber-500/20')}`}
             >
               {isPlaying ? <Pause size={18} md={{size: 24}} fill="currentColor" /> : <Play size={18} md={{size: 24}} fill="currentColor" className="ml-1" />}
             </button>
