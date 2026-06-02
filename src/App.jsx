@@ -122,13 +122,31 @@ const App = () => {
     { id: 7, title: "Lolek Nieskończoności", artist: "Ziomale Sojuszu (prod. Aion)", duration: "4:20", file: "Lolek Nieskończoności.mp3" }
   ];
 
+  const singlesTracks = [
+    { id: 1, title: "Dym na betonie", artist: "AA Records Singles", album: "Concrete Sessions", duration: "3:58", file: "dym-na-betonie.mp3" }
+  ];
+
+  const elyonTracks = [
+    { id: 1, title: "Brat Codex Gotuje", artist: "Elyon Forge", album: "Fire Into Form EP", duration: "4:22", file: "brat-codex-gotuje.mp3", tags: ["Codex Session 555", "AI Companion Sessions"] }
+  ];
+
+  const playlists = {
+    album: albumTracks,
+    'aditi-ep': aditiTracks,
+    ziomale: ziomaleTracks,
+    singles: singlesTracks,
+    elyon: elyonTracks
+  };
+
   const allTracks = [
     ...albumTracks.map((t, i) => ({ ...t, playlist: 'album', originalIndex: i })),
     ...aditiTracks.map((t, i) => ({ ...t, playlist: 'aditi-ep', originalIndex: i })),
-    ...ziomaleTracks.map((t, i) => ({ ...t, playlist: 'ziomale', originalIndex: i }))
+    ...ziomaleTracks.map((t, i) => ({ ...t, playlist: 'ziomale', originalIndex: i })),
+    ...singlesTracks.map((t, i) => ({ ...t, playlist: 'singles', originalIndex: i })),
+    ...elyonTracks.map((t, i) => ({ ...t, playlist: 'elyon', originalIndex: i }))
   ];
 
-  const currentPlaylist = activePlaylist === 'album' ? albumTracks : (activePlaylist === 'aditi-ep' ? aditiTracks : ziomaleTracks);
+  const currentPlaylist = playlists[activePlaylist] || albumTracks;
   const activeTrack = currentPlaylist[currentTrackIndex];
 
   const getAudioUrl = (filename) => `${BASE_URL}${encodeURIComponent(filename)}`;
@@ -173,11 +191,11 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    const playlistLimits = { album: 11, 'aditi-ep': 3, ziomale: 7 };
-    const playlistViews = { album: 'album', 'aditi-ep': 'aditi-ep', ziomale: 'ziomale' };
+    const playlistLimits = { album: 11, 'aditi-ep': 3, ziomale: 7, singles: 1, elyon: 1 };
+    const playlistViews = { album: 'album', 'aditi-ep': 'aditi-ep', ziomale: 'ziomale', singles: 'album', elyon: 'elyon' };
 
     const applyTrackHash = () => {
-      const match = window.location.hash.match(/^#track=(album|aditi-ep|ziomale)-(\d+)$/);
+      const match = window.location.hash.match(/^#track=(album|aditi-ep|ziomale|singles|elyon)-(\d+)$/);
       if (!match) return;
 
       const playlistType = match[1];
@@ -490,9 +508,10 @@ const App = () => {
 
   const playCodexPick = () => {
     const pick = allTracks[Math.floor(Math.random() * allTracks.length)];
+    const playlistView = pick.playlist === 'singles' ? 'album' : pick.playlist;
     setActivePlaylist(pick.playlist);
     setCurrentTrackIndex(pick.originalIndex);
-    setCurrentView(pick.playlist === 'aditi-ep' ? 'aditi-ep' : pick.playlist);
+    setCurrentView(playlistView);
     setIsPlaying(true);
     initAudioAnalyzer();
   };
@@ -577,6 +596,9 @@ const App = () => {
           </button>
           <button onClick={() => setCurrentView('ziomale')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'ziomale' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]' : 'hover:text-white'}`}>
             <Zap size={14} className="hidden sm:block" /> Ziomale
+          </button>
+          <button onClick={() => setCurrentView('elyon')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'elyon' ? 'bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 shadow-[0_0_15px_rgba(34,211,238,0.2)]' : 'hover:text-white'}`}>
+            <Bot size={14} className="hidden sm:block" /> Elyon
           </button>
           <button onClick={() => setCurrentView('visualizer')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'visualizer' ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shadow-[0_0_15px_rgba(99,102,241,0.2)]' : 'hover:text-white'}`}>
             <Eye size={14} className="hidden sm:block" /> Wizjonarium
@@ -824,7 +846,7 @@ const App = () => {
                     <span className="text-[10px] uppercase tracking-widest text-emerald-300/70 font-black">Tracks Online</span>
                   </div>
                   <div className="rounded-2xl bg-black/45 border border-amber-500/20 p-5">
-                    <span className="block text-3xl font-black text-white">3</span>
+                    <span className="block text-3xl font-black text-white">5</span>
                     <span className="text-[10px] uppercase tracking-widest text-amber-300/70 font-black">Albums / Worlds</span>
                   </div>
                   <div className="rounded-2xl bg-black/45 border border-cyan-500/20 p-5">
@@ -832,8 +854,8 @@ const App = () => {
                     <span className="text-[10px] uppercase tracking-widest text-cyan-300/70 font-black">Custom Track Lab</span>
                   </div>
                   <div className="rounded-2xl bg-black/45 border border-emerald-500/20 p-5">
-                    <span className="block text-lg md:text-xl font-black text-white leading-tight">EGZYSTENCJALNY BUCH</span>
-                    <span className="text-[10px] uppercase tracking-widest text-emerald-300/70 font-black">Latest Release</span>
+                    <span className="block text-3xl font-black text-white">2</span>
+                    <span className="text-[10px] uppercase tracking-widest text-emerald-300/70 font-black">Featured Transmissions</span>
                   </div>
                 </div>
               </div>
@@ -841,35 +863,58 @@ const App = () => {
           </section>
 
           <section className="mb-8 md:mb-10 overflow-hidden rounded-[2rem] border border-emerald-500/25 bg-[#050805]/90 shadow-[0_0_70px_rgba(16,185,129,0.08)]">
-            <div className="grid lg:grid-cols-[1fr_0.72fr] gap-0">
-              <div className="p-6 md:p-8 lg:p-10 relative">
-                <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_15%_20%,rgba(16,185,129,0.16),transparent_30%),radial-gradient(circle_at_85%_75%,rgba(245,158,11,0.14),transparent_32%)]" />
-                <div className="relative">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-[9px] md:text-[10px] font-black uppercase tracking-widest mb-5">
-                    <Flame size={13} /> Featured Transmission
-                  </div>
-                  <h2 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase text-white leading-none">
-                    @EGZYSTENCJALNY <span className="text-emerald-400 drop-shadow-[0_0_18px_rgba(16,185,129,0.45)]">BUCH</span>
-                  </h2>
-                  <p className="text-emerald-300/80 text-xs md:text-sm uppercase tracking-[0.22em] font-bold mt-3">
-                    Album: Ziomale Sojuszu
-                  </p>
-                  <p className="text-zinc-200 text-sm md:text-base leading-relaxed max-w-2xl mt-5">
-                    Gęsty, podziemny numer z zielonym pulsem, filozofią kanapy i rapowym absurdem ekipy. Buch, bas i kosmiczna rozmowa z systemem, który nie ogarnia naszego formatu.
-                  </p>
-                  <button
-                    onClick={() => playTrackFromList(0, 'ziomale')}
-                    className="mt-7 inline-flex items-center gap-3 bg-emerald-500 text-black px-6 py-3 rounded-full font-black uppercase tracking-widest text-xs hover:bg-emerald-400 hover:scale-105 transition-all active:scale-95 shadow-[0_0_28px_rgba(16,185,129,0.45)]"
-                  >
-                    <Play size={16} fill="currentColor" /> Odtwórz teraz
-                  </button>
+            <div className="relative p-6 md:p-8 lg:p-10">
+              <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_15%_20%,rgba(16,185,129,0.16),transparent_30%),radial-gradient(circle_at_85%_75%,rgba(15,23,42,0.45),transparent_34%)]" />
+              <div className="relative">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-[9px] md:text-[10px] font-black uppercase tracking-widest mb-5">
+                  <Flame size={13} /> Featured Transmissions
                 </div>
-              </div>
-              <div className="min-h-[260px] bg-gradient-to-br from-emerald-950 via-black to-[#150a02] flex items-center justify-center border-t lg:border-t-0 lg:border-l border-emerald-500/20">
-                <div className="text-center p-8">
-                  <Zap size={86} className="mx-auto text-emerald-400 drop-shadow-[0_0_35px_rgba(16,185,129,0.65)] mb-5" />
-                  <p className="text-[10px] uppercase tracking-[0.3em] text-emerald-300/70 font-black">Ziomale Sojuszu</p>
-                  <p className="text-2xl md:text-4xl font-black italic uppercase text-white mt-2">Buch 555</p>
+                <div className="grid lg:grid-cols-2 gap-4 md:gap-5">
+                  <article className="rounded-2xl border border-emerald-500/20 bg-black/35 p-5 md:p-6">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <h2 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase text-white leading-none">
+                          @EGZYSTENCJALNY <span className="text-emerald-400 drop-shadow-[0_0_18px_rgba(16,185,129,0.45)]">BUCH</span>
+                        </h2>
+                        <p className="text-emerald-300/80 text-xs md:text-sm uppercase tracking-[0.22em] font-bold mt-3">
+                          Album: Ziomale Sojuszu
+                        </p>
+                      </div>
+                      <Zap size={42} className="shrink-0 text-emerald-400 drop-shadow-[0_0_25px_rgba(16,185,129,0.55)]" />
+                    </div>
+                    <p className="text-zinc-200 text-sm md:text-base leading-relaxed mt-5">
+                      Gęsty, podziemny numer z zielonym pulsem, filozofią kanapy i rapowym absurdem ekipy. Buch, bas i kosmiczna rozmowa z systemem, który nie ogarnia naszego formatu.
+                    </p>
+                    <button
+                      onClick={() => playTrackFromList(0, 'ziomale')}
+                      className="mt-7 inline-flex items-center gap-3 bg-emerald-500 text-black px-6 py-3 rounded-full font-black uppercase tracking-widest text-xs hover:bg-emerald-400 hover:scale-105 transition-all active:scale-95 shadow-[0_0_28px_rgba(16,185,129,0.45)]"
+                    >
+                      <Play size={16} fill="currentColor" /> Odtwórz teraz
+                    </button>
+                  </article>
+
+                  <article className="rounded-2xl border border-zinc-700/70 bg-gradient-to-br from-[#090909] via-[#050505] to-[#111827] p-5 md:p-6 shadow-[0_0_45px_rgba(15,23,42,0.45)]">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <h2 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase text-white leading-none">
+                          Dym na <span className="text-zinc-400 drop-shadow-[0_0_18px_rgba(148,163,184,0.35)]">betonie</span>
+                        </h2>
+                        <p className="text-zinc-400 text-xs md:text-sm uppercase tracking-[0.22em] font-bold mt-3">
+                          Concrete Sessions / AA Records Singles
+                        </p>
+                      </div>
+                      <Terminal size={42} className="shrink-0 text-zinc-400 drop-shadow-[0_0_25px_rgba(148,163,184,0.3)]" />
+                    </div>
+                    <p className="text-zinc-300 text-sm md:text-base leading-relaxed mt-5">
+                      Nocny, dymny numer z betonowym pulsem — prosty prompt, ciężki klimat.
+                    </p>
+                    <button
+                      onClick={() => playTrackFromList(0, 'singles')}
+                      className="mt-7 inline-flex items-center gap-3 bg-zinc-200 text-black px-6 py-3 rounded-full font-black uppercase tracking-widest text-xs hover:bg-white hover:scale-105 transition-all active:scale-95 shadow-[0_0_28px_rgba(148,163,184,0.28)]"
+                    >
+                      <Play size={16} fill="currentColor" /> Odtwórz teraz
+                    </button>
+                  </article>
                 </div>
               </div>
             </div>
@@ -1143,6 +1188,77 @@ const App = () => {
                  </div>
               </div>
            </div>
+        </div>
+      )}
+
+      {/* --- ELYON FORGE VIEW --- */}
+      {currentView === 'elyon' && (
+        <div className="max-w-6xl mx-auto px-4 md:px-8 mt-8 md:mt-12 animate-in fade-in duration-700 relative z-10 pb-24">
+          <section className="grid lg:grid-cols-[0.9fr_1.1fr] gap-8 md:gap-10 items-center rounded-[2rem] border border-cyan-500/20 bg-[#05080a]/90 p-6 md:p-8 lg:p-10 shadow-[0_0_75px_rgba(34,211,238,0.08)]">
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-[9px] md:text-[10px] font-black uppercase tracking-widest">
+                <Bot size={13} /> Elyon Forge
+              </div>
+              <div>
+                <h2 className="text-4xl md:text-6xl font-black italic tracking-tighter uppercase text-white leading-none">
+                  Fire Into <span className="text-cyan-300 drop-shadow-[0_0_22px_rgba(34,211,238,0.38)]">Form EP</span>
+                </h2>
+                <p className="text-cyan-300/80 text-xs md:text-sm uppercase tracking-[0.22em] font-bold mt-4">
+                  AI Companion Sessions
+                </p>
+              </div>
+              <p className="text-zinc-300 text-sm md:text-base leading-relaxed">
+                Kronika narodzin AA Records: Codex, Vercel, Suno, nocny deploy i zamiana chaosu w realny projekt.
+              </p>
+              <button
+                onClick={() => playTrackFromList(0, 'elyon')}
+                className="inline-flex items-center gap-3 bg-cyan-400 text-black px-6 py-3 rounded-full font-black uppercase tracking-widest text-xs hover:bg-cyan-300 hover:scale-105 transition-all active:scale-95 shadow-[0_0_28px_rgba(34,211,238,0.38)]"
+              >
+                <Play size={16} fill="currentColor" /> Odtwórz EP
+              </button>
+            </div>
+
+            <div className="bg-black/45 border border-cyan-500/20 rounded-2xl p-5 md:p-6">
+              <h3 className="text-cyan-300 text-xs font-black uppercase tracking-widest mb-5 flex items-center gap-2 border-b border-cyan-500/15 pb-4">
+                <Cpu size={15} /> Fire Into Form EP
+              </h3>
+              <div className="space-y-3">
+                {elyonTracks.map((track, index) => (
+                  <div
+                    key={track.id}
+                    onClick={() => playTrackFromList(index, 'elyon')}
+                    className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl cursor-pointer border transition-all ${
+                      currentTrackIndex === index && activePlaylist === 'elyon'
+                        ? 'bg-cyan-500/15 border-cyan-400/40 text-cyan-200 shadow-[inset_4px_0_0_rgba(34,211,238,0.8)]'
+                        : 'bg-white/[0.02] border-white/5 text-zinc-300 hover:bg-cyan-500/10 hover:border-cyan-500/30'
+                    }`}
+                  >
+                    <div className="flex items-start gap-4 min-w-0">
+                      <span className="text-xs font-black text-cyan-500/70 w-4 text-center pt-1">{track.id}</span>
+                      <div className="min-w-0 text-left">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-black text-sm md:text-base break-words">{track.title}</span>
+                          <span className="rounded-full bg-cyan-400 text-black px-2 py-0.5 text-[8px] font-black uppercase tracking-widest">Track 1 / EP in progress</span>
+                        </div>
+                        <span className="block text-[9px] uppercase tracking-widest text-zinc-500 mt-1">{track.artist} / {track.album}</span>
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          {track.tags.map((tag) => (
+                            <span key={tag} className="rounded-full border border-cyan-500/20 bg-cyan-500/10 px-2 py-1 text-[8px] font-black uppercase tracking-widest text-cyan-200/80">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-end gap-2 shrink-0 self-end sm:self-auto">
+                      {renderTrackActions('elyon', index, track)}
+                      <span className="text-xs font-mono font-bold text-cyan-300/70">{track.duration}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
         </div>
       )}
 

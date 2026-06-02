@@ -8,7 +8,7 @@ const musicDir = join(rootDir, 'public', 'music');
 
 const appSource = readFileSync(appPath, 'utf8');
 const musicFiles = new Set(readdirSync(musicDir));
-const trackPattern = /\{\s*id:\s*\d+,\s*title:\s*"([^"]+)"[\s\S]*?file:\s*"([^"]*)"\s*\}/g;
+const trackPattern = /\{\s*id:\s*\d+,[\s\S]*?title:\s*"([^"]+)"[\s\S]*?file:\s*"([^"]*)"[\s\S]*?\}/g;
 const tracks = [...appSource.matchAll(trackPattern)].map((match) => ({
   title: match[1],
   file: match[2],
@@ -37,6 +37,14 @@ for (const track of tracks) {
 
 if (!tracks.some((track) => track.title.includes('EGZYSTENCJALNY BUCH'))) {
   failures.push('Important track "@EGZYSTENCJALNY BUCH" was not found in playlist data.');
+}
+
+if (!tracks.some((track) => track.title.includes('Dym na betonie') && track.file === 'dym-na-betonie.mp3')) {
+  failures.push('New single "Dym na betonie" was not found with file dym-na-betonie.mp3.');
+}
+
+if (!tracks.some((track) => track.title.includes('Brat Codex Gotuje') && track.file === 'brat-codex-gotuje.mp3')) {
+  failures.push('Elyon Forge track "Brat Codex Gotuje" was not found with file brat-codex-gotuje.mp3.');
 }
 
 if (failures.length > 0) {
