@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Elyon Forge Fire Into Form EP Cover</title>
+  <desc id="desc">Cyber forge orb placeholder cover for Elyon Forge.</desc>
+  <defs>
+    <radialGradient id="forge" cx="50%" cy="45%" r="43%">
+      <stop offset="0" stop-color="#f59e0b" stop-opacity=".96"/>
+      <stop offset=".38" stop-color="#22d3ee" stop-opacity=".64"/>
+      <stop offset=".72" stop-color="#a855f7" stop-opacity=".31"/>
+      <stop offset="1" stop-color="#03080a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="beam" x1="0" x2="1">
+      <stop offset="0" stop-color="#22d3ee"/>
+      <stop offset=".5" stop-color="#f59e0b"/>
+      <stop offset="1" stop-color="#a855f7"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="1200" fill="#03080a"/>
+  <circle cx="600" cy="500" r="360" fill="url(#forge)"/>
+  <g opacity=".22" stroke="#67e8f9" stroke-width="7">
+    <path d="M235 330h160M820 330h185M170 505h180M850 505h220M255 680h150M820 680h170"/>
+  </g>
+  <path d="M600 240l175 225-175 225-175-225z" fill="none" stroke="url(#beam)" stroke-width="18" stroke-linejoin="round"/>
+  <path d="M365 780h470" stroke="#f59e0b" stroke-width="18" stroke-linecap="round"/>
+  <text x="600" y="862" text-anchor="middle" font-family="Arial Black, Impact, sans-serif" font-size="73" font-weight="900" fill="#fff">FIRE INTO</text>
+  <text x="600" y="952" text-anchor="middle" font-family="Arial Black, Impact, sans-serif" font-size="85" font-weight="900" fill="#67e8f9">FORM EP</text>
+  <text x="600" y="1040" text-anchor="middle" font-family="Arial, sans-serif" font-size="29" font-weight="700" fill="#fbbf24" letter-spacing="8">ELYON FORGE</text>
+</svg>

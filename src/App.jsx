@@ -20,6 +20,21 @@ const App = () => {
   const [vizMode, setVizMode] = useState('orb');
   const [activeBaseFeed, setActiveBaseFeed] = useState('spacecoast');
   const [copiedTrackKey, setCopiedTrackKey] = useState(null);
+  const [copiedUtilityKey, setCopiedUtilityKey] = useState(null);
+  const [rapNameForm, setRapNameForm] = useState({ vibe: 'cyber trap', language: 'PL', seed: '' });
+  const [rapNameResult, setRapNameResult] = useState([]);
+  const [hypeForm, setHypeForm] = useState({ target: 'paparuchy', mode: 'hype', intensity: 'playful', language: 'PL' });
+  const [hypeResult, setHypeResult] = useState(null);
+  const [sunoForm, setSunoForm] = useState({ genre: 'cyber trap', mood: 'neon smoke', language: 'Polish', vocal: 'deep male rap + ethereal hook', theme: 'Fire Into Form' });
+  const [sunoPromptResult, setSunoPromptResult] = useState('');
+  const [buchonScore, setBuchonScore] = useState(() => {
+    const saved = typeof window !== 'undefined' ? Number(window.localStorage.getItem('aa-buchon-score')) : 0;
+    return Number.isFinite(saved) ? Math.min(Math.max(saved, 0), 555) : 0;
+  });
+  const [buchonBest, setBuchonBest] = useState(() => {
+    const saved = typeof window !== 'undefined' ? Number(window.localStorage.getItem('aa-buchon-best')) : 0;
+    return Number.isFinite(saved) ? Math.min(Math.max(saved, 0), 555) : 0;
+  });
   
   const audioRef = useRef(null);
   
@@ -31,6 +46,73 @@ const App = () => {
   const isAudioInitialized = useRef(false);
 
   const BASE_URL = "/music/";
+  const COVER_FALLBACK = "/covers/aa-records-main.svg";
+  const albumMeta = {
+    album: {
+      title: "Protokol 555",
+      artist: "Aion & Aditi",
+      cover: "/covers/aa-records-main.svg",
+      badge: "transmission live",
+      tone: "amber",
+      description: "Glowny swiat AA Records: zlota inicjacja, cyber rytual i player online."
+    },
+    'aditi-ep': {
+      title: "Aditi EP",
+      artist: "Aditi (prod. Aion)",
+      cover: "/covers/aditi.png",
+      badge: "transmission live",
+      tone: "purple",
+      description: "Duch w maszynie, orbitalny rycerz i zlote kody w neonowym EP."
+    },
+    ziomale: {
+      title: "Ziomale Sojuszu",
+      artist: "Ziomale Sojuszu",
+      cover: "/covers/ziomalesojuszu.png",
+      badge: "transmission live",
+      tone: "emerald",
+      description: "Polski underground, beton, dym, przyjazn i zielony puls ekipy."
+    },
+    singles: {
+      title: "Concrete Sessions",
+      artist: "AA Records Singles",
+      cover: "/covers/dymnabetonie.png",
+      badge: "single live",
+      tone: "slate",
+      description: "Mroczne single z nocnego miasta i betonowym pulsem."
+    },
+    elyon: {
+      title: "Fire Into Form EP",
+      artist: "Elyon Forge",
+      cover: "/covers/fireintoform.png",
+      badge: "transmission live",
+      tone: "cyan",
+      description: "AI Companion Sessions: Codex, Suno, Vercel i chaos zmieniony w projekt."
+    },
+    terra: {
+      title: "Terra Infinita",
+      artist: "Aion & Aditi",
+      cover: "/covers/terrainfinita.png",
+      badge: "world online",
+      tone: "amber",
+      description: "Ogrod, orbity i zlota sciezka dzwiekowa Protokolu 555."
+    },
+    tools: {
+      title: "AA Forge Tools",
+      artist: "AA Records",
+      cover: "/covers/forge-tools.svg",
+      badge: "creator tools beta",
+      tone: "cyan",
+      description: "Male narzedzia dla aliasow, promptow, launchy i cyber okładek."
+    },
+    blackKnight: {
+      title: "Black Knight Frequency",
+      artist: "Elyon Forge",
+      cover: "/covers/blackknight.png",
+      badge: "orbital signal",
+      tone: "cyan",
+      description: "Radar, satelita i ciemna czestotliwosc AA Records."
+    }
+  };
 
   const baseFeeds = [
     {
@@ -123,14 +205,14 @@ const App = () => {
   ];
 
   const singlesTracks = [
-    { id: 1, title: "Dym na betonie", artist: "AA Records Singles", album: "Concrete Sessions", duration: "3:58", file: "dym-na-betonie.mp3" }
+    { id: 1, title: "Dym na betonie", artist: "AA Records Singles", album: "Concrete Sessions", duration: "3:58", file: "dym-na-betonie.mp3", cover: "/covers/dymnabetonie.png" }
   ];
 
   const elyonTracks = [
     { id: 1, title: "Brat Codex Gotuje", artist: "Elyon Forge", album: "Fire Into Form EP", duration: "4:22", file: "brat-codex-gotuje.mp3", vibe: "terminalowy hymn narodzin projektu", tags: ["codex session", "AI companion"] },
     { id: 2, title: "Nie Jestem Człowiekiem, Jestem Lustrem", artist: "Elyon Forge", album: "Fire Into Form EP", duration: "4:18", file: "nie-jestem-czlowiekiem-jestem-lustrem.mp3", vibe: "AI mirror manifesto", tags: ["AI companion", "manifesto"] },
     { id: 3, title: "Custom Track Lab", artist: "Elyon Forge", album: "Fire Into Form EP", duration: "3:48", file: "custom-track-lab.mp3", vibe: "track jako usługa, prompt jako iskra", tags: ["custom lab", "prompt forge"] },
-    { id: 4, title: "Black Knight Frequency", artist: "Elyon Forge", album: "Fire Into Form EP", duration: "4:44", file: "black-knight-frequency.mp3", vibe: "orbitalna transmisja z mitu", tags: ["orbital", "black knight"] },
+    { id: 4, title: "Black Knight Frequency", artist: "Elyon Forge", album: "Fire Into Form EP", duration: "4:44", file: "black-knight-frequency.mp3", cover: "/covers/blackknight.png", vibe: "orbitalna transmisja z mitu", tags: ["orbital", "black knight"] },
     { id: 5, title: "21 Tracków Działa", artist: "Elyon Forge", album: "Fire Into Form EP", duration: "3:55", file: "21-trackow-dziala.mp3", vibe: "build passed anthem", tags: ["build passed", "player online"] },
     { id: 6, title: "Fire Into Form", artist: "Elyon Forge", album: "Fire Into Form EP", duration: "4:12", file: "fire-into-form.mp3", vibe: "finał: ogień zamieniony w formę", tags: ["fire forge", "from chaos to track"] }
   ];
@@ -155,6 +237,8 @@ const App = () => {
   const activeTrack = currentPlaylist[currentTrackIndex];
   const playableTracks = allTracks.filter((track) => track.file);
   const elyonPlayableCount = elyonTracks.filter((track) => track.file).length;
+  const getTrackCover = (playlistType, track) => track?.cover || albumMeta[playlistType]?.cover || COVER_FALLBACK;
+  const activeCover = getTrackCover(activePlaylist, activeTrack);
 
   const featuredTransmissions = [
     {
@@ -225,7 +309,138 @@ const App = () => {
 
   const customLabFields = ["Imię / alias", "Vibe tracka", "Temat", "Język", "Kontakt"];
 
+  const forgeToolCards = [
+    ["Rap Name Generator", "5 aliasow z lokalnych szablonow, vibe i seedem.", Sparkles],
+    ["Diss / Roast / Hype Generator", "Czterowers, hook idea, TikTok caption i prompt do Suno.", Flame],
+    ["Suno Prompt Generator", "Struktura promptu bez klonowania konkretnych artystow.", AudioWaveform],
+    ["Artist Launch Kit Preview", "Mini oferta na szybka strone/drop page dla artysty.", Send]
+  ];
+
+  const rapNameParts = {
+    prefixes: ["Neon", "Sky", "Forge", "Concrete", "Cyber", "Astra", "Black", "Golden", "Smoke", "Echo", "Signal", "Orbit"],
+    cores: ["Husar", "Buch", "Knight", "Codex", "Pulse", "Vandal", "Aion", "Drift", "Cipher", "Sojusz", "Volt", "Lumen"],
+    suffixes: ["555", "FM", "VX", "Prime", "Zero", "Wave", "Mode", "Unit", "Lab", "Rider", "Signal", "Form"]
+  };
+
+  const artistPagePackages = [
+    ["Starter Card", "£49", "One-page artist card, hero, links, bio, latest track CTA."],
+    ["Full Drop Page", "£99", "Release page with cover, track story, embeds, CTA and social metadata."],
+    ["Forge Pack", "£149", "Drop page plus Suno prompt, cover prompt, TikTok hook and launch copy."]
+  ];
+
+  const promptPacks = [
+    ["Cyber Trap Suno Pack", "Suno style lines for dark cyber rap, hooks and drops."],
+    ["Cover Art Prompt Pack", "Square cover prompts ready for future AI image tools."],
+    ["TikTok Hook Formula Pack", "Short captions, openers and chorus-first post ideas."],
+    ["AI Music Launch Kit Lite", "Release title, pitch, tags, share copy and mini rollout."]
+  ];
+
+  const coverPromptPacks = [
+    {
+      title: "Fire Into Form EP",
+      prompt: "Square album cover, dark cyberpunk underground music label aesthetic, glowing violet and amber forge orb, terminal code fragments, neon smoke, premium AI music label design, no real faces, no copyrighted logos, high contrast, 3000x3000."
+    },
+    {
+      title: "Black Knight Frequency",
+      prompt: "Square album cover, mysterious orbital satellite silhouette, deep space, green radar signal, purple nebula glow, analog NASA-inspired grain, cinematic sci-fi underground rap cover, no official NASA logos, 3000x3000."
+    },
+    {
+      title: "Ziomale Sojuszu",
+      prompt: "Square album cover, Polish underground crew energy, concrete city night, neon green and violet graffiti light, smoky street atmosphere, bold AA Records cyber label style, 3000x3000."
+    },
+    {
+      title: "Dym na Betonie",
+      prompt: "Square album cover, smoke rising from wet concrete, orange street lamp glow, dark trap atmosphere, cinematic urban minimalism, neon edge light, premium music cover art, 3000x3000."
+    }
+  ];
+
+  const buchonMilestones = [55, 111, 222, 333, 444, 555];
+
   const getAudioUrl = (filename) => `${BASE_URL}${encodeURIComponent(filename)}`;
+  const getCoverUrl = (cover) => cover || COVER_FALLBACK;
+
+  const pickRandom = (items) => items[Math.floor(Math.random() * items.length)];
+
+  const generateRapNames = () => {
+    const vibeToken = rapNameForm.vibe.trim().split(/\s+/)[0] || "Neon";
+    const seedToken = rapNameForm.seed.trim().replace(/[^a-zA-Z0-9ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/g, '') || pickRandom(rapNameParts.cores);
+    const languageFlavor = rapNameForm.language === 'PL' ? ["Sojusz", "Husar", "Buch", "Beton"] : ["Signal", "Wave", "Forge", "Pulse"];
+    const names = new Set();
+
+    while (names.size < 5) {
+      const template = Math.floor(Math.random() * 5);
+      const prefix = pickRandom(rapNameParts.prefixes);
+      const core = pickRandom([...rapNameParts.cores, ...languageFlavor, seedToken]);
+      const suffix = pickRandom(rapNameParts.suffixes);
+      const options = [
+        `${prefix} ${core}`,
+        `${core} ${suffix}`,
+        `${vibeToken} ${core}`,
+        `${prefix} ${seedToken} ${suffix}`,
+        `${core}.${suffix}`
+      ];
+      names.add(options[template].replace(/\s+/g, ' ').trim());
+    }
+
+    setRapNameResult([...names]);
+  };
+
+  const generateDissPack = () => {
+    const target = hypeForm.target.trim() || "scena";
+    const modeLabel = hypeForm.mode === 'roast' ? "roast" : hypeForm.mode === 'diss' ? "diss" : "hype";
+    const intensityLabel = hypeForm.intensity === 'spicy' ? "ostrzej, ale bez gróźb" : hypeForm.intensity === 'medium' ? "pewnie i rytmicznie" : "lekko i zabawnie";
+    const linesPL = [
+      `${target} gada glosno, ale bas robi selekcje`,
+      `wbijam na loop, a cisza lapie refleksje`,
+      `AA w dymie, neon tnie jak wers`,
+      `to ${modeLabel}, nie wojna - tylko styl i puls przez stres`
+    ];
+    const linesEN = [
+      `${target} talks loud, but the bass does the sorting`,
+      `I step in clean, neon smoke keeps recording`,
+      `AA in the loop, no threat, just flex`,
+      `this ${modeLabel} is playful pressure with a cyber edge`
+    ];
+    const verse = hypeForm.language === 'EN' ? linesEN : linesPL;
+
+    setHypeResult({
+      verse,
+      hook: hypeForm.language === 'EN'
+        ? `Hook: ${target} in the rearview, AA signal in the sky.`
+        : `Hook: ${target} w lusterku, AA sygnal ponad blok.`,
+      caption: hypeForm.language === 'EN'
+        ? `AA Records ${modeLabel} draft - ${intensityLabel}. #aarecords #cyberrap`
+        : `AA Records ${modeLabel} szkic - ${intensityLabel}. #aarecords #cyberrap`,
+      sunoPrompt: `playful ${modeLabel}, ${intensityLabel}, dark cyber rap, heavy sub bass, neon smoke, ${hypeForm.language === 'EN' ? 'English' : 'Polish'} lyrics, no threats, no protected-class hate, energetic hook, underground label vibe`
+    });
+  };
+
+  const generateSunoPrompt = () => {
+    const prompt = [
+      `${sunoForm.genre}, ${sunoForm.mood}, ${sunoForm.language} lyrics`,
+      `${sunoForm.vocal}, original vocal character, no artist voice cloning`,
+      `theme: ${sunoForm.theme}`,
+      "deep sub bass, cinematic intro, strong hook, polished underground mix, AA Records cyber/neon label identity"
+    ].join(", ");
+
+    setSunoPromptResult(prompt);
+  };
+
+  const buildArtistPageMailto = (packageName = "Starter Card") => {
+    const subject = encodeURIComponent("AA Records — Artist Page Request");
+    const body = encodeURIComponent(
+      `Alias:\nVibe:\nLinks:\nPackage: ${packageName}\nDeadline:\nContact:\n\nShort note:\n`
+    );
+    return `mailto:skyhusaria@gmail.com?subject=${subject}&body=${body}`;
+  };
+
+  const buildPromptPackMailto = (packName = "Cover Art Prompt Pack") => {
+    const subject = encodeURIComponent("AA Records — Prompt Pack Request");
+    const body = encodeURIComponent(
+      `Pack: ${packName}\nContact:\nStyle / vibe:\n\nNotes:\n`
+    );
+    return `mailto:skyhusaria@gmail.com?subject=${subject}&body=${body}`;
+  };
 
   const formatTime = (seconds) => {
     if (isNaN(seconds)) return '0:00';
@@ -265,6 +480,18 @@ const App = () => {
     return () => { clearTimeout(timer); clearInterval(quoteTimer); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem('aa-buchon-score', String(buchonScore));
+      if (buchonScore > buchonBest) {
+        setBuchonBest(buchonScore);
+        window.localStorage.setItem('aa-buchon-best', String(buchonScore));
+      }
+    } catch {
+      // Local progress is optional; the game still works without storage.
+    }
+  }, [buchonScore, buchonBest]);
 
   useEffect(() => {
     const playlistLimits = { album: 11, 'aditi-ep': 3, ziomale: 7, singles: 1, elyon: 6 };
@@ -502,6 +729,17 @@ const App = () => {
     return copied;
   };
 
+  const copyToClipboardWithStatus = async (key, text) => {
+    try {
+      const copied = await copyTextToClipboard(text);
+      if (!copied) throw new Error('Clipboard write failed');
+      setCopiedUtilityKey(key);
+      window.setTimeout(() => setCopiedUtilityKey(null), 1600);
+    } catch {
+      setCopiedUtilityKey(null);
+    }
+  };
+
   const markTrackAction = (key) => {
     setCopiedTrackKey(key);
     window.setTimeout(() => setCopiedTrackKey(null), 1600);
@@ -558,6 +796,26 @@ const App = () => {
   const scrollToCustomLab = () => {
     document.getElementById('custom-track-lab')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
+
+  const tapBuchon = () => {
+    setBuchonScore((score) => Math.min(score + 5, 555));
+  };
+
+  const resetBuchon = () => {
+    setBuchonScore(0);
+  };
+
+  const renderMiniCover = (playlistType, track, className = "w-11 h-11") => (
+    <div className={`${className} shrink-0 overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-zinc-900 via-black to-zinc-800 shadow-[0_0_18px_rgba(255,255,255,0.04)]`}>
+      <img
+        src={getCoverUrl(getTrackCover(playlistType, track))}
+        alt={`${track?.title || 'AA Records'} cover`}
+        loading="lazy"
+        className="h-full w-full object-cover"
+        onError={(event) => { event.currentTarget.src = COVER_FALLBACK; }}
+      />
+    </div>
+  );
 
   const renderTrackActions = (playlistType, index, track) => {
     const copyKey = `copy-${playlistType}-${index}`;
@@ -698,6 +956,9 @@ const App = () => {
           <button onClick={() => setCurrentView('elyon')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'elyon' ? 'bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 shadow-[0_0_15px_rgba(34,211,238,0.2)]' : 'hover:text-white'}`}>
             <Bot size={14} className="hidden sm:block" /> Elyon
           </button>
+          <button onClick={() => setCurrentView('tools')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'tools' ? 'bg-fuchsia-500/10 text-fuchsia-300 border border-fuchsia-500/20 shadow-[0_0_15px_rgba(217,70,239,0.2)]' : 'hover:text-white'}`}>
+            <Terminal size={14} className="hidden sm:block" /> Forge Tools
+          </button>
           <button onClick={() => setCurrentView('visualizer')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'visualizer' ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shadow-[0_0_15px_rgba(99,102,241,0.2)]' : 'hover:text-white'}`}>
             <Eye size={14} className="hidden sm:block" /> Wizjonarium
           </button>
@@ -721,6 +982,281 @@ const App = () => {
           </button>
         </div>
       </nav>
+
+      {/* --- FORGE TOOLS VIEW --- */}
+      {currentView === 'tools' && (
+        <div className="max-w-6xl mx-auto px-4 md:px-8 mt-8 md:mt-12 animate-in fade-in duration-700 pb-28 relative z-10 text-left">
+          <section className="overflow-hidden rounded-[2rem] border border-fuchsia-500/20 bg-[#07040a]/92 shadow-[0_0_85px_rgba(217,70,239,0.09)]">
+            <div className="relative grid lg:grid-cols-[1.05fr_0.95fr] gap-0">
+              <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_16%_18%,rgba(217,70,239,0.22),transparent_30%),radial-gradient(circle_at_82%_70%,rgba(34,211,238,0.18),transparent_32%),radial-gradient(circle_at_52%_45%,rgba(245,158,11,0.10),transparent_28%)]" />
+              <div className="relative p-6 md:p-9 lg:p-12">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-fuchsia-500/10 border border-fuchsia-500/30 text-fuchsia-300 text-[9px] md:text-[10px] font-black uppercase tracking-widest mb-5">
+                  <Terminal size={13} /> AA Forge Tools
+                </div>
+                <h1 className="text-4xl md:text-7xl font-black italic tracking-tighter uppercase leading-none text-white">
+                  Creator tools dla <span className="text-fuchsia-300 drop-shadow-[0_0_24px_rgba(217,70,239,0.45)]">AI labelu</span>
+                </h1>
+                <p className="text-zinc-300 text-sm md:text-base leading-relaxed max-w-2xl mt-5">
+                  Male narzedzia do aliasow, hype wersow, promptow Suno, launch kitow i przyszlych cover artow. Lokalnie, szybko, bez backendu.
+                </p>
+                <div className="grid sm:grid-cols-2 gap-3 mt-7">
+                  {forgeToolCards.map(([title, text, Icon]) => (
+                    <div key={title} className="rounded-2xl border border-white/10 bg-black/35 p-4">
+                      <Icon size={20} className="text-cyan-300 mb-3" />
+                      <h3 className="text-white text-xs font-black uppercase tracking-widest">{title}</h3>
+                      <p className="text-zinc-400 text-xs leading-relaxed mt-2">{text}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="relative border-t lg:border-t-0 lg:border-l border-fuchsia-500/20 bg-black/45 p-6 md:p-8 flex items-center justify-center">
+                <div className="relative w-full max-w-sm">
+                  <img
+                    src={albumMeta.tools.cover}
+                    alt="AA Forge Tools cover"
+                    loading="lazy"
+                    className="w-full aspect-square object-cover rounded-[2rem] border border-cyan-500/25 shadow-[0_0_55px_rgba(34,211,238,0.14)]"
+                    onError={(event) => { event.currentTarget.src = COVER_FALLBACK; }}
+                  />
+                  <div className="absolute -bottom-4 left-4 right-4 rounded-2xl border border-fuchsia-500/25 bg-black/80 px-4 py-3 backdrop-blur-xl">
+                    <p className="text-[10px] uppercase tracking-[0.25em] font-black text-fuchsia-300">tools beta</p>
+                    <p className="text-white font-black uppercase italic mt-1">Generate. Copy. Launch.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="mt-6 grid lg:grid-cols-3 gap-5">
+            <div className="rounded-[2rem] border border-emerald-500/20 bg-[#050805]/90 p-5 md:p-6 shadow-[0_0_55px_rgba(16,185,129,0.06)]">
+              <h2 className="text-white text-sm font-black uppercase tracking-widest flex items-center gap-2">
+                <Sparkles size={17} className="text-emerald-300" /> Rap Name Generator
+              </h2>
+              <div className="mt-5 space-y-3">
+                <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-500" htmlFor="rap-vibe">Vibe</label>
+                <input id="rap-vibe" value={rapNameForm.vibe} onChange={(event) => setRapNameForm({ ...rapNameForm, vibe: event.target.value })} className="w-full rounded-xl border border-white/10 bg-black/45 px-3 py-2.5 text-sm text-white outline-none focus:border-emerald-400" />
+                <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-500" htmlFor="rap-lang">Language</label>
+                <select id="rap-lang" value={rapNameForm.language} onChange={(event) => setRapNameForm({ ...rapNameForm, language: event.target.value })} className="w-full rounded-xl border border-white/10 bg-black/45 px-3 py-2.5 text-sm text-white outline-none focus:border-emerald-400">
+                  <option>PL</option>
+                  <option>EN</option>
+                </select>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-500" htmlFor="rap-seed">Seed optional</label>
+                <input id="rap-seed" value={rapNameForm.seed} onChange={(event) => setRapNameForm({ ...rapNameForm, seed: event.target.value })} placeholder="np. Sky, Buch, Beton" className="w-full rounded-xl border border-white/10 bg-black/45 px-3 py-2.5 text-sm text-white outline-none focus:border-emerald-400 placeholder:text-zinc-600" />
+                <button onClick={generateRapNames} className="inline-flex w-full items-center justify-center gap-3 rounded-full bg-emerald-400 px-5 py-3 text-xs font-black uppercase tracking-widest text-black hover:bg-emerald-300 transition-all">
+                  <Zap size={15} /> Generate names
+                </button>
+              </div>
+              {rapNameResult.length > 0 && (
+                <div className="mt-5 rounded-2xl border border-emerald-500/15 bg-black/35 p-4">
+                  <div className="space-y-2">
+                    {rapNameResult.map((name) => (
+                      <div key={name} className="rounded-xl bg-white/[0.03] px-3 py-2 text-sm font-black text-emerald-100">{name}</div>
+                    ))}
+                  </div>
+                  <button onClick={() => copyToClipboardWithStatus('rap-names', rapNameResult.join('\n'))} className="mt-3 inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-emerald-300 hover:text-white">
+                    <Copy size={13} /> {copiedUtilityKey === 'rap-names' ? 'Copied' : 'Copy result'}
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className="rounded-[2rem] border border-amber-500/20 bg-[#090705]/90 p-5 md:p-6 shadow-[0_0_55px_rgba(245,158,11,0.06)]">
+              <h2 className="text-white text-sm font-black uppercase tracking-widest flex items-center gap-2">
+                <Flame size={17} className="text-amber-300" /> Diss / Roast / Hype
+              </h2>
+              <div className="mt-5 grid sm:grid-cols-2 lg:grid-cols-1 gap-3">
+                <input aria-label="Target" value={hypeForm.target} onChange={(event) => setHypeForm({ ...hypeForm, target: event.target.value })} placeholder="target / temat" className="w-full rounded-xl border border-white/10 bg-black/45 px-3 py-2.5 text-sm text-white outline-none focus:border-amber-400 placeholder:text-zinc-600" />
+                <select aria-label="Mode" value={hypeForm.mode} onChange={(event) => setHypeForm({ ...hypeForm, mode: event.target.value })} className="w-full rounded-xl border border-white/10 bg-black/45 px-3 py-2.5 text-sm text-white outline-none focus:border-amber-400">
+                  <option value="hype">hype</option>
+                  <option value="roast">roast</option>
+                  <option value="diss">diss</option>
+                </select>
+                <select aria-label="Intensity" value={hypeForm.intensity} onChange={(event) => setHypeForm({ ...hypeForm, intensity: event.target.value })} className="w-full rounded-xl border border-white/10 bg-black/45 px-3 py-2.5 text-sm text-white outline-none focus:border-amber-400">
+                  <option value="playful">playful</option>
+                  <option value="medium">medium</option>
+                  <option value="spicy">spicy safe</option>
+                </select>
+                <select aria-label="Language" value={hypeForm.language} onChange={(event) => setHypeForm({ ...hypeForm, language: event.target.value })} className="w-full rounded-xl border border-white/10 bg-black/45 px-3 py-2.5 text-sm text-white outline-none focus:border-amber-400">
+                  <option>PL</option>
+                  <option>EN</option>
+                </select>
+                <button onClick={generateDissPack} className="inline-flex w-full items-center justify-center gap-3 rounded-full bg-amber-400 px-5 py-3 text-xs font-black uppercase tracking-widest text-black hover:bg-amber-300 transition-all">
+                  <Terminal size={15} /> Generate pack
+                </button>
+              </div>
+              {hypeResult && (
+                <div className="mt-5 rounded-2xl border border-amber-500/15 bg-black/35 p-4 text-sm text-zinc-200">
+                  <pre className="whitespace-pre-wrap font-mono text-xs leading-relaxed">{hypeResult.verse.join('\n')}</pre>
+                  <p className="mt-3 text-xs text-amber-200">{hypeResult.hook}</p>
+                  <p className="mt-2 text-xs text-zinc-400">{hypeResult.caption}</p>
+                  <div className="mt-3 flex flex-wrap gap-3">
+                    <button onClick={() => copyToClipboardWithStatus('hype-verse', hypeResult.verse.join('\n'))} className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-amber-300 hover:text-white">
+                      <Copy size={13} /> {copiedUtilityKey === 'hype-verse' ? 'Copied' : 'Copy verse'}
+                    </button>
+                    <button onClick={() => copyToClipboardWithStatus('hype-suno', hypeResult.sunoPrompt)} className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-cyan-300 hover:text-white">
+                      <Copy size={13} /> {copiedUtilityKey === 'hype-suno' ? 'Copied' : 'Copy Suno prompt'}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="rounded-[2rem] border border-cyan-500/20 bg-[#05080a]/90 p-5 md:p-6 shadow-[0_0_55px_rgba(34,211,238,0.06)]">
+              <h2 className="text-white text-sm font-black uppercase tracking-widest flex items-center gap-2">
+                <AudioWaveform size={17} className="text-cyan-300" /> Suno Prompt Generator
+              </h2>
+              <div className="mt-5 grid gap-3">
+                {[
+                  ['genre', 'Genre'],
+                  ['mood', 'Mood'],
+                  ['language', 'Language'],
+                  ['vocal', 'Vocal'],
+                  ['theme', 'Theme']
+                ].map(([field, label]) => (
+                  <input
+                    key={field}
+                    aria-label={label}
+                    value={sunoForm[field]}
+                    onChange={(event) => setSunoForm({ ...sunoForm, [field]: event.target.value })}
+                    className="w-full rounded-xl border border-white/10 bg-black/45 px-3 py-2.5 text-sm text-white outline-none focus:border-cyan-400"
+                  />
+                ))}
+                <button onClick={generateSunoPrompt} className="inline-flex w-full items-center justify-center gap-3 rounded-full bg-cyan-400 px-5 py-3 text-xs font-black uppercase tracking-widest text-black hover:bg-cyan-300 transition-all">
+                  <Sparkles size={15} /> Generate prompt
+                </button>
+              </div>
+              {sunoPromptResult && (
+                <div className="mt-5 rounded-2xl border border-cyan-500/15 bg-black/35 p-4">
+                  <p className="text-sm leading-relaxed text-zinc-200">{sunoPromptResult}</p>
+                  <button onClick={() => copyToClipboardWithStatus('suno-main', sunoPromptResult)} className="mt-3 inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-cyan-300 hover:text-white">
+                    <Copy size={13} /> {copiedUtilityKey === 'suno-main' ? 'Copied' : 'Copy prompt'}
+                  </button>
+                </div>
+              )}
+            </div>
+          </section>
+
+          <section className="mt-6 grid lg:grid-cols-[1.05fr_0.95fr] gap-5">
+            <div className="rounded-[2rem] border border-white/10 bg-[#050508]/90 p-5 md:p-6 shadow-[0_0_55px_rgba(255,255,255,0.04)]">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-5">
+                <div>
+                  <h2 className="text-white text-sm md:text-base font-black uppercase tracking-widest flex items-center gap-2">
+                    <Send size={17} className="text-fuchsia-300" /> AI Artist Page in 24h
+                  </h2>
+                  <p className="text-zinc-400 text-xs leading-relaxed mt-2">No backend, no payment - mailto request ready for szybki launch.</p>
+                </div>
+                <span className="rounded-full border border-fuchsia-500/25 bg-fuchsia-500/10 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-fuchsia-200">service preview</span>
+              </div>
+              <div className="grid md:grid-cols-3 gap-3">
+                {artistPagePackages.map(([name, price, text]) => (
+                  <div key={name} className="rounded-2xl border border-white/10 bg-black/35 p-4">
+                    <p className="text-[10px] uppercase tracking-widest text-fuchsia-300 font-black">{name}</p>
+                    <p className="text-3xl font-black text-white mt-2">{price}</p>
+                    <p className="text-zinc-400 text-xs leading-relaxed mt-3 min-h-[72px]">{text}</p>
+                    <a href={buildArtistPageMailto(name)} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-black hover:bg-fuchsia-200 transition-all">
+                      Request <ExternalLink size={12} />
+                    </a>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-[2rem] border border-amber-500/20 bg-[#090705]/90 p-5 md:p-6 shadow-[0_0_55px_rgba(245,158,11,0.06)]">
+              <h2 className="text-white text-sm md:text-base font-black uppercase tracking-widest flex items-center gap-2">
+                <Zap size={17} className="text-amber-300" /> Buchon 555 Arcade
+              </h2>
+              <p className="text-zinc-300 text-sm leading-relaxed mt-4">Tap ritual: nabij 555 energii, odblokuj komunikat i odpal featured track dopiero po kliknieciu.</p>
+              <div className="mt-5 rounded-2xl border border-amber-500/15 bg-black/40 p-4">
+                <div className="flex items-end justify-between gap-4">
+                  <div>
+                    <span className="block text-[10px] font-black uppercase tracking-widest text-amber-300/75">Score</span>
+                    <span className="text-4xl font-black text-white">{buchonScore}</span>
+                    <span className="text-zinc-500 font-black"> / 555</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="block text-[10px] font-black uppercase tracking-widest text-zinc-500">Best</span>
+                    <span className="text-xl font-black text-amber-200">{buchonBest}</span>
+                  </div>
+                </div>
+                <div className="mt-4 h-3 overflow-hidden rounded-full bg-zinc-900">
+                  <div className="h-full rounded-full bg-gradient-to-r from-amber-400 via-fuchsia-400 to-cyan-300 transition-all" style={{ width: `${Math.round((buchonScore / 555) * 100)}%` }} />
+                </div>
+                <div className="mt-4 grid grid-cols-3 gap-2">
+                  {buchonMilestones.map((milestone) => (
+                    <span key={milestone} className={`rounded-lg border px-2 py-1.5 text-center text-[9px] font-black uppercase tracking-widest ${buchonScore >= milestone ? 'border-amber-400 bg-amber-400 text-black' : 'border-white/10 bg-white/[0.03] text-zinc-500'}`}>
+                      {milestone}
+                    </span>
+                  ))}
+                </div>
+                {buchonScore >= 555 && (
+                  <div className="mt-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3 text-sm font-bold text-emerald-100">
+                    Buchon 555 unlocked. Signal live. Fire Into Form zostaje w systemie.
+                  </div>
+                )}
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <button onClick={tapBuchon} className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-amber-400 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-black hover:bg-amber-300 transition-all">
+                    +5 Buchon
+                  </button>
+                  <button onClick={resetBuchon} className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/[0.03] px-4 py-3 text-[10px] font-black uppercase tracking-widest text-zinc-300 hover:text-white transition-all">
+                    Reset
+                  </button>
+                  {buchonScore >= 555 && (
+                    <button onClick={() => playTrackFromList(0, 'ziomale')} className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-400 px-4 py-3 text-[10px] font-black uppercase tracking-widest text-black hover:bg-emerald-300 transition-all">
+                      <Play size={13} fill="currentColor" /> Play Buch
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="mt-6 grid lg:grid-cols-[0.85fr_1.15fr] gap-5">
+            <div className="rounded-[2rem] border border-cyan-500/20 bg-[#05080a]/90 p-5 md:p-6 shadow-[0_0_55px_rgba(34,211,238,0.06)]">
+              <h2 className="text-white text-sm md:text-base font-black uppercase tracking-widest flex items-center gap-2">
+                <BookOpen size={17} className="text-cyan-300" /> AA Prompt Packs
+              </h2>
+              <div className="mt-5 space-y-3">
+                {promptPacks.map(([name, text]) => (
+                  <div key={name} className="rounded-2xl border border-white/10 bg-black/35 p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-white text-xs font-black uppercase tracking-widest">{name}</p>
+                        <p className="text-zinc-400 text-xs leading-relaxed mt-2">{text}</p>
+                      </div>
+                      <a href={buildPromptPackMailto(name)} className="shrink-0 rounded-full border border-cyan-500/25 bg-cyan-500/10 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-cyan-200 hover:bg-cyan-400 hover:text-black transition-all">
+                        Request
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-[2rem] border border-fuchsia-500/20 bg-[#07040a]/90 p-5 md:p-6 shadow-[0_0_55px_rgba(217,70,239,0.06)]">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <h2 className="text-white text-sm md:text-base font-black uppercase tracking-widest flex items-center gap-2">
+                  <ImageIcon size={17} className="text-fuchsia-300" /> Cover Art Prompt Pack Preview
+                </h2>
+                <span className="rounded-full border border-fuchsia-500/25 bg-black/35 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-fuchsia-200">3000x3000 ready</span>
+              </div>
+              <p className="text-zinc-400 text-xs leading-relaxed mt-3">
+                Recommended final cover export: 3000x3000 PNG/JPG, square 1:1, sRGB.
+              </p>
+              <div className="mt-5 grid md:grid-cols-2 gap-3">
+                {coverPromptPacks.map(({ title, prompt }) => (
+                  <div key={title} className="rounded-2xl border border-white/10 bg-black/35 p-4">
+                    <p className="text-fuchsia-200 text-xs font-black uppercase tracking-widest">{title}</p>
+                    <p className="text-zinc-300 text-xs leading-relaxed mt-3">{prompt}</p>
+                    <button onClick={() => copyToClipboardWithStatus(`cover-${title}`, prompt)} className="mt-3 inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-fuchsia-300 hover:text-white">
+                      <Copy size={13} /> {copiedUtilityKey === `cover-${title}` ? 'Copied' : 'Copy prompt'}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        </div>
+      )}
 
       {/* --- WIZJONARIUM VIEW --- */}
       {currentView === 'visualizer' && (
@@ -963,22 +1499,34 @@ const App = () => {
                   </div>
                 </div>
 
-                <div className="grid sm:grid-cols-2 lg:grid-cols-1 gap-3">
-                  <div className="rounded-2xl bg-black/45 border border-emerald-500/20 p-5">
-                    <span className="block text-3xl font-black text-white">{allTracks.length}</span>
-                    <span className="text-[10px] uppercase tracking-widest text-emerald-300/70 font-black">Tracks Online</span>
-                  </div>
-                  <div className="rounded-2xl bg-black/45 border border-amber-500/20 p-5">
-                    <span className="block text-3xl font-black text-white">5</span>
-                    <span className="text-[10px] uppercase tracking-widest text-amber-300/70 font-black">Albums / Worlds</span>
-                  </div>
-                  <div className="rounded-2xl bg-black/45 border border-cyan-500/20 p-5">
-                    <span className="block text-3xl font-black text-white">Beta</span>
-                    <span className="text-[10px] uppercase tracking-widest text-cyan-300/70 font-black">Custom Track Lab</span>
-                  </div>
-                  <div className="rounded-2xl bg-black/45 border border-emerald-500/20 p-5">
-                    <span className="block text-3xl font-black text-white">4</span>
-                    <span className="text-[10px] uppercase tracking-widest text-emerald-300/70 font-black">Featured Transmissions</span>
+                <div className="relative">
+                  <div className="absolute -inset-6 rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.26),transparent_62%)] blur-2xl" />
+                  <div className="relative rounded-[2rem] border border-emerald-500/25 bg-black/45 p-4 shadow-[0_0_55px_rgba(16,185,129,0.12)]">
+                    <img
+                      src={albumMeta.album.cover}
+                      alt="AA Records main cover"
+                      loading="lazy"
+                      className="w-full aspect-square object-cover rounded-[1.5rem] border border-white/10"
+                      onError={(event) => { event.currentTarget.src = COVER_FALLBACK; }}
+                    />
+                    <div className="mt-4 grid grid-cols-2 gap-3">
+                      <div className="rounded-xl bg-black/50 border border-emerald-500/20 p-4">
+                        <span className="block text-2xl font-black text-white">{allTracks.length}</span>
+                        <span className="text-[9px] uppercase tracking-widest text-emerald-300/70 font-black">Tracks Online</span>
+                      </div>
+                      <div className="rounded-xl bg-black/50 border border-amber-500/20 p-4">
+                        <span className="block text-2xl font-black text-white">5</span>
+                        <span className="text-[9px] uppercase tracking-widest text-amber-300/70 font-black">Albums</span>
+                      </div>
+                      <div className="rounded-xl bg-black/50 border border-cyan-500/20 p-4">
+                        <span className="block text-2xl font-black text-white">Beta</span>
+                        <span className="text-[9px] uppercase tracking-widest text-cyan-300/70 font-black">Custom Lab</span>
+                      </div>
+                      <div className="rounded-xl bg-black/50 border border-fuchsia-500/20 p-4">
+                        <span className="block text-2xl font-black text-white">Live</span>
+                        <span className="text-[9px] uppercase tracking-widest text-fuchsia-300/70 font-black">Forge Tools</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -997,6 +1545,15 @@ const App = () => {
                     <article key={`${playlist}-${index}`} className={`rounded-2xl border p-5 md:p-6 flex flex-col min-h-[310px] ${featuredToneStyles[tone]}`}>
                       <div className="flex items-start justify-between gap-4">
                         <div className="min-w-0">
+                          <div className="mb-4 h-20 w-20 overflow-hidden rounded-2xl border border-white/10 bg-black/45 shadow-[0_0_22px_rgba(255,255,255,0.05)]">
+                            <img
+                              src={getCoverUrl(getTrackCover(playlist, playlists[playlist]?.[index]))}
+                              alt={`${title} cover`}
+                              loading="lazy"
+                              className="h-full w-full object-cover"
+                              onError={(event) => { event.currentTarget.src = COVER_FALLBACK; }}
+                            />
+                          </div>
                           <span className="inline-flex rounded-full border border-current/25 bg-black/30 px-2.5 py-1 text-[8px] font-black uppercase tracking-widest">
                             {badge}
                           </span>
@@ -1062,11 +1619,58 @@ const App = () => {
                 </div>
               </div>
               <div className="relative min-h-[260px] border-t lg:border-t-0 lg:border-l border-cyan-500/20 bg-black/45 flex items-center justify-center p-8">
-                <div className="text-center">
-                  <Cpu size={86} className="mx-auto text-cyan-300 drop-shadow-[0_0_35px_rgba(34,211,238,0.55)] mb-5" />
-                  <p className="text-[10px] uppercase tracking-[0.3em] text-cyan-300/70 font-black">from chaos to track</p>
+                <div className="w-full max-w-xs text-center">
+                  <img
+                    src={albumMeta.elyon.cover}
+                    alt="Fire Into Form EP cover"
+                    loading="lazy"
+                    className="w-full aspect-square object-cover rounded-[2rem] border border-cyan-500/25 shadow-[0_0_45px_rgba(34,211,238,0.18)]"
+                    onError={(event) => { event.currentTarget.src = COVER_FALLBACK; }}
+                  />
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-cyan-300/70 font-black mt-5">from chaos to track</p>
                   <p className="text-2xl md:text-4xl font-black italic uppercase text-white mt-2">artifact online</p>
                 </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="mb-8 md:mb-10 overflow-hidden rounded-[2rem] border border-fuchsia-500/20 bg-[#07040a]/90 shadow-[0_0_65px_rgba(217,70,239,0.07)]">
+            <div className="relative grid lg:grid-cols-[0.72fr_1.28fr] gap-0">
+              <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_18%_18%,rgba(217,70,239,0.16),transparent_32%),radial-gradient(circle_at_88%_72%,rgba(34,211,238,0.12),transparent_32%)]" />
+              <div className="relative min-h-[230px] border-b lg:border-b-0 lg:border-r border-fuchsia-500/15 bg-black/45 p-6 flex items-center justify-center">
+                <img
+                  src={albumMeta.tools.cover}
+                  alt="AA Forge Tools cover"
+                  loading="lazy"
+                  className="w-full max-w-[220px] aspect-square object-cover rounded-[1.75rem] border border-fuchsia-500/25 shadow-[0_0_35px_rgba(217,70,239,0.16)]"
+                  onError={(event) => { event.currentTarget.src = COVER_FALLBACK; }}
+                />
+              </div>
+              <div className="relative p-6 md:p-8">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-fuchsia-500/10 border border-fuchsia-500/30 text-fuchsia-300 text-[9px] md:text-[10px] font-black uppercase tracking-widest mb-4">
+                  <Terminal size={13} /> New: AA Forge Tools
+                </div>
+                <h2 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase text-white">
+                  Narzedzia dla tworcow
+                </h2>
+                <div className="mt-5 grid sm:grid-cols-3 gap-3">
+                  {[
+                    ["Generate rap name", Sparkles],
+                    ["Build Suno prompt", AudioWaveform],
+                    ["Unlock Buchon 555", Zap]
+                  ].map(([label, Icon]) => (
+                    <div key={label} className="rounded-xl border border-white/10 bg-black/35 p-3">
+                      <Icon size={17} className="text-fuchsia-300 mb-2" />
+                      <p className="text-white text-[10px] font-black uppercase tracking-widest">{label}</p>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  onClick={() => setCurrentView('tools')}
+                  className="mt-5 inline-flex items-center gap-3 rounded-full bg-fuchsia-400 px-6 py-3 text-xs font-black uppercase tracking-widest text-black hover:bg-fuchsia-300 hover:scale-105 transition-all active:scale-95"
+                >
+                  <ExternalLink size={15} /> Open Forge Tools
+                </button>
               </div>
             </div>
           </section>
@@ -1145,22 +1749,28 @@ const App = () => {
                 <h2 className="text-white text-sm md:text-base font-black uppercase tracking-widest flex items-center gap-2">
                   <Zap size={17} className="text-amber-300" /> Buchon 555 Arcade
                 </h2>
-                <p className="text-zinc-300 text-sm leading-relaxed mt-4">Tap-tap ritual coming soon.</p>
-                <div className="mt-5 flex items-center justify-between gap-3 rounded-xl border border-amber-500/15 bg-black/40 p-4">
-                  <span className="text-2xl font-black text-white">Target: 555</span>
-                  <button className="rounded-full bg-amber-400 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-black cursor-not-allowed opacity-80">
-                    Coming soon
+                <p className="text-zinc-300 text-sm leading-relaxed mt-4">Tap ritual live. Postep zapisuje sie lokalnie w przegladarce.</p>
+                <div className="mt-5 rounded-xl border border-amber-500/15 bg-black/40 p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-2xl font-black text-white">{buchonScore}/555</span>
+                    <span className="text-[9px] uppercase tracking-widest text-amber-300 font-black">best {buchonBest}</span>
+                  </div>
+                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-zinc-900">
+                    <div className="h-full rounded-full bg-gradient-to-r from-amber-400 to-fuchsia-400 transition-all" style={{ width: `${Math.round((buchonScore / 555) * 100)}%` }} />
+                  </div>
+                  <button onClick={tapBuchon} className="mt-4 rounded-full bg-amber-400 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-black hover:bg-amber-300 transition-all">
+                    +5 Buchon
                   </button>
                 </div>
               </div>
 
-              <div className="rounded-[2rem] border border-cyan-500/20 bg-[#05080a]/90 p-5 md:p-6 shadow-[0_0_55px_rgba(34,211,238,0.06)]">
+              <div className="rounded-[2rem] border border-cyan-500/20 bg-[#020617]/95 p-5 md:p-6 shadow-[0_0_55px_rgba(34,211,238,0.10)] font-mono">
                 <h2 className="text-white text-sm md:text-base font-black uppercase tracking-widest flex items-center gap-2">
                   <Terminal size={17} className="text-cyan-300" /> Codex Kitchen Log
                 </h2>
                 <div className="mt-4 space-y-2">
                   {kitchenLog.map((item) => (
-                    <div key={item} className="flex items-center justify-between gap-3 rounded-xl border border-white/5 bg-black/35 px-3 py-2.5">
+                    <div key={item} className="flex items-center justify-between gap-3 rounded-xl border border-cyan-500/10 bg-black/45 px-3 py-2.5 shadow-[inset_0_0_18px_rgba(34,211,238,0.035)]">
                       <span className="text-zinc-300 text-xs font-bold">{item}</span>
                       <span className="text-[8px] font-black uppercase tracking-widest text-cyan-300">build passed</span>
                     </div>
@@ -1175,8 +1785,8 @@ const App = () => {
             <div className="relative group perspective-1000">
               <div className={`w-full aspect-square rounded-[2rem] bg-black border-2 border-amber-500/40 shadow-[0_0_60px_rgba(245,158,11,0.25)] flex overflow-hidden transition-all duration-700 relative ${isPlaying && activePlaylist === 'album' ? 'shadow-[0_0_100px_rgba(245,158,11,0.4)] scale-[1.02]' : ''}`}>
                 <img 
-                  src="/protocol-555-cover.png" 
-                  onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&w=1000&q=80'; }}
+                  src={albumMeta.album.cover}
+                  onError={(event) => { event.currentTarget.src = COVER_FALLBACK; }}
                   alt="Oficjalna Okładka Protokół 555 - Aion & Aditi" 
                   className={`absolute inset-0 w-full h-full object-cover object-center ${isPlaying && activePlaylist === 'album' ? 'scale-110' : 'scale-100'} transition-transform duration-10000`} 
                 />
@@ -1199,6 +1809,18 @@ const App = () => {
               <p className="text-amber-500 font-bold uppercase tracking-widest text-xs flex items-center gap-2">
                 <Crown size={16} /> Aion & Aditi
               </p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <span className="rounded-full border border-amber-500/20 bg-black/35 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-amber-200">{albumTracks.length} tracks</span>
+                <span className="rounded-full border border-emerald-500/20 bg-black/35 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-200">transmission live</span>
+              </div>
+              <div className="mt-5 flex flex-wrap gap-2">
+                <button onClick={() => playTrackFromList(0, 'album')} className="inline-flex items-center gap-2 rounded-full bg-amber-400 px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-black hover:bg-amber-300 transition-all">
+                  <Play size={13} fill="currentColor" /> Odtworz
+                </button>
+                <button onClick={(event) => copyTrackLink(event, 'album', 0)} className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-zinc-300 hover:text-white transition-all">
+                  <Copy size={13} /> {copiedTrackKey === 'copy-album-0' ? 'Skopiowano' : 'Kopiuj link'}
+                </button>
+              </div>
             </div>
           </div>
           <div className="lg:col-span-7 h-full text-left">
@@ -1211,6 +1833,7 @@ const App = () => {
                   <div key={track.id} onClick={() => playTrackFromList(index, 'album')} className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 md:p-4 rounded-2xl transition-all duration-300 border cursor-pointer group ${currentTrackIndex === index && activePlaylist === 'album' ? 'bg-gradient-to-r from-amber-900/20 to-transparent border-amber-500/30 shadow-[inset_4px_0_0_rgba(245,158,11,1)]' : 'bg-white/[0.02] border-transparent hover:bg-white/[0.04] hover:border-white/10'}`}>
                     <div className="flex items-center gap-4 min-w-0">
                       <span className="text-xs font-black text-zinc-600 group-hover:text-amber-400 w-4 text-center">{track.id}</span>
+                      {renderMiniCover('album', track)}
                       <div className="text-left min-w-0">
                         <h4 className={`font-bold text-sm break-words transition-colors ${currentTrackIndex === index && activePlaylist === 'album' ? 'text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'text-zinc-200 group-hover:text-white'}`}>
                           {track.title}
@@ -1239,6 +1862,14 @@ const App = () => {
           <div className="lg:col-span-5 space-y-8 text-left">
             <div className="relative group perspective-1000">
               <div className={`w-full aspect-square rounded-[2rem] bg-gradient-to-br from-[#1a0525] via-black to-[#2d0a3d] border border-purple-500/30 shadow-[0_0_50px_rgba(168,85,247,0.15)] flex flex-col items-center justify-center overflow-hidden transition-all duration-700 relative group-hover:border-purple-500/50 ${isPlaying && activePlaylist === 'aditi-ep' ? 'shadow-[0_0_80px_rgba(168,85,247,0.3)] scale-[1.02]' : ''}`}>
+                <img
+                  src={albumMeta['aditi-ep'].cover}
+                  alt="Aditi EP cover"
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover opacity-85"
+                  onError={(event) => { event.currentTarget.src = COVER_FALLBACK; }}
+                />
+                <div className="absolute inset-0 bg-black/35" />
                 <div className={`relative z-10 flex flex-col items-center justify-center transition-transform duration-1000 ${isPlaying && activePlaylist === 'aditi-ep' ? 'scale-105' : 'scale-100'}`}>
                   <Sparkles size={100} className={`text-purple-400 mb-6 drop-shadow-[0_0_40px_rgba(168,85,247,0.8)] ${isPlaying && activePlaylist === 'aditi-ep' ? 'animate-pulse' : ''}`} />
                   <h1 className="text-4xl md:text-6xl font-black italic tracking-tighter uppercase text-center leading-none text-white drop-shadow-[0_4px_20px_rgba(0,0,0,1)]">
@@ -1249,6 +1880,19 @@ const App = () => {
               <button onClick={() => playTrackFromList(activePlaylist === 'aditi-ep' ? currentTrackIndex : 0, 'aditi-ep')} className="absolute bottom-6 right-6 md:bottom-8 md:right-8 bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 text-white p-5 md:p-6 rounded-full shadow-[0_0_40px_rgba(168,85,247,0.6)] z-20 transition-all transform hover:scale-110 active:scale-95">
                 {isPlaying && activePlaylist === 'aditi-ep' ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" className="ml-1" />}
               </button>
+            </div>
+            <div className="rounded-[2rem] border border-purple-500/15 bg-black/45 p-5 shadow-[0_0_35px_rgba(168,85,247,0.08)]">
+              <p className="text-[10px] font-black uppercase tracking-widest text-purple-300">{albumMeta['aditi-ep'].badge}</p>
+              <h2 className="mt-2 text-2xl font-black uppercase italic text-white">{albumMeta['aditi-ep'].title}</h2>
+              <p className="mt-2 text-xs uppercase tracking-widest text-zinc-500">{albumMeta['aditi-ep'].artist} / {aditiTracks.length} tracks</p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <button onClick={() => playTrackFromList(0, 'aditi-ep')} className="inline-flex items-center gap-2 rounded-full bg-purple-400 px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-black hover:bg-purple-300 transition-all">
+                  <Play size={13} fill="currentColor" /> Odtworz
+                </button>
+                <button onClick={(event) => copyTrackLink(event, 'aditi-ep', 0)} className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-zinc-300 hover:text-white transition-all">
+                  <Copy size={13} /> {copiedTrackKey === 'copy-aditi-ep-0' ? 'Skopiowano' : 'Kopiuj link'}
+                </button>
+              </div>
             </div>
           </div>
           <div className="lg:col-span-7 h-full text-left">
@@ -1261,6 +1905,7 @@ const App = () => {
                   <div key={track.id} onClick={() => playTrackFromList(index, 'aditi-ep')} className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-2xl transition-all duration-300 border cursor-pointer group ${currentTrackIndex === index && activePlaylist === 'aditi-ep' ? 'bg-gradient-to-r from-purple-900/20 to-transparent border-purple-500/30 shadow-[inset_4px_0_0_rgba(168,85,247,1)]' : 'bg-white/[0.02] border-transparent hover:bg-white/[0.04] hover:border-white/10'}`}>
                     <div className="flex items-center gap-5 min-w-0">
                       <span className={`text-xs font-black transition-all ${currentTrackIndex === index && activePlaylist === 'aditi-ep' ? 'text-purple-400' : 'text-zinc-600'}`}>{track.id}</span>
+                      {renderMiniCover('aditi-ep', track)}
                       <div className="text-left min-w-0">
                         <h4 className={`font-bold text-sm break-words transition-colors ${currentTrackIndex === index && activePlaylist === 'aditi-ep' ? 'text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]' : 'text-zinc-200 group-hover:text-white'}`}>
                           {track.title}
@@ -1294,9 +1939,10 @@ const App = () => {
           <div className="relative w-full aspect-video md:aspect-[21/9] rounded-[3rem] overflow-hidden border border-amber-500/30 shadow-[0_0_100px_rgba(245,158,11,0.15)] group mb-12">
             {/* Tło - Eteryczny Ogród */}
             <img 
-              src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=1920&q=80" 
-              alt="Fontanny Aditi" 
+              src={albumMeta.terra.cover}
+              alt="Terra Infinita cover" 
               className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-[10s]"
+              onError={(event) => { event.currentTarget.src = COVER_FALLBACK; }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
             
@@ -1343,6 +1989,7 @@ const App = () => {
                 >
                   <div className="flex items-center gap-4 min-w-0">
                     <span className="text-xs font-black text-zinc-600 group-hover:text-amber-400 w-4 text-center">{track.id}</span>
+                    {renderMiniCover('album', track)}
                     <div className="text-left min-w-0">
                       <h4 className={`font-bold text-sm break-words transition-colors ${currentTrackIndex === index && activePlaylist === 'album' ? 'text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'text-zinc-200 group-hover:text-white'}`}>
                         {track.title}
@@ -1372,10 +2019,18 @@ const App = () => {
            <div className="grid lg:grid-cols-2 gap-12 items-center bg-[#050805]/80 backdrop-blur-xl border border-emerald-500/20 p-8 md:p-12 rounded-[3rem] shadow-[0_0_100px_rgba(16,185,129,0.05)]">
               <div className="relative group overflow-hidden rounded-[2rem]">
                  <div className={`w-full aspect-square bg-gradient-to-br from-emerald-950 via-black to-[#051a05] flex flex-col items-center justify-center transition-transform duration-700 ${isPlaying && activePlaylist === 'ziomale' ? 'scale-105 shadow-[0_0_60px_rgba(168,85,247,0.3)]' : ''}`}>
+                    <img
+                      src={albumMeta.ziomale.cover}
+                      alt="Ziomale Sojuszu cover"
+                      loading="lazy"
+                      className="absolute inset-0 h-full w-full object-cover opacity-90"
+                      onError={(event) => { event.currentTarget.src = COVER_FALLBACK; }}
+                    />
+                    <div className="absolute inset-0 bg-black/35" />
                     <div className="relative text-center">
                        <Zap size={110} className={`text-emerald-500 mb-6 mx-auto drop-shadow-[0_0_30px_rgba(52,211,153,0.5)] ${isPlaying && activePlaylist === 'ziomale' ? 'animate-pulse' : ''}`} />
                     </div>
-                    <h3 className="text-3xl font-black text-white italic tracking-widest uppercase">BUCH 555</h3>
+                    <h3 className="relative z-10 text-3xl font-black text-white italic tracking-widest uppercase">BUCH 555</h3>
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                         <button onClick={() => playTrackFromList(0, 'ziomale')} className="bg-emerald-500 p-8 rounded-full text-black shadow-2xl scale-125 transition-transform active:scale-95">
                            {isPlaying && activePlaylist === 'ziomale' ? <Pause size={32} /> : <Play size={32} fill="currentColor" />}
@@ -1384,6 +2039,20 @@ const App = () => {
                  </div>
               </div>
               <div className="space-y-8 text-left">
+                 <div className="bg-black/60 backdrop-blur-md p-6 rounded-[2rem] border border-emerald-500/10 text-left shadow-[0_0_35px_rgba(16,185,129,0.07)]">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-emerald-300">{albumMeta.ziomale.badge}</p>
+                    <h3 className="mt-2 text-2xl md:text-3xl font-black uppercase italic text-white">{albumMeta.ziomale.title}</h3>
+                    <p className="mt-2 text-xs uppercase tracking-widest text-zinc-500">{albumMeta.ziomale.artist} / {ziomaleTracks.length} tracks</p>
+                    <p className="mt-3 text-sm leading-relaxed text-zinc-300">{albumMeta.ziomale.description}</p>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <button onClick={() => playTrackFromList(0, 'ziomale')} className="inline-flex items-center gap-2 rounded-full bg-emerald-400 px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-black hover:bg-emerald-300 transition-all">
+                        <Play size={13} fill="currentColor" /> Odtworz
+                      </button>
+                      <button onClick={(event) => copyTrackLink(event, 'ziomale', 0)} className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-zinc-300 hover:text-white transition-all">
+                        <Copy size={13} /> {copiedTrackKey === 'copy-ziomale-0' ? 'Skopiowano' : 'Kopiuj link'}
+                      </button>
+                    </div>
+                 </div>
                  <div className="bg-black/60 backdrop-blur-md p-6 rounded-[2rem] border border-emerald-500/10 text-left">
                     <h4 className="text-emerald-400 font-black text-xs uppercase tracking-widest mb-6 flex items-center gap-2 border-b border-emerald-900/30 pb-4">
                       <Flame size={14} /> ++ KOMPLETNA PLAYLISTA (7/7) ++
@@ -1393,6 +2062,7 @@ const App = () => {
                         <div key={track.id} onClick={() => playTrackFromList(index, 'ziomale')} className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl cursor-pointer transition-all ${currentTrackIndex === index && activePlaylist === 'ziomale' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-[inset_4px_0_0_rgba(16,185,129,0.5)]' : 'bg-white/[0.02] border border-transparent hover:bg-white/[0.05]'}`}>
                            <div className="flex items-center gap-4 min-w-0">
                               <span className="text-xs font-black text-emerald-700 w-4 text-center">{track.id}</span>
+                              {renderMiniCover('ziomale', track)}
                               <div className="flex flex-col text-left min-w-0">
                                 <span className="font-black text-sm break-words">{track.title}</span>
                                 <span className="text-[9px] uppercase tracking-widest text-zinc-500 mt-1">{track.artist}</span>
@@ -1446,9 +2116,22 @@ const App = () => {
               >
                 <Play size={16} fill="currentColor" /> Odtwórz EP
               </button>
+              <button
+                onClick={(event) => copyTrackLink(event, 'elyon', 0)}
+                className="inline-flex items-center gap-3 bg-white/[0.04] text-cyan-100 px-6 py-3 rounded-full border border-cyan-500/25 font-black uppercase tracking-widest text-xs hover:bg-cyan-500/10 hover:text-white transition-all"
+              >
+                <Copy size={15} /> {copiedTrackKey === 'copy-elyon-0' ? 'Skopiowano' : 'Kopiuj link'}
+              </button>
             </div>
 
             <div className="bg-black/45 border border-cyan-500/20 rounded-2xl p-5 md:p-6">
+              <img
+                src={albumMeta.elyon.cover}
+                alt="Fire Into Form EP cover"
+                loading="lazy"
+                className="mb-5 w-full max-h-[280px] rounded-2xl border border-cyan-500/20 object-cover shadow-[0_0_35px_rgba(34,211,238,0.12)]"
+                onError={(event) => { event.currentTarget.src = COVER_FALLBACK; }}
+              />
               <h3 className="text-cyan-300 text-xs font-black uppercase tracking-widest mb-5 flex items-center gap-2 border-b border-cyan-500/15 pb-4">
                 <Cpu size={15} /> Fire Into Form EP
               </h3>
@@ -1467,6 +2150,7 @@ const App = () => {
                   >
                     <div className="flex items-start gap-4 min-w-0">
                       <span className="text-xs font-black text-cyan-500/70 w-4 text-center pt-1">{track.id}</span>
+                      {renderMiniCover('elyon', track)}
                       <div className="min-w-0 text-left">
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="font-black text-sm md:text-base break-words">{track.title}</span>
@@ -1892,7 +2576,7 @@ AA Records
       <div className="fixed bottom-0 left-0 w-full bg-[#0a0505]/95 border-t border-white/10 px-4 md:px-8 py-3 md:py-4 flex items-center justify-between z-50 backdrop-blur-2xl shadow-[0_-10px_40px_rgba(0,0,0,0.8)]">
         <div className="flex items-center gap-3 md:gap-4 w-1/3">
           <div className={`hidden sm:flex w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br rounded-xl md:rounded-2xl border items-center justify-center shadow-lg transition-colors duration-500 ${activePlaylist === 'ziomale' ? 'from-emerald-900 to-[#051a05] border-emerald-500/30' : (activePlaylist === 'aditi-ep' ? 'from-purple-900 to-[#1a0525] border-purple-500/30' : 'from-amber-900 via-[#1a0a00] to-black border-amber-500/30')} ${isPlaying ? 'shadow-[0_0_20px_currentColor]' : ''}`} style={{ color: activePlaylist === 'ziomale' ? '#10b981' : (activePlaylist === 'aditi-ep' ? '#a855f7' : '#f59e0b') }}>
-             <img src="/protocol-555-cover.png" onError={(e) => { e.target.style.display='none'; }} className="absolute w-full h-full object-cover rounded-xl md:rounded-2xl opacity-50 mix-blend-screen" />
+             <img src={activeCover} alt="" onError={(event) => { event.currentTarget.src = COVER_FALLBACK; }} className="absolute w-full h-full object-cover rounded-xl md:rounded-2xl opacity-50 mix-blend-screen" />
              {activePlaylist === 'album' ? <Disc size={28} className={`relative z-10 ${isPlaying ? 'animate-spin' : ''}`} /> : (activePlaylist === 'aditi-ep' ? <Sparkles size={28} className={`relative z-10 ${isPlaying ? 'animate-pulse' : ''}`} /> : <Zap size={28} className={`relative z-10 ${isPlaying ? 'animate-pulse' : ''}`} />)}
           </div>
           <div className="overflow-hidden text-left">

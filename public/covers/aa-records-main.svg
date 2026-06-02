@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" role="img" aria-labelledby="title desc">
+  <title id="title">AA Records Main Cover</title>
+  <desc id="desc">Neon cyber label cover placeholder for AA Records.</desc>
+  <defs>
+    <radialGradient id="orb" cx="50%" cy="45%" r="46%">
+      <stop offset="0" stop-color="#22d3ee" stop-opacity=".95"/>
+      <stop offset=".36" stop-color="#a855f7" stop-opacity=".65"/>
+      <stop offset=".72" stop-color="#10b981" stop-opacity=".28"/>
+      <stop offset="1" stop-color="#020617" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="line" x1="0" x2="1">
+      <stop offset="0" stop-color="#10b981"/>
+      <stop offset=".5" stop-color="#f59e0b"/>
+      <stop offset="1" stop-color="#22d3ee"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="1200" fill="#050208"/>
+  <rect x="58" y="58" width="1084" height="1084" rx="58" fill="none" stroke="#22d3ee" stroke-opacity=".25" stroke-width="4"/>
+  <circle cx="600" cy="520" r="355" fill="url(#orb)"/>
+  <path d="M175 695c118-78 181-78 292 0s183 78 292 0 176-78 266 0" fill="none" stroke="url(#line)" stroke-width="24" stroke-linecap="round"/>
+  <path d="M255 465h490l100 105H155z" fill="none" stroke="#f59e0b" stroke-opacity=".62" stroke-width="14" stroke-linejoin="round"/>
+  <text x="600" y="612" text-anchor="middle" font-family="Arial Black, Impact, sans-serif" font-size="148" font-weight="900" fill="#fff" letter-spacing="6">AA</text>
+  <text x="600" y="818" text-anchor="middle" font-family="Arial, sans-serif" font-size="70" font-weight="900" fill="#d1fae5" letter-spacing="10">RECORDS</text>
+  <text x="600" y="930" text-anchor="middle" font-family="Arial, sans-serif" font-size="29" font-weight="700" fill="#67e8f9" letter-spacing="8">FIRE INTO FORM</text>
+</svg>

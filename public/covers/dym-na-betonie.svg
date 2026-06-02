@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Dym na Betonie Cover</title>
+  <desc id="desc">Dark concrete smoke cover placeholder.</desc>
+  <defs>
+    <radialGradient id="lamp" cx="55%" cy="34%" r="42%">
+      <stop offset="0" stop-color="#f59e0b" stop-opacity=".8"/>
+      <stop offset=".48" stop-color="#475569" stop-opacity=".42"/>
+      <stop offset="1" stop-color="#050505" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="1200" fill="#050505"/>
+  <circle cx="640" cy="390" r="330" fill="url(#lamp)"/>
+  <path d="M250 750c120-85 210 70 335-20 130-93 210 55 365-35" fill="none" stroke="#d4d4d8" stroke-opacity=".32" stroke-width="30" stroke-linecap="round"/>
+  <path d="M300 590c80-85 5-150 120-225M520 610c90-105 15-190 140-285M720 620c75-90 35-155 140-240" fill="none" stroke="#f8fafc" stroke-opacity=".16" stroke-width="25" stroke-linecap="round"/>
+  <path d="M125 885h950" stroke="#f59e0b" stroke-opacity=".45" stroke-width="12" stroke-linecap="round"/>
+  <text x="600" y="795" text-anchor="middle" font-family="Arial Black, Impact, sans-serif" font-size="84" font-weight="900" fill="#fff">DYM NA</text>
+  <text x="600" y="895" text-anchor="middle" font-family="Arial Black, Impact, sans-serif" font-size="78" font-weight="900" fill="#f59e0b">BETONIE</text>
+  <text x="600" y="1015" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#a7f3d0" letter-spacing="8">CONCRETE SESSIONS</text>
+</svg>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Ziomale Sojuszu Cover</title>
+  <desc id="desc">Green and violet underground crew cover placeholder.</desc>
+  <defs>
+    <radialGradient id="glow" cx="48%" cy="38%" r="55%">
+      <stop offset="0" stop-color="#10b981" stop-opacity=".85"/>
+      <stop offset=".44" stop-color="#7c3aed" stop-opacity=".46"/>
+      <stop offset="1" stop-color="#050805" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="spray" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#10b981"/>
+      <stop offset=".52" stop-color="#e879f9"/>
+      <stop offset="1" stop-color="#f59e0b"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="1200" fill="#050805"/>
+  <circle cx="590" cy="455" r="370" fill="url(#glow)"/>
+  <g opacity=".18" stroke="#d1fae5" stroke-width="4">
+    <path d="M110 810h980M150 880h900M195 950h810"/>
+    <path d="M210 300v670M390 245v760M570 255v690M750 230v780M930 300v670"/>
+  </g>
+  <path d="M315 655c65-145 145-225 240-238 131-17 230 78 335 270" fill="none" stroke="url(#spray)" stroke-width="32" stroke-linecap="round"/>
+  <circle cx="396" cy="590" r="50" fill="#10b981"/>
+  <circle cx="600" cy="510" r="62" fill="#e879f9"/>
+  <circle cx="805" cy="600" r="50" fill="#f59e0b"/>
+  <text x="600" y="800" text-anchor="middle" font-family="Arial Black, Impact, sans-serif" font-size="92" font-weight="900" fill="#fff">ZIOMALE</text>
+  <text x="600" y="900" text-anchor="middle" font-family="Arial Black, Impact, sans-serif" font-size="70" font-weight="900" fill="#86efac" letter-spacing="8">SOJUSZU</text>
+  <text x="600" y="1010" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#fbbf24" letter-spacing="8">AA RECORDS</text>
+</svg>
