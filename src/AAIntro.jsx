@@ -73,7 +73,7 @@ export default function AAIntro({ onClose, onEnableSound }) {
         </div>
         <div className="aacin-controls">
           {autoplayBlocked && <button type="button" className="aacin-control" onClick={playFromStart}><Play size={16}/> Uruchom film</button>}
-          {!autoplayBlocked && <button type="button" className="aacin-control" onClick={enableSound}>{soundOn ? <Volume2 size={16}/> : <VolumeX size={16}/>} {soundOn ? 'Wycisz' : 'Włącz dźwięk'}</button>}
+          {!autoplayBlocked && <button type="button" className="aacin-control" onClick={enableSound}>{soundOn ? <Volume2 size={16}/> : <VolumeX size={16}/>} {soundOn ? 'Wycisz' : 'Włącz muzykę #15'}</button>}
           <button type="button" className="aacin-enter" onClick={onClose}>Wejdź do AA Records <ArrowRight size={16}/></button>
         </div>
       </div>
