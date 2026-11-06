@@ -7,9 +7,10 @@ const appPath = join(rootDir, 'src', 'App.jsx');
 const musicDir = join(rootDir, 'public', 'music');
 
 const appSource = readFileSync(appPath, 'utf8');
+const after4amSource = readFileSync(join(rootDir, 'src', 'after4am.js'), 'utf8');
 const musicFiles = new Set(readdirSync(musicDir));
 const trackObjectPattern = /\{\s*id:\s*\d+,[\s\S]*?\}/g;
-const tracks = [...appSource.matchAll(trackObjectPattern)]
+const tracks = [...appSource.matchAll(trackObjectPattern), ...after4amSource.matchAll(trackObjectPattern)]
   .map((match) => {
     const source = match[0];
     const title = source.match(/title:\s*"([^"]+)"/)?.[1];
@@ -19,6 +20,7 @@ const tracks = [...appSource.matchAll(trackObjectPattern)]
   })
   .filter(Boolean);
 const playableTracks = tracks.filter((track) => track.file);
+const after4amFiles = [...after4amSource.matchAll(/file:\s*"([^"]+\.mp3)"/g)].map((match) => match[1]);
 const comingSoonTracks = tracks.filter((track) => !track.file);
 
 const failures = [];
@@ -42,6 +44,11 @@ for (const track of playableTracks) {
   }
 }
 
+if (after4amFiles.length !== 15) failures.push(`After 4 AM should contain 15 tracks; found ${after4amFiles.length}.`);
+if (new Set(after4amFiles).size !== after4amFiles.length) failures.push('Duplicate audio paths found in After 4 AM.');
+if (playableTracks.length !== 44) failures.push(`Expected 44 playable tracks (28 previous + 15 After 4 AM + Bez Rakiet); found ${playableTracks.length}.`);
+const requiredAssets = ['public/videos/aa-universe-remembers-us.mp4', 'public/covers/aa-intro-poster.webp', 'public/covers/bez-rakiet.jpg', 'public/covers/aa-hero-scene.webp'];
+for (const asset of requiredAssets) if (!existsSync(join(rootDir, asset))) failures.push(`Missing cinematic asset: ${asset}`);
 if (!tracks.some((track) => track.title.includes('EGZYSTENCJALNY BUCH'))) {
   failures.push('Important track "@EGZYSTENCJALNY BUCH" was not found in playlist data.');
 }

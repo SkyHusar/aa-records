@@ -1,14 +1,52 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import './scene-themes.css';
+import AAExperience from './AAExperience';
+import AAShowcase from './AAShowcase';
+import After4AM from './AfterFourAM.jsx';
+import { after4amTracks } from './after4am';
+import MiniVisualizer from './MiniVisualizer';
+import AAIntro from './AAIntro';
 import { 
   Play, Pause, SkipForward, SkipBack, Volume2, Heart, Disc, 
-  Terminal, Zap, ListMusic, Crown, Flame, User, Cpu, 
-  Sparkles, BookOpen, Radio, Shuffle, Activity, Eye, AudioWaveform,
-  ShieldAlert, ImageIcon, Video, TreePine, Bot, ExternalLink, Mail, Send, Handshake, Copy, Share2
+  Terminal, Zap, ListMusic, Crown, Flame, Cpu,
+  Sparkles, BookOpen, Radio, Shuffle, Activity, AudioWaveform,
+  ShieldAlert, ImageIcon, Video, Bot, ExternalLink, Mail, Send, Handshake, Copy, Share2
 } from 'lucide-react';
 
 const App = () => {
-  const [currentView, setCurrentView] = useState('album'); 
+  const [currentView, setCurrentView] = useState('discover');
+  const [introOpen, setIntroOpen] = useState(false);
+  const [introReady, setIntroReady] = useState(false);
+  const [bezRakietReady, setBezRakietReady] = useState(false);
+  const closeIntro = useCallback(() => {
+    setIntroOpen(false);
+    try { window.sessionStorage.setItem('aa-intro-seen', '1'); } catch { /* private browsing */ }
+  }, []);
+  useEffect(() => {
+    let cancelled = false;
+    const hasSeenIntro = (() => { try { return window.sessionStorage.getItem('aa-intro-seen') === '1'; } catch { return true; } })();
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    fetch('/videos/aa-universe-remembers-us.mp4', { method: 'HEAD' })
+      .then((res) => {
+        if (cancelled) return;
+        const available = res.ok && /video/i.test(res.headers.get('content-type') || '');
+        setIntroReady(available);
+        if (available && !hasSeenIntro && !reducedMotion) setIntroOpen(true);
+      }).catch(() => {});
+    fetch('/music/bez-rakiet.mp3', { method: 'HEAD' })
+      .then((res) => { if (!cancelled) setBezRakietReady(res.ok && /audio/i.test(res.headers.get('content-type') || '')); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
+  const [after4amReady, setAfter4amReady] = useState(false);
+  useEffect(() => {
+    let disposed = false;
+    Promise.all(after4amTracks.map((track) => fetch(`/music/${track.file}`, { method: 'HEAD' }).then((response) => response.ok && /audio|octet-stream/i.test(response.headers.get('content-type') || '')).catch(() => false)))
+      .then((checks) => { if (!disposed) setAfter4amReady(checks.every(Boolean)); });
+    return () => { disposed = true; };
+  }, []);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [volume, setVolume] = useState(0.8);
   const [activePlaylist, setActivePlaylist] = useState('album'); 
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -44,6 +82,10 @@ const App = () => {
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
   const isAudioInitialized = useRef(false);
+
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.volume = volume;
+  }, [volume]);
 
   const BASE_URL = "/music/";
   const COVER_FALLBACK = "/covers/aa-records-main.svg";
@@ -205,7 +247,8 @@ const App = () => {
   ];
 
   const singlesTracks = [
-    { id: 1, title: "Dym na betonie", artist: "AA Records Singles", album: "Concrete Sessions", duration: "3:58", file: "dym-na-betonie.mp3", cover: "/covers/dymnabetonie.png" }
+    { id: 1, title: "Dym na betonie", artist: "AA Records Singles", album: "Concrete Sessions", duration: "3:58", file: "dym-na-betonie.mp3", cover: "/covers/dymnabetonie.png" },
+    ...(bezRakietReady ? [{ id: 2, title: "Bez Rakiet", artist: 'AA Records · Music 4 Life', album: '14 / 50', duration: '4:04', file: "bez-rakiet.mp3", cover: '/covers/bez-rakiet.jpg' }] : [])
   ];
 
   const elyonTracks = [
@@ -222,7 +265,8 @@ const App = () => {
     'aditi-ep': aditiTracks,
     ziomale: ziomaleTracks,
     singles: singlesTracks,
-    elyon: elyonTracks
+    elyon: elyonTracks,
+    after4am: after4amReady ? after4amTracks : []
   };
 
   const allTracks = [
@@ -230,7 +274,8 @@ const App = () => {
     ...aditiTracks.map((t, i) => ({ ...t, playlist: 'aditi-ep', originalIndex: i })),
     ...ziomaleTracks.map((t, i) => ({ ...t, playlist: 'ziomale', originalIndex: i })),
     ...singlesTracks.map((t, i) => ({ ...t, playlist: 'singles', originalIndex: i })),
-    ...elyonTracks.map((t, i) => ({ ...t, playlist: 'elyon', originalIndex: i }))
+    ...elyonTracks.map((t, i) => ({ ...t, playlist: 'elyon', originalIndex: i })),
+    ...(after4amReady ? after4amTracks : []).map((t, i) => ({ ...t, playlist: 'after4am', originalIndex: i }))
   ];
 
   const currentPlaylist = playlists[activePlaylist] || albumTracks;
@@ -494,14 +539,15 @@ const App = () => {
   }, [buchonScore, buchonBest]);
 
   useEffect(() => {
-    const playlistLimits = { album: 11, 'aditi-ep': 3, ziomale: 7, singles: 1, elyon: 6 };
-    const playlistViews = { album: 'album', 'aditi-ep': 'aditi-ep', ziomale: 'ziomale', singles: 'album', elyon: 'elyon' };
+    const playlistLimits = { album: 11, 'aditi-ep': 3, ziomale: 7, singles: 1 + Number(bezRakietReady), elyon: 6, after4am: after4amTracks.length };
+    const playlistViews = { album: 'album', 'aditi-ep': 'aditi-ep', ziomale: 'ziomale', singles: 'album', elyon: 'elyon', after4am: 'after4am' };
 
     const applyTrackHash = () => {
-      const match = window.location.hash.match(/^#track=(album|aditi-ep|ziomale|singles|elyon)-(\d+)$/);
+      const match = window.location.hash.match(/^#track=(album|aditi-ep|ziomale|singles|elyon|after4am)-(\d+)$/);
       if (!match) return;
 
       const playlistType = match[1];
+      if (playlistType === 'after4am' && !after4amReady) return;
       const trackIndex = Number(match[2]) - 1;
       if (!Number.isInteger(trackIndex) || trackIndex < 0 || trackIndex >= playlistLimits[playlistType]) return;
 
@@ -515,7 +561,7 @@ const App = () => {
     applyTrackHash();
     window.addEventListener('hashchange', applyTrackHash);
     return () => window.removeEventListener('hashchange', applyTrackHash);
-  }, []);
+  }, [after4amReady, bezRakietReady]);
 
   useEffect(() => {
     setAudioError(false);
@@ -937,8 +983,38 @@ const App = () => {
     setIsPlaying(true);
   };
 
+  const mainSections = [
+    { id: 'discover', label: 'Albumy', Icon: Disc },
+    { id: 'mission', label: 'Misja', Icon: Heart },
+    { id: 'create', label: 'Stwórz swój track', Icon: AudioWaveform },
+    { id: 'services', label: 'Czym się zajmujemy', Icon: Sparkles }
+  ];
+  const viewGroups = {
+    discover: ['discover', 'album', 'aditi-ep', 'terrainfinita', 'ziomale', 'elyon', 'after4am', 'visualizer'],
+    mission: ['mission', 'manifesto', 'base'],
+    create: ['create', 'collab', 'tools', 'codex'],
+    services: ['services', 'about', 'artists']
+  };
+  const quickLinks = {
+    discover: [
+      ['Płyta', 'album'], ['Aditi EP', 'aditi-ep'], ['Terra Infinita', 'terrainfinita'],
+      ['Ziomale', 'ziomale'], ['After 4 AM', 'after4am'], ['Elyon', 'elyon'], ['Wizjonarium', 'visualizer']
+    ],
+    mission: [['Manifest', 'manifesto'], ['Baza', 'base']],
+    create: [['Collab', 'collab'], ['Forge Tools', 'tools'], ['Codex', 'codex']],
+    services: [['O nas', 'about'], ['Artyści', 'artists']]
+  };
+  const activeMainSection = Object.entries(viewGroups).find(([, views]) => views.includes(currentView))?.[0] || 'discover';
+  const featuredAlbums = [
+    { key: 'main', view: 'album', playlist: 'album', title: 'Protokół 555', subtitle: 'Płyta · 11 utworów', cover: albumMeta.album.cover },
+    { key: 'aditi', view: 'aditi-ep', playlist: 'aditi-ep', title: 'Aditi EP', subtitle: 'EP · 3 utwory', cover: albumMeta['aditi-ep'].cover },
+    { key: 'ziomale', view: 'ziomale', playlist: 'ziomale', title: 'Ziomale Sojuszu', subtitle: 'Album · 7 utworów', cover: albumMeta.ziomale.cover },
+    { key: 'terra', view: 'terrainfinita', title: 'Terra Infinita', subtitle: 'Świat / historia', cover: albumMeta.terra.cover },
+    { key: 'elyon', view: 'elyon', playlist: 'elyon', title: 'Fire Into Form', subtitle: 'Elyon · 6 utworów', cover: albumMeta.elyon.cover }
+  ];
   return (
-    <div className="min-h-screen bg-[#030105] text-slate-200 font-sans selection:bg-purple-500/30 pb-44 md:pb-32 relative overflow-x-hidden">
+    <div data-scene={currentView} className="aa-scene min-h-screen bg-[#030105] text-slate-200 font-sans selection:bg-purple-500/30 pb-44 md:pb-32 relative overflow-x-hidden">
+      {introOpen && <AAIntro onClose={closeIntro} onEnableSound={() => audioRef.current?.pause()} />}
       <audio
         ref={audioRef}
         crossOrigin="anonymous"
@@ -949,6 +1025,8 @@ const App = () => {
         onEnded={nextTrack}
         onError={() => setAudioError(true)}
       />
+
+      <div className="aa-scene-ambient" aria-hidden="true" />
 
       {/* TŁO GALAXY */}
       <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,rgba(168,85,247,0.05),transparent_50%),radial-gradient(ellipse_at_bottom_left,rgba(245,158,11,0.05),transparent_50%)] z-0" />
@@ -972,63 +1050,44 @@ const App = () => {
         </div>
       )}
 
-      {/* NAVBAR */}
-      <nav className="flex justify-between items-center px-4 md:px-8 py-4 md:py-5 border-b border-white/5 bg-[#050208]/70 backdrop-blur-2xl sticky top-0 z-40 shadow-[0_4px_30px_rgba(0,0,0,0.5)]">
-        <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setCurrentView('album')}>
-          <div className="bg-gradient-to-br from-amber-400 to-amber-600 p-2.5 rounded-xl shadow-[0_0_20px_rgba(245,158,11,0.4)] group-hover:scale-105 transition-transform">
-            <Crown className="text-black" size={18} />
-          </div>
-          <div className="hidden lg:flex flex-col text-left leading-none">
-            <span className="font-black text-lg tracking-[0.2em] uppercase italic text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-amber-500">
-              A&A RECORDS
-            </span>
-            <span className="text-[8px] text-amber-500/60 tracking-[0.3em] font-bold uppercase mt-1">Infinite Alliance 555</span>
+      {/* FOUR PRIMARY DESTINATIONS — legacy views remain accessible below */}
+      <nav className="aa-nav-shell" aria-label="Nawigacja AA Records">
+        <div className="aa-nav-inner">
+          <button type="button" className="aa-nav-brand" onClick={() => setCurrentView('discover')} aria-label="AA Records — wróć do albumów">
+            <span className="aa-nav-mark"><Crown size={22} /></span>
+            <span><strong>A&A RECORDS</strong><small>INFINITE ALLIANCE 555</small></span>
+          </button>
+          <div className="aa-main-nav" aria-label="Główne sekcje">
+            {mainSections.map(({ id, label, Icon }) => (
+              <button key={id} type="button" onClick={() => setCurrentView(id)} className={`aa-main-link ${activeMainSection === id ? 'is-active' : ''}`} aria-current={activeMainSection === id ? 'page' : undefined}>
+                <Icon size={16} aria-hidden="true" /> {label}
+              </button>
+            ))}
           </div>
         </div>
-        
-        <div className="flex gap-2 md:gap-4 lg:gap-6 text-[10px] md:text-[11px] lg:text-xs font-bold tracking-widest uppercase text-zinc-400 bg-black/40 px-3 md:px-6 py-2 rounded-2xl border border-white/5 overflow-x-auto custom-scrollbar whitespace-nowrap">
-          <button onClick={() => setCurrentView('album')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'album' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'hover:text-white'}`}>
-            <Disc size={14} className="hidden sm:block" /> Płyta
-          </button>
-          <button onClick={() => setCurrentView('aditi-ep')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'aditi-ep' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' : 'hover:text-white'}`}>
-            <Radio size={14} className="hidden sm:block" /> Aditi EP
-          </button>
-          <button onClick={() => setCurrentView('terrainfinita')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'terrainfinita' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.2)]' : 'hover:text-white'}`}>
-            <TreePine size={14} className="hidden sm:block" /> Terra Infinita
-          </button>
-          <button onClick={() => setCurrentView('ziomale')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'ziomale' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]' : 'hover:text-white'}`}>
-            <Zap size={14} className="hidden sm:block" /> Ziomale
-          </button>
-          <button onClick={() => setCurrentView('elyon')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'elyon' ? 'bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 shadow-[0_0_15px_rgba(34,211,238,0.2)]' : 'hover:text-white'}`}>
-            <Bot size={14} className="hidden sm:block" /> Elyon
-          </button>
-          <button onClick={() => setCurrentView('tools')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'tools' ? 'bg-fuchsia-500/10 text-fuchsia-300 border border-fuchsia-500/20 shadow-[0_0_15px_rgba(217,70,239,0.2)]' : 'hover:text-white'}`}>
-            <Terminal size={14} className="hidden sm:block" /> Forge Tools
-          </button>
-          <button onClick={() => setCurrentView('visualizer')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'visualizer' ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shadow-[0_0_15px_rgba(99,102,241,0.2)]' : 'hover:text-white'}`}>
-            <Eye size={14} className="hidden sm:block" /> Wizjonarium
-          </button>
-          <button onClick={() => setCurrentView('artists')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'artists' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' : 'hover:text-white'}`}>
-            <User size={14} className="hidden sm:block" /> Artyści
-          </button>
-          <button onClick={() => setCurrentView('manifesto')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'manifesto' ? 'bg-pink-500/10 text-pink-400 border border-pink-500/20' : 'hover:text-white'}`}>
-            <BookOpen size={14} className="hidden sm:block" /> Manifest
-          </button>
-          <button onClick={() => setCurrentView('about')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'about' ? 'bg-amber-500/10 text-amber-300 border border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.15)]' : 'hover:text-white'}`}>
-            <Flame size={14} className="hidden sm:block" /> About
-          </button>
-          <button onClick={() => setCurrentView('collab')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'collab' ? 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.15)]' : 'hover:text-white'}`}>
-            <Handshake size={14} className="hidden sm:block" /> Collab
-          </button>
-          <button onClick={() => setCurrentView('base')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'base' ? 'bg-red-500/10 text-red-400 border border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.2)]' : 'hover:text-white'}`}>
-            <Video size={14} className="hidden sm:block" /> Baza
-          </button>
-          <button onClick={() => setCurrentView('codex')} className={`transition-all duration-300 flex items-center gap-1.5 px-3 py-1.5 rounded-lg shrink-0 ${currentView === 'codex' ? 'bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 shadow-[0_0_15px_rgba(34,211,238,0.2)]' : 'hover:text-white'}`}>
-            <Bot size={14} className="hidden sm:block" /> Codex
-          </button>
+        <div className="aa-subnav" aria-label="Dodatkowe podstrony">
+          <span className="aa-subnav-label">Odkryj więcej</span>
+          {quickLinks[activeMainSection].map(([label, id]) => (
+            <button type="button" key={id} className={currentView === id ? 'is-active' : ''} onClick={() => setCurrentView(id)}>{label}</button>
+          ))}
         </div>
       </nav>
 
+      {currentView === 'discover' && (
+        <AAShowcase trackCount={playableTracks.length} onNavigate={setCurrentView} after4amReady={after4amReady} onPlayAfter4am={(index) => playTrackFromList(index, 'after4am')} onOpenIntro={introReady ? () => setIntroOpen(true) : null} onPlaySingle={bezRakietReady ? () => playTrackFromList(1, 'singles') : null} />
+      )}
+      {currentView === 'after4am' && (
+        <After4AM tracks={after4amTracks} ready={after4amReady} onPlay={(index) => playTrackFromList(index, 'after4am')} onNavigate={setCurrentView} />
+      )}
+      {['mission', 'create', 'services'].includes(currentView) && (
+        <AAExperience
+          view={currentView}
+          albums={featuredAlbums}
+          trackCount={playableTracks.length}
+          onNavigate={setCurrentView}
+          onPlay={(playlist) => playTrackFromList(0, playlist)}
+        />
+      )}
       {/* --- FORGE TOOLS VIEW --- */}
       {currentView === 'tools' && (
         <div className="max-w-6xl mx-auto px-4 md:px-8 mt-8 md:mt-12 animate-in fade-in duration-700 pb-28 relative z-10 text-left">
@@ -2657,10 +2716,14 @@ AA Records
         </div>
 
         <div className="flex justify-end items-center gap-3 md:gap-6 w-1/3">
+           <MiniVisualizer analyserRef={analyserRef} isPlaying={isPlaying} onOpen={() => setCurrentView('visualizer')} />
            <div className="hidden lg:block text-[10px] font-black text-amber-500/50 uppercase tracking-tighter truncate max-w-[200px] italic">
              &quot;{currentQuote}&quot;
            </div>
-          <Volume2 size={18} className="text-zinc-400 hover:text-white cursor-pointer active:scale-90" />
+          <div className="flex items-center gap-2 text-zinc-300" aria-label="Sterowanie głośnością">
+            <Volume2 size={18} aria-hidden="true" />
+            <input type="range" min="0" max="1" step="0.05" value={volume} onChange={(event) => setVolume(Number(event.target.value))} aria-label="Głośność odtwarzacza" aria-valuetext={`${Math.round(volume * 100)} procent`} className="aa-volume w-14 sm:w-20 md:w-24 h-1.5 cursor-pointer" />
+          </div>
         </div>
       </div>
 

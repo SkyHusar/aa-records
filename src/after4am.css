@@ -1,0 +1,33 @@
+.aa4am{position:relative;z-index:1;color:#fce9ff;padding-bottom:170px;background:linear-gradient(#140c22,#090512);max-width:1700px;margin:auto;}
+.aa4am-hero{min-height:430px;background:linear-gradient(90deg,rgba(8,4,14,.94) 0%,rgba(17,5,25,.72) 47%,rgba(18,6,21,.17) 100%),url('/covers/zielone-swiatla.webp') 50% 53%/cover;display:flex;align-items:center;}
+.aa4am-hero-copy{padding:48px clamp(24px,8vw,130px);max-width:710px;}
+.aa4am-back{background:transparent;border:0;color:#e6abd7;display:flex;align-items:center;gap:8px;font-size:12px;margin-bottom:40px;cursor:pointer;}
+.aa4am-back:hover{color:white;}
+.aa4am-eyebrow{color:#faade9;letter-spacing:.2em;font-size:11px;font-weight:800;}
+.aa4am-hero h1{margin:14px 0;font-size:clamp(52px,7vw,108px);line-height:1;letter-spacing:-.07em;font-style:italic;font-weight:900;text-shadow:0 0 40px rgba(243,54,186,.28);}
+.aa4am-hero h1 em{font-style:inherit;color:#f6b8fc;}
+.aa4am-hero-copy>p{font-size:15px;line-height:1.75;color:#e7cde7;max-width:490px;}
+.aa4am-play-all{margin:25px 0 15px;background:linear-gradient(105deg,#fc9c56,#e83abe,#7628d5);border:1px solid #ffb2fa;border-radius:999px;padding:13px 24px;color:white;box-shadow:0 0 22px #b51fa776;display:flex;align-items:center;gap:10px;font-weight:800;cursor:pointer;}
+.aa4am-stats{display:flex;align-items:center;gap:10px;color:#ce9ed7;font-size:12px;}
+.aa4am-list{max-width:1200px;margin:auto;padding:45px 22px;}
+.aa4am-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;border-bottom:1px solid #542359;padding-bottom:12px;margin-bottom:24px;}
+.aa4am-head h2{margin:0;font-size:clamp(22px,3vw,35px);font-weight:800;}
+.aa4am-head span{font-size:10px;letter-spacing:.15em;color:#d08fcb;white-space:nowrap;}
+.aa4am-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+.aa4am-track{min-width:0;display:flex;align-items:center;gap:13px;border:1px solid #67316e80;border-radius:15px;padding:10px;background:linear-gradient(130deg,#3b184d80,#170e26);transition:transform .2s,border-color .2s;}
+.aa4am-track:hover{border-color:#e688e1;transform:translateY(-2px);}
+.aa4am-cover{flex:0 0 61px;height:61px;position:relative;overflow:hidden;border-radius:10px;}
+.aa4am-cover img{width:100%;height:100%;object-fit:cover;display:block;}
+.aa4am-cover span{position:absolute;left:5px;top:3px;font-size:10px;font-weight:900;text-shadow:0 1px 4px #000;}
+.aa4am-track-meta{flex:1;min-width:0;}
+.aa4am-track-meta h3{font-size:13px;font-weight:750;margin:0 0 6px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;}
+.aa4am-track-meta p{font-size:10px;color:#aa8cbd;margin:0;}
+.aa4am-duration{font:11px monospace;color:#bca3c7;}
+.aa4am-track-play{flex:0 0 34px;height:34px;border-radius:50%;border:1px solid #ed9af3;background:#ba2bdc38;display:grid;place-items:center;color:white;cursor:pointer;}
+.aa4am-track-play:hover{background:#c044d9;}
+.aa4am-note{display:flex;align-items:center;gap:12px;margin-top:25px;padding:17px;border:1px solid #512c70;border-radius:13px;color:#caa9d8;font-size:12px;}
+.aa4am-note p{margin:0;line-height:1.5;}
+@media(max-width:760px){.aa4am-hero{min-height:390px;background-position:64% center;}.aa4am-grid{grid-template-columns:1fr;}.aa4am-hero-copy{padding:30px 20px;}.aa4am-back{margin-bottom:35px;}.aa4am-track{gap:10px;}.aa4am-cover{flex-basis:53px;height:53px;}}
+@media(prefers-reduced-motion:reduce){.aa4am-track{transition:none;}.aa4am-track:hover{transform:none;}}
+
+.aa4am-import-note{border:1px solid #d88be477;background:#54255665;border-radius:13px;padding:17px;margin-bottom:22px;font-size:12px;line-height:1.65;color:#f1cbed}.aa4am button:disabled{opacity:.55;cursor:not-allowed;box-shadow:none}
