@@ -37,7 +37,7 @@ function NeonWave({ compact = false }) {
   );
 }
 
-export default function AAShowcase({ trackCount, onNavigate, after4amReady, onPlayAfter4am, onOpenIntro, onPlaySingle }) {
+export default function AAShowcase({ trackCount, onNavigate, after4amReady, onPlayAfter4am, onOpenIntro, onPlaySingle, onPlayTrack15 }) {
   const [activeArtwork, setActiveArtwork] = useState(null);
   return (
     <main className="aash">
@@ -54,7 +54,7 @@ export default function AAShowcase({ trackCount, onNavigate, after4amReady, onPl
             <button type="button" onClick={() => onNavigate('create')}><AudioWaveform size={27}/><strong>Utwórz Track</strong><small>Twój własny numer</small></button>
             <button type="button" onClick={() => onNavigate('services')}><Headphones size={27}/><strong>O nas</strong><small>AA Records</small></button>
           </div>
-          {onOpenIntro && <button type="button" className="aash-intro-trigger" onClick={onOpenIntro}><Video size={17}/> Obejrzyj intro · 30 s</button>}
+          {onOpenIntro && <button type="button" className="aash-intro-trigger" onClick={onOpenIntro}><Video size={17}/> Obejrzyj intro · 20 s</button>}
         </div>
         <div className="aash-hero-wave"><NeonWave /></div>
       </section>
@@ -70,6 +70,7 @@ export default function AAShowcase({ trackCount, onNavigate, after4amReady, onPl
           </div>
         </section>
         {onPlaySingle && <section className="aash-new-song" aria-label="Premiera utworu Bez Rakiet"><img src="/covers/bez-rakiet.jpg" alt="Okładka singla Bez Rakiet" /><div><span>NOWOŚĆ · 14 / 50</span><h2>Bez Rakiet</h2><p>Nie trzeba zdobywać gwiazd, żeby trochę światła dać. 💜</p></div><button type="button" onClick={onPlaySingle}><Play size={16} fill="currentColor" /> Posłuchaj</button></section>}
+        {onPlayTrack15 && <section className="aash-new-song aash-new-song--15" aria-label="Premiera utworu numer 15 Nie zgasisz nas"><img src="/covers/aa-intro-poster.webp" alt="Kosmiczna ilustracja do utworu 15 Nie zgasisz nas" /><div><span>PREMIERA · TRACK 15 / 50</span><h2>15. NIE ZGASISZ NAS (Aditi 555)</h2><p>Oficjalna wersja 2 · refren z naszego filmowego intro AA Records.</p></div><button type="button" onClick={onPlayTrack15}><Play size={16} fill="currentColor" /> Posłuchaj #15</button></section>}
         <section className="aash-featured" aria-labelledby="aash-featured-title">
           <div className="aash-section-top">
             <h2 id="aash-featured-title">Muzyczne historie</h2>
