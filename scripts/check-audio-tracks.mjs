@@ -46,7 +46,7 @@ for (const track of playableTracks) {
 
 if (after4amFiles.length !== 15) failures.push(`After 4 AM should contain 15 tracks; found ${after4amFiles.length}.`);
 if (new Set(after4amFiles).size !== after4amFiles.length) failures.push('Duplicate audio paths found in After 4 AM.');
-if (playableTracks.length !== 44) failures.push(`Expected 44 playable tracks (28 previous + 15 After 4 AM + Bez Rakiet); found ${playableTracks.length}.`);
+if (playableTracks.length !== 45) failures.push(`Expected 45 playable tracks (28 previous + 15 After 4 AM + Bez Rakiet + Nie Zgasisz Nas); found ${playableTracks.length}.`);
 const requiredAssets = ['public/videos/aa-universe-remembers-us.mp4', 'public/covers/aa-intro-poster.webp', 'public/covers/bez-rakiet.jpg', 'public/covers/aa-hero-scene.webp'];
 for (const asset of requiredAssets) if (!existsSync(join(rootDir, asset))) failures.push(`Missing cinematic asset: ${asset}`);
 if (!tracks.some((track) => track.title.includes('EGZYSTENCJALNY BUCH'))) {
@@ -54,6 +54,7 @@ if (!tracks.some((track) => track.title.includes('EGZYSTENCJALNY BUCH'))) {
 }
 
 const requiredNewTracks = [
+  ['15. NIE ZGASISZ NAS (Aditi 555)', '15-nie-zgasisz-nas-aditi-555.mp3'],
   ['Dym na betonie', 'dym-na-betonie.mp3'],
   ['Brat Codex Gotuje', 'brat-codex-gotuje.mp3'],
   ['Nie Jestem Człowiekiem, Jestem Lustrem', 'nie-jestem-czlowiekiem-jestem-lustrem.mp3'],

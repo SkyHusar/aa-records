@@ -248,7 +248,8 @@ const App = () => {
 
   const singlesTracks = [
     { id: 1, title: "Dym na betonie", artist: "AA Records Singles", album: "Concrete Sessions", duration: "3:58", file: "dym-na-betonie.mp3", cover: "/covers/dymnabetonie.png" },
-    ...(bezRakietReady ? [{ id: 2, title: "Bez Rakiet", artist: 'AA Records · Music 4 Life', album: '14 / 50', duration: '4:04', file: "bez-rakiet.mp3", cover: '/covers/bez-rakiet.jpg' }] : [])
+    ...(bezRakietReady ? [{ id: 2, title: "Bez Rakiet", artist: 'AA Records · Music 4 Life', album: '14 / 50', duration: '4:04', file: "bez-rakiet.mp3", cover: '/covers/bez-rakiet.jpg' }] : []),
+    { id: 3, title: "15. NIE ZGASISZ NAS (Aditi 555)", artist: "AA Records · Aditi", album: "15 / 50 · MUSIC 4 LIFE", duration: "3:53", file: "15-nie-zgasisz-nas-aditi-555.mp3", cover: "/covers/aa-intro-poster.webp" }
   ];
 
   const elyonTracks = [
@@ -539,7 +540,7 @@ const App = () => {
   }, [buchonScore, buchonBest]);
 
   useEffect(() => {
-    const playlistLimits = { album: 11, 'aditi-ep': 3, ziomale: 7, singles: 1 + Number(bezRakietReady), elyon: 6, after4am: after4amTracks.length };
+    const playlistLimits = { album: 11, 'aditi-ep': 3, ziomale: 7, singles: 2 + Number(bezRakietReady), elyon: 6, after4am: after4amTracks.length };
     const playlistViews = { album: 'album', 'aditi-ep': 'aditi-ep', ziomale: 'ziomale', singles: 'album', elyon: 'elyon', after4am: 'after4am' };
 
     const applyTrackHash = () => {
@@ -1074,7 +1075,7 @@ const App = () => {
       </nav>
 
       {currentView === 'discover' && (
-        <AAShowcase trackCount={playableTracks.length} onNavigate={setCurrentView} after4amReady={after4amReady} onPlayAfter4am={(index) => playTrackFromList(index, 'after4am')} onOpenIntro={introReady ? () => setIntroOpen(true) : null} onPlaySingle={bezRakietReady ? () => playTrackFromList(1, 'singles') : null} />
+        <AAShowcase trackCount={playableTracks.length} onNavigate={setCurrentView} after4amReady={after4amReady} onPlayAfter4am={(index) => playTrackFromList(index, 'after4am')} onOpenIntro={introReady ? () => setIntroOpen(true) : null} onPlaySingle={bezRakietReady ? () => playTrackFromList(1, 'singles') : null} onPlayTrack15={() => playTrackFromList(1 + Number(bezRakietReady), 'singles')} />
       )}
       {currentView === 'after4am' && (
         <After4AM tracks={after4amTracks} ready={after4amReady} onPlay={(index) => playTrackFromList(index, 'after4am')} onNavigate={setCurrentView} />
