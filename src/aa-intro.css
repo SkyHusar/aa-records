@@ -1,0 +1,22 @@
+/* AA Records immersive cinematic opener. Never blocks site navigation without a skip control. */
+.aacin{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;color:#fff;background:#05020d;isolation:isolate;overflow:hidden;font-family:inherit}
+.aacin-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.aacin-vignette{position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,rgba(4,2,12,.63),transparent 27%,transparent 54%,rgba(4,2,15,.87) 96%),linear-gradient(90deg,rgba(2,1,9,.24),transparent 46%,rgba(2,1,9,.18))}
+.aacin-top{display:flex;justify-content:space-between;align-items:flex-start;padding:clamp(18px,3vw,44px);gap:20px}
+.aacin-brand{font-size:clamp(16px,2.4vw,28px);font-weight:950;letter-spacing:.17em;color:#ffdfad;text-shadow:0 0 21px #ed78d2}
+.aacin-brand small{display:block;margin-top:4px;color:#dbbce7;font-size:9px;letter-spacing:.26em;font-weight:750}
+.aacin-skip{display:flex;align-items:center;gap:9px;border:1px solid rgba(249,196,255,.6);background:rgba(8,4,22,.72);color:#fff;border-radius:999px;padding:12px 17px;font-size:12px;font-weight:800;cursor:pointer;backdrop-filter:blur(12px);box-shadow:0 0 22px #922bb363}
+.aacin-skip:hover,.aacin-control:hover,.aacin-enter:hover{border-color:#ffd1fb;background-color:rgba(102,33,130,.6)}
+.aacin :is(button):focus-visible{outline:3px solid #68f4ef;outline-offset:3px}
+.aacin-bottom{display:flex;justify-content:space-between;align-items:end;gap:30px;margin-top:auto;padding:32px clamp(19px,4vw,62px) 43px}
+.aacin-bottom-copy>span{font-size:10px;letter-spacing:.21em;font-weight:800;color:#d8afed}
+.aacin-bottom-copy h2{max-width:650px;margin:11px 0 8px;font-size:clamp(27px,4.3vw,58px);line-height:1.1;letter-spacing:-.03em;font-weight:900;font-style:italic;text-shadow:0 3px 25px #0b0614}
+.aacin-bottom-copy h2 em{font-style:inherit;background:linear-gradient(90deg,#f8b4ff,#8eedf7,#ffcfaa);background-clip:text;-webkit-background-clip:text;color:transparent}
+.aacin-bottom-copy p{font-size:13px;color:#e4d4ec;margin:0}
+.aacin-controls{display:flex;align-items:center;gap:11px;flex-wrap:wrap;justify-content:end}
+.aacin-control,.aacin-enter{border:1px solid rgba(244,178,251,.56);border-radius:999px;background:rgba(19,7,38,.75);padding:13px 17px;display:flex;align-items:center;gap:10px;color:#fff;font-size:12px;font-weight:750;white-space:nowrap;cursor:pointer;transition:.2s}
+.aacin-enter{background:linear-gradient(120deg,#b82ed4,#ca58a5,#f38a51);box-shadow:0 0 19px #b72cc877;border-color:#ffc4f1}
+.aacin-progress{position:absolute;bottom:0;left:0;right:0;height:4px;background:rgba(255,255,255,.14)}
+.aacin-progress span{height:100%;display:block;background:linear-gradient(90deg,#d15aef,#62e6f5);box-shadow:0 0 12px #e59bff;transition:width .15s linear}
+@media(max-width:700px){.aacin-video{object-fit:cover;object-position:center}.aacin-top{padding:17px 15px}.aacin-brand{font-size:15px}.aacin-brand small{font-size:8px}.aacin-skip{font-size:11px;padding:9px 11px}.aacin-bottom{flex-direction:column;align-items:stretch;padding:18px 15px 28px;gap:15px}.aacin-bottom-copy h2{font-size:clamp(27px,8vw,42px)}.aacin-controls{justify-content:flex-start}.aacin-enter{padding:12px 14px}.aacin-control{padding:12px 13px}}
+@media(prefers-reduced-motion:reduce){.aacin-control,.aacin-enter{transition:none}.aacin-progress span{transition:none}}

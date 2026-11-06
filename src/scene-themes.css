@@ -1,0 +1,73 @@
+/* AA Records: lightweight view-specific ambience. Presentation only. */
+.aa-scene {
+  --aa-scene-primary: 245, 158, 11;
+  --aa-scene-secondary: 139, 92, 246;
+  isolation: isolate;
+}
+
+.aa-scene[data-scene="aditi-ep"] { --aa-scene-primary: 168, 85, 247; --aa-scene-secondary: 236, 72, 153; }
+.aa-scene[data-scene="terrainfinita"] { --aa-scene-primary: 250, 204, 21; --aa-scene-secondary: 45, 212, 191; }
+.aa-scene[data-scene="ziomale"] { --aa-scene-primary: 16, 185, 129; --aa-scene-secondary: 74, 222, 128; }
+.aa-scene[data-scene="elyon"] { --aa-scene-primary: 34, 211, 238; --aa-scene-secondary: 249, 115, 22; }
+.aa-scene[data-scene="visualizer"] { --aa-scene-primary: 168, 85, 247; --aa-scene-secondary: 34, 211, 238; }
+.aa-scene[data-scene="tools"] { --aa-scene-primary: 217, 70, 239; --aa-scene-secondary: 34, 211, 238; }
+.aa-scene[data-scene="artists"] { --aa-scene-primary: 96, 165, 250; --aa-scene-secondary: 167, 139, 250; }
+.aa-scene[data-scene="manifesto"] { --aa-scene-primary: 244, 63, 94; --aa-scene-secondary: 217, 70, 239; }
+.aa-scene[data-scene="about"] { --aa-scene-primary: 245, 158, 11; --aa-scene-secondary: 236, 72, 153; }
+.aa-scene[data-scene="collab"] { --aa-scene-primary: 20, 184, 166; --aa-scene-secondary: 34, 211, 238; }
+.aa-scene[data-scene="base"] { --aa-scene-primary: 248, 113, 113; --aa-scene-secondary: 34, 211, 238; }
+.aa-scene[data-scene="codex"] { --aa-scene-primary: 34, 211, 238; --aa-scene-secondary: 163, 230, 53; }
+
+.aa-scene-ambient {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 44% 35% at 85% 13%, rgba(var(--aa-scene-primary), 0.14), transparent 76%),
+    radial-gradient(ellipse 40% 42% at 7% 78%, rgba(var(--aa-scene-secondary), 0.09), transparent 76%);
+  transition: background 350ms ease;
+}
+
+.aa-scene-ambient::before {
+  content: "";
+  position: absolute;
+  right: -12vmin;
+  top: 9vh;
+  width: min(55vmin, 600px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(var(--aa-scene-primary), 0.14);
+  border-radius: 50%;
+  box-shadow: 0 0 70px rgba(var(--aa-scene-primary), 0.04), inset 0 0 85px rgba(var(--aa-scene-secondary), 0.045);
+  opacity: 0.72;
+  animation: aa-orbit-drift 34s ease-in-out infinite alternate;
+}
+
+.aa-scene-ambient::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(var(--aa-scene-primary), 0.035) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(var(--aa-scene-primary), 0.035) 1px, transparent 1px);
+  background-size: 70px 70px;
+  mask-image: linear-gradient(90deg, transparent 10%, black 100%);
+  opacity: 0.36;
+}
+
+.aa-scene nav { border-bottom-color: rgba(var(--aa-scene-primary), 0.15); }
+.aa-volume { accent-color: rgb(var(--aa-scene-primary)); touch-action: pan-x; }
+
+@keyframes aa-orbit-drift {
+  from { transform: translate(0, 0) rotate(-9deg); }
+  to { transform: translate(-16px, 10px) rotate(9deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aa-scene-ambient, .aa-scene-ambient::before { animation: none !important; transition: none !important; }
+}
+
+@media (max-width: 480px) {
+  .aa-scene-ambient::before { width: 66vmin; right: -24vmin; top: 12vh; }
+  .aa-scene-ambient::after { opacity: 0.18; }
+}

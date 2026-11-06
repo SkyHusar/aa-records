@@ -1,0 +1,64 @@
+/* AA Records reference hero / local generated art overrides the studio fallback */
+.aash-hero{
+  min-height:clamp(440px,34vw,550px);
+  background-image:linear-gradient(90deg,rgba(8,3,17,.05),rgba(5,2,15,.19) 42%,rgba(5,2,16,.12)),url('/covers/aa-hero-scene.webp'),url('/covers/aa-studio-dawn.webp');
+  background-position:center,center,center;
+  background-size:cover,cover,cover;
+}
+.aash-hero-shade{background:linear-gradient(0deg,rgba(8,2,16,.6),transparent 38%),linear-gradient(90deg,transparent 0%,rgba(7,2,18,.22) 39%,rgba(6,2,19,.20) 64%,transparent 100%);}
+.aash-hero-content{margin-left:29%;padding:24px 38px 46px 0;max-width:none;width:64%;display:flex;flex-direction:column;align-items:center;text-align:center;}
+.aash-hero .aash-kicker{display:none;}
+.aash-hero-crown{font-size:42px;color:#ffd597;text-shadow:0 0 18px #ff9d64;line-height:.9;margin-bottom:3px;}
+.aash-hero h1.aash-hero-brand{display:flex;align-items:center;flex-direction:column;gap:0;margin:5px 0 2px;font-weight:900;font-style:normal;font-size:clamp(35px,4vw,62px);line-height:1.04;color:#ffcd90;text-shadow:0 0 13px rgba(255,151,90,.5),0 4px 15px #130416;white-space:nowrap;}
+.aash-hero h1.aash-hero-brand em{font-size:clamp(22px,2.8vw,40px);font-weight:450;font-family:cursive;font-style:italic;letter-spacing:.02em;color:#f79eff;background:none;-webkit-text-fill-color:#f79eff;text-shadow:0 0 17px #ce27e6;}
+.aash-hero-content>p{margin:7px 0 15px;font-size:clamp(12px,1.2vw,16px);font-style:italic;letter-spacing:.07em;color:#f0bef7;}
+.aash-hero-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%;max-width:730px;gap:12px;}
+.aash-hero-tiles button{min-width:0;min-height:115px;border:1px solid #df85ef;border-radius:17px;background:linear-gradient(140deg,rgba(30,13,49,.79),rgba(7,5,23,.86));color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;box-shadow:0 0 16px rgba(198,72,230,.55),inset 0 0 20px rgba(172,65,225,.14);transition:transform .2s,box-shadow .2s;}
+.aash-hero-tiles button:hover{transform:translateY(-5px);box-shadow:0 0 25px #d951f5;}
+.aash-hero-tiles button svg{color:#f497ff;filter:drop-shadow(0 0 7px #d95af0);}
+.aash-hero-tiles button strong{font-size:13px;line-height:1.2;}
+.aash-hero-tiles button small{font-size:10px;color:#c7aacb;line-height:1.2;}
+.aash-hero-wave{display:none;}
+@media(max-width:1050px){
+ .aash-hero-content{margin-left:25%;width:72%;padding-right:18px;}
+ .aash-hero-tiles{gap:8px;}
+ .aash-hero-tiles button{min-height:95px;}
+}
+@media(max-width:650px){
+ .aash-hero{min-height:620px;background-position:center,22% center,center;background-size:cover,auto 100%,cover;align-items:flex-end;}
+ .aash-hero-shade{background:linear-gradient(0deg,#12071e 1%,rgba(17,5,29,.95) 14%,rgba(10,3,22,.68) 49%,transparent 82%);}
+ .aash-hero-content{margin:0;width:100%;padding:35px 14px 30px;}
+ .aash-hero-crown{font-size:34px;}
+ .aash-hero h1.aash-hero-brand{font-size:clamp(32px,8vw,43px);}
+ .aash-hero h1.aash-hero-brand em{font-size:clamp(24px,6.2vw,32px);}
+ .aash-hero-content>p{margin:7px 0 15px;}
+ .aash-hero-tiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+ .aash-hero-tiles button{min-height:85px;}
+ .aash-hero-tiles button svg{width:23px;height:23px;}
+}
+@media(prefers-reduced-motion:reduce){.aash-hero-tiles button{transition:none;}.aash-hero-tiles button:hover{transform:none;}}
+
+/* New releases: accessible cards, real navigation and artwork */
+.aash-release-strip{padding-top:26px;margin-bottom:32px;}
+.aash-release-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;}
+.aash-release{position:relative;min-width:0;padding:0;text-align:left;background:#1e102e;border:1px solid rgba(228,123,235,.48);border-radius:16px;overflow:hidden;color:white;box-shadow:0 8px 27px #0006;transition:transform .2s,box-shadow .2s;}
+.aash-release:hover{transform:translateY(-5px);box-shadow:0 10px 26px #ac33c557;}
+.aash-release>img{display:block;width:100%;aspect-ratio:1.35;object-fit:cover;}
+.aash-release>span:nth-of-type(1){display:block;padding:11px 13px 14px;}
+.aash-release strong{display:block;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.aash-release small{display:block;color:#cfaad8;font-size:10px;margin-top:5px;}
+.aash-release-play{position:absolute;top:10px;right:10px;border:1px solid #eeb3ff;border-radius:50%;width:32px;height:32px;display:grid;place-items:center;background:#1c0828c9;box-shadow:0 0 12px #ad34d4;}
+@media(max-width:760px){.aash-release-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}.aash-release>img{aspect-ratio:1.15;}.aash-release strong{font-size:12px;}.aash-release-strip{margin-bottom:25px;}}
+@media(prefers-reduced-motion:reduce){.aash-release{transition:none;}.aash-release:hover{transform:none;}}
+
+.aash-intro-trigger{margin-top:14px;display:flex;align-items:center;gap:9px;padding:9px 15px;border:1px solid rgba(249,178,255,.56);border-radius:999px;color:#fae6ff;background:rgba(15,4,29,.76);box-shadow:0 0 15px #a634cb50;backdrop-filter:blur(10px);font-size:12px;font-weight:800;cursor:pointer;}
+.aash-intro-trigger:hover{border-color:#fcbdff;background:rgba(80,22,102,.74);}
+.aash-new-song{display:flex;align-items:center;gap:18px;margin:21px 0 0;padding:14px 19px;border:1px solid #c75bcf7b;border-radius:19px;background:linear-gradient(120deg,rgba(65,25,86,.7),rgba(31,16,48,.82));box-shadow:0 0 20px #b835bf27;}
+.aash-new-song img{width:75px;height:75px;border-radius:12px;object-fit:cover;flex-shrink:0;}
+.aash-new-song>div{flex:1;min-width:0;}
+.aash-new-song>div>span{color:#f7aeef;letter-spacing:.16em;font-size:9px;font-weight:900;}
+.aash-new-song h2{font-size:clamp(18px,2vw,27px);font-weight:900;font-style:italic;letter-spacing:-.025em;margin:2px 0 4px;color:white;}
+.aash-new-song p{color:#d7b6dd;font-size:11px;line-height:1.45;margin:0;}
+.aash-new-song>button{background:linear-gradient(120deg,#df5cc8,#9238ba);color:white;border:1px solid #f0b5ee;border-radius:999px;display:flex;align-items:center;gap:8px;padding:11px 17px;font-weight:800;font-size:12px;white-space:nowrap;cursor:pointer;}
+.aash-new-song>button:hover{filter:brightness(1.18);}
+@media(max-width:650px){.aash-intro-trigger{margin-top:9px;font-size:11px;padding:8px 13px;}.aash-new-song{gap:11px;padding:11px 12px;flex-wrap:wrap;}.aash-new-song img{width:60px;height:60px;}.aash-new-song>button{margin-left:auto;font-size:11px;}}
