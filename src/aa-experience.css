@@ -233,3 +233,8 @@
   .aaex-btn, .aaex-album-card, .aaex-cover-button img, .aaex-service { transition: none !important; }
   .aaex-btn:hover, .aaex-album-card:hover, .aaex-service:hover { transform: none !important; }
 }
+
+.aaex-contact-address{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:21px 0 0;color:#e8d9f0;font-size:13px;line-height:1.6}
+.aaex-contact-address svg{color:#dd9df4;flex-shrink:0}
+.aaex-contact-address a{font-weight:850;color:#f4c6ff;text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}
+.aaex-contact-address a:hover{color:#fff}

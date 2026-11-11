@@ -31,6 +31,11 @@ for(const url of [
 ])assert.ok(catalog.includes(url));
 const html=read('index.html');
 for(const field of ['og-aa-records.jpg','og:image:width','twitter:card','description','rel="canonical"'])assert.ok(html.includes(field));
+for(const component of ['src/AAExperience.jsx','src/Discography.jsx']){
+  const source=read(component);
+  assert.ok(source.includes('mailto:skyhusaria@gmail.com'), 'contact address missing in '+component);
+  assert.ok(source.includes('skyhusaria@gmail.com</a>'), 'contact address not visible in '+component);
+}
 assert.ok(exists('public/og-aa-records.jpg'));
 assert.ok(read('public/robots.txt').includes('/sitemap.xml'));
 assert.ok(read('public/sitemap.xml').includes('https://aa-records.vercel.app/'));

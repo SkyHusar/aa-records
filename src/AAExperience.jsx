@@ -65,6 +65,10 @@ function TrackBrief() {
         <div className="aaex-chips" aria-label="Język utworu">
           {languageChoices.map((item) => <button key={item} type="button" aria-pressed={language === item} className={language === item ? 'is-active' : ''} onClick={() => { setLanguage(item); setCopied(false); }}>{item}</button>)}
         </div>
+        <p className="aaex-contact-address">
+          <Mail size={17} aria-hidden="true" />
+          <span>Adres kontaktowy: <a href="mailto:skyhusaria@gmail.com?subject=AA%20Records%20-%20kontakt">skyhusaria@gmail.com</a></span>
+        </p>
         <div className="aaex-form-actions">
           <a href={mailto} className="aaex-btn aaex-btn--primary"><Mail size={17} /> Przygotuj e-mail <ArrowRight size={16} /></a>
           <button type="button" className="aaex-btn aaex-btn--quiet" onClick={copyBrief}>{copied ? <Check size={17} /> : <Copy size={17} />}{copied ? 'Skopiowano' : 'Kopiuj pomysł'}</button>

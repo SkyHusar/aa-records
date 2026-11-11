@@ -36,3 +36,7 @@
 .aadisc-community small{display:block;font-size:11px;color:#b9a8c0;margin-top:14px}
 @media(max-width:700px){.aadisc{padding:20px 14px 120px}.aadisc-album{grid-template-columns:1fr}.aadisc-art{min-height:240px;max-height:280px}.aadisc-content{padding:22px}.aadisc-tracks ol{columns:1}.aadisc-actions a,.aadisc-actions button{flex-grow:1}}
 @media(prefers-reduced-motion:reduce){.aadisc-actions a,.aadisc-actions button,.aadisc-community button{transition:none}}
+
+.aadisc-community .aadisc-direct-contact{margin:16px auto 2px;font-size:12px;color:#dfc9ee}
+.aadisc-direct-contact a{font-weight:900;color:#f5c3ff;text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}
+.aadisc-direct-contact a:hover{color:#fff}
