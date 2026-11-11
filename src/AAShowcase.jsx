@@ -66,7 +66,7 @@ export default function AAShowcase({ trackCount, onNavigate, after4amReady, onPl
           <div className="aash-release-grid">
             {featuredAlbums.map((album) => <button key={album.target} type="button" className="aash-release" onClick={() => onNavigate(album.target)}>
               <img src={album.cover} loading="lazy" alt="" />
-              <span><strong>{album.title}</strong><small>{album.label}</small></span><span className="aash-release-play"><Disc3 size={20}/></span>
+              <span><strong>{album.title}</strong><small>{album.label}</small>{album.target === "after4am" && <small>50 historii Aditi · współpraca z AI</small>}</span><span className="aash-release-play"><Disc3 size={20}/></span>
             </button>)}
           </div>
         </section>

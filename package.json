@@ -8,6 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "test:audio": "node scripts/check-audio-tracks.mjs",
+    "test:track-numbers": "node scripts/check-track-presentation.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
