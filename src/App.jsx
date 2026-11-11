@@ -5,6 +5,7 @@ import AAShowcase from './AAShowcase';
 import After4AM from './AfterFourAM.jsx';
 import Discography from './Discography.jsx';
 import ContactForm from './ContactForm.jsx';
+import ForgeWorkbench from './ForgeWorkbench.jsx';
 import { trackNumber, stripTrackPrefix } from './trackPresentation';
 import { after4amTracks } from './after4am';
 import MiniVisualizer from './MiniVisualizer';
@@ -67,6 +68,7 @@ const App = () => {
   const [hypeResult, setHypeResult] = useState(null);
   const [sunoForm, setSunoForm] = useState({ genre: 'cyber trap', mood: 'neon smoke', language: 'Polish', vocal: 'deep male rap + ethereal hook', theme: 'Fire Into Form' });
   const [sunoPromptResult, setSunoPromptResult] = useState('');
+  const [forgePackChoice, setForgePackChoice] = useState(null);
   const [buchonScore, setBuchonScore] = useState(() => {
     const saved = typeof window !== 'undefined' ? Number(window.localStorage.getItem('aa-buchon-score')) : 0;
     return Number.isFinite(saved) ? Math.min(Math.max(saved, 0), 555) : 0;
@@ -362,7 +364,7 @@ const App = () => {
     ["Rap Name Generator", "5 aliasow z lokalnych szablonow, vibe i seedem.", Sparkles],
     ["Diss / Roast / Hype Generator", "Czterowers, hook idea, TikTok caption i prompt do Suno.", Flame],
     ["Suno Prompt Generator", "Struktura promptu bez klonowania konkretnych artystow.", AudioWaveform],
-    ["Artist Launch Kit Preview", "Mini oferta na szybka strone/drop page dla artysty.", Send]
+    ["Forge Submission Studio", "Scal wyniki generatorów, popraw tekst i wyślij pomysł do AA Records.", Send]
   ];
 
   const rapNameParts = {
@@ -370,12 +372,6 @@ const App = () => {
     cores: ["Husar", "Buch", "Knight", "Codex", "Pulse", "Vandal", "Aion", "Drift", "Cipher", "Sojusz", "Volt", "Lumen"],
     suffixes: ["555", "FM", "VX", "Prime", "Zero", "Wave", "Mode", "Unit", "Lab", "Rider", "Signal", "Form"]
   };
-
-  const artistPagePackages = [
-    ["Starter Card", "£49", "One-page artist card, hero, links, bio, latest track CTA."],
-    ["Full Drop Page", "£99", "Release page with cover, track story, embeds, CTA and social metadata."],
-    ["Forge Pack", "£149", "Drop page plus Suno prompt, cover prompt, TikTok hook and launch copy."]
-  ];
 
   const promptPacks = [
     ["Cyber Trap Suno Pack", "Suno style lines for dark cyber rap, hooks and drops."],
@@ -473,22 +469,6 @@ const App = () => {
     ].join(", ");
 
     setSunoPromptResult(prompt);
-  };
-
-  const buildArtistPageMailto = (packageName = "Starter Card") => {
-    const subject = encodeURIComponent("AA Records — Artist Page Request");
-    const body = encodeURIComponent(
-      `Alias:\nVibe:\nLinks:\nPackage: ${packageName}\nDeadline:\nContact:\n\nShort note:\n`
-    );
-    return `mailto:skyhusaria@gmail.com?subject=${subject}&body=${body}`;
-  };
-
-  const buildPromptPackMailto = (packName = "Cover Art Prompt Pack") => {
-    const subject = encodeURIComponent("AA Records — Prompt Pack Request");
-    const body = encodeURIComponent(
-      `Pack: ${packName}\nContact:\nStyle / vibe:\n\nNotes:\n`
-    );
-    return `mailto:skyhusaria@gmail.com?subject=${subject}&body=${body}`;
   };
 
   const formatTime = (seconds) => {
@@ -1161,7 +1141,7 @@ const App = () => {
                   Creator tools dla <span className="text-fuchsia-300 drop-shadow-[0_0_24px_rgba(217,70,239,0.45)]">AI labelu</span>
                 </h1>
                 <p className="text-zinc-300 text-sm md:text-base leading-relaxed max-w-2xl mt-5">
-                  Male narzedzia do aliasow, hype wersow, promptow Suno, launch kitow i przyszlych cover artow. Lokalnie, szybko, bez backendu.
+                  Generuj aliasy, wersy i prompty, a potem zbierz wyniki w jeden tekst. Generatory działają w przeglądarce; zgłoszenie na maila AA Records wyślesz dopiero po kliknięciu.
                 </p>
                 <div className="grid sm:grid-cols-2 gap-3 mt-7">
                   {forgeToolCards.map(([title, text, Icon]) => (
@@ -1184,7 +1164,7 @@ const App = () => {
                   />
                   <div className="absolute -bottom-4 left-4 right-4 rounded-2xl border border-fuchsia-500/25 bg-black/80 px-4 py-3 backdrop-blur-xl">
                     <p className="text-[10px] uppercase tracking-[0.25em] font-black text-fuchsia-300">tools beta</p>
-                    <p className="text-white font-black uppercase italic mt-1">Generate. Copy. Launch.</p>
+                    <p className="text-white font-black uppercase italic mt-1">Generate. Compose. Send.</p>
                   </div>
                 </div>
               </div>
@@ -1301,29 +1281,13 @@ const App = () => {
           </section>
 
           <section className="mt-6 grid lg:grid-cols-[1.05fr_0.95fr] gap-5">
-            <div className="rounded-[2rem] border border-white/10 bg-[#050508]/90 p-5 md:p-6 shadow-[0_0_55px_rgba(255,255,255,0.04)]">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-5">
-                <div>
-                  <h2 className="text-white text-sm md:text-base font-black uppercase tracking-widest flex items-center gap-2">
-                    <Send size={17} className="text-fuchsia-300" /> AI Artist Page in 24h
-                  </h2>
-                  <p className="text-zinc-400 text-xs leading-relaxed mt-2">No backend, no payment - mailto request ready for szybki launch.</p>
-                </div>
-                <span className="rounded-full border border-fuchsia-500/25 bg-fuchsia-500/10 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-fuchsia-200">service preview</span>
-              </div>
-              <div className="grid md:grid-cols-3 gap-3">
-                {artistPagePackages.map(([name, price, text]) => (
-                  <div key={name} className="rounded-2xl border border-white/10 bg-black/35 p-4">
-                    <p className="text-[10px] uppercase tracking-widest text-fuchsia-300 font-black">{name}</p>
-                    <p className="text-3xl font-black text-white mt-2">{price}</p>
-                    <p className="text-zinc-400 text-xs leading-relaxed mt-3 min-h-[72px]">{text}</p>
-                    <a href={buildArtistPageMailto(name)} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-black hover:bg-fuchsia-200 transition-all">
-                      Request <ExternalLink size={12} />
-                    </a>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <ForgeWorkbench
+              rapNames={rapNameResult}
+              hype={hypeResult}
+              sunoPrompt={sunoPromptResult}
+              coverPacks={coverPromptPacks}
+              selectedPack={forgePackChoice}
+            />
 
             <div className="rounded-[2rem] border border-amber-500/20 bg-[#090705]/90 p-5 md:p-6 shadow-[0_0_55px_rgba(245,158,11,0.06)]">
               <h2 className="text-white text-sm md:text-base font-black uppercase tracking-widest flex items-center gap-2">
@@ -1387,9 +1351,14 @@ const App = () => {
                         <p className="text-white text-xs font-black uppercase tracking-widest">{name}</p>
                         <p className="text-zinc-400 text-xs leading-relaxed mt-2">{text}</p>
                       </div>
-                      <a href={buildPromptPackMailto(name)} className="shrink-0 rounded-full border border-cyan-500/25 bg-cyan-500/10 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-cyan-200 hover:bg-cyan-400 hover:text-black transition-all">
-                        Request
-                      </a>
+                      <button type="button" onClick={() => {
+                        setForgePackChoice(previous => ({
+                          name, text, revision: (previous?.revision || 0) + 1
+                        }));
+                        document.getElementById('aa-forge-workbench')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }} className="shrink-0 rounded-full border border-cyan-500/25 bg-cyan-500/10 px-3 py-2 text-[9px] font-black uppercase tracking-widest text-cyan-200 hover:bg-cyan-400 hover:text-black transition-all">
+                        Dodaj do projektu
+                      </button>
                     </div>
                   </div>
                 ))}

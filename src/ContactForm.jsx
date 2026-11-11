@@ -1,4 +1,5 @@
-import { useState } from 'react';
+/* eslint-disable react/prop-types */
+import { useEffect, useState } from 'react';
 import { CheckCircle2, ExternalLink, Mail, Send, ShieldCheck } from 'lucide-react';
 import './contact-form.css';
 
@@ -7,10 +8,16 @@ const ENDPOINT = 'https://formsubmit.co/ajax/' + CONTACT_EMAIL;
 const TYPES = ['Demo / własny utwór','Wspólna piosenka','Produkcja / beat','Wizualizacje / teledysk','Inny pomysł'];
 const initial = {name:'',email:'',type:TYPES[0],demo:'',message:'',consent:false,honey:''};
 
-export default function ContactForm() {
+export default function ContactForm({ forgeDraft = null }) {
   const [data,setData] = useState(initial);
   const [status,setStatus] = useState('idle');
   const [error,setError] = useState('');
+  useEffect(() => {
+    if (!forgeDraft) return;
+    setData(old => ({ ...old, message: forgeDraft.text, type: 'Wspólna piosenka' }));
+    setStatus('idle');
+    setError('');
+  }, [forgeDraft]);
   const update = (key,value) => {
     setData(old=>({...old,[key]:value}));
     if (status==='error') setStatus('idle');
@@ -77,7 +84,7 @@ export default function ContactForm() {
         <input className="aa-collab-field mt-2" name="demo" type="url" maxLength={500} value={data.demo}
           onChange={e=>update('demo',e.target.value)} placeholder="https://suno.com/song/..."/>
       </label>
-      <label className="block text-xs text-zinc-200 font-semibold">Opowiedz nam o swoim pomyśle *
+      <label className="block text-xs text-zinc-200 font-semibold">{forgeDraft ? 'Gotowy szkic / tekst do wysłania *' : 'Opowiedz nam o swoim pomyśle *'}
         <textarea className="aa-collab-field mt-2 min-h-32 resize-y" name="message" minLength={12} maxLength={4000}
           required value={data.message} onChange={e=>update('message',e.target.value)}
           placeholder="Jaki styl, jaka historia, co możemy razem nagrać?"/>
