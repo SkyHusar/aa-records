@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "test:experience": "node scripts/check-experience.mjs",
     "test:contact": "node scripts/check-contact.mjs",
-    "test:forge": "node scripts/check-forge.mjs"
+    "test:forge": "node scripts/check-forge.mjs",
+    "test:navigation": "node scripts/check-navigation.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.577.0",
