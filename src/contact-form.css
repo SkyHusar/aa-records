@@ -1,0 +1,8 @@
+.aa-collab-field {
+  display:block;width:100%;border:1px solid rgba(255,255,255,.15);
+  border-radius:12px;background:rgba(0,0,0,.45);color:#fff;
+  font:inherit;font-weight:450;padding:13px 14px;outline:none;
+}
+.aa-collab-field::placeholder{color:#95929d;font-weight:400}
+.aa-collab-field:focus-visible{border-color:#6ee7b7;box-shadow:0 0 0 2px rgba(16,185,129,.22)}
+.aa-collab-field option{background:#12131b;color:#fff}
