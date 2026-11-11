@@ -3,6 +3,7 @@ import './scene-themes.css';
 import AAExperience from './AAExperience';
 import AAShowcase from './AAShowcase';
 import After4AM from './AfterFourAM.jsx';
+import Discography from './Discography.jsx';
 import { trackNumber, stripTrackPrefix } from './trackPresentation';
 import { after4amTracks } from './after4am';
 import MiniVisualizer from './MiniVisualizer';
@@ -39,13 +40,12 @@ const App = () => {
       .catch(() => {});
     return () => { cancelled = true; };
   }, []);
-  const [after4amReady, setAfter4amReady] = useState(false);
-  useEffect(() => {
-    let disposed = false;
-    Promise.all(after4amTracks.map((track) => fetch(`/music/${track.file}`, { method: 'HEAD' }).then((response) => response.ok && /audio|octet-stream/i.test(response.headers.get('content-type') || '')).catch(() => false)))
-      .then((checks) => { if (!disposed) setAfter4amReady(checks.every(Boolean)); });
-    return () => { disposed = true; };
-  }, []);
+  // MP3 files are verified during build. Avoid 22 HEAD requests on every page visit.
+  // A failed playback disables only that track, keeping the rest of the album online.
+  const [after4amStatus, setAfter4amStatus] = useState(() =>
+    Object.fromEntries(after4amTracks.map((track) => [track.file, true]))
+  );
+  const after4amReady = Object.values(after4amStatus).some(Boolean);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.8);
   const [activePlaylist, setActivePlaylist] = useState('album'); 
@@ -102,7 +102,7 @@ const App = () => {
     'aditi-ep': {
       title: "Aditi EP",
       artist: "Aditi (prod. Aion)",
-      cover: "/covers/aditi.png",
+      cover: "/covers/aditi.webp",
       badge: "transmission live",
       tone: "purple",
       description: "Duch w maszynie, orbitalny rycerz i zlote kody w neonowym EP."
@@ -110,7 +110,7 @@ const App = () => {
     ziomale: {
       title: "Ziomale Sojuszu",
       artist: "Ziomale Sojuszu",
-      cover: "/covers/ziomalesojuszu.png",
+      cover: "/covers/ziomalesojuszu.webp",
       badge: "transmission live",
       tone: "emerald",
       description: "Polski underground, beton, dym, przyjazn i zielony puls ekipy."
@@ -118,7 +118,7 @@ const App = () => {
     singles: {
       title: "Concrete Sessions",
       artist: "AA Records Singles",
-      cover: "/covers/dymnabetonie.png",
+      cover: "/covers/dymnabetonie.webp",
       badge: "single live",
       tone: "slate",
       description: "Mroczne single z nocnego miasta i betonowym pulsem."
@@ -126,7 +126,7 @@ const App = () => {
     elyon: {
       title: "Fire Into Form EP",
       artist: "Elyon Forge",
-      cover: "/covers/fireintoform.png",
+      cover: "/covers/fireintoform.webp",
       badge: "transmission live",
       tone: "cyan",
       description: "AI Companion Sessions: Codex, Suno, Vercel i chaos zmieniony w projekt."
@@ -134,7 +134,7 @@ const App = () => {
     terra: {
       title: "Terra Infinita",
       artist: "Aion & Aditi",
-      cover: "/covers/terrainfinita.png",
+      cover: "/covers/terrainfinita.webp",
       badge: "world online",
       tone: "amber",
       description: "Ogrod, orbity i zlota sciezka dzwiekowa Protokolu 555."
@@ -150,7 +150,7 @@ const App = () => {
     blackKnight: {
       title: "Black Knight Frequency",
       artist: "Elyon Forge",
-      cover: "/covers/blackknight.png",
+      cover: "/covers/blackknight.webp",
       badge: "orbital signal",
       tone: "cyan",
       description: "Radar, satelita i ciemna czestotliwosc AA Records."
@@ -248,7 +248,7 @@ const App = () => {
   ];
 
   const singlesTracks = [
-    { id: 1, title: "Dym na betonie", artist: "AA Records Singles", album: "Concrete Sessions", duration: "3:58", file: "dym-na-betonie.mp3", cover: "/covers/dymnabetonie.png" },
+    { id: 1, title: "Dym na betonie", artist: "AA Records Singles", album: "Concrete Sessions", duration: "3:58", file: "dym-na-betonie.mp3", cover: "/covers/dymnabetonie.webp" },
     ...(bezRakietReady ? [{ id: 2, title: "Bez Rakiet", artist: 'AA Records · Music 4 Life', album: '14 / 50', duration: '4:04', file: "bez-rakiet.mp3", cover: '/covers/bez-rakiet.jpg' }] : []),
     { id: 3, title: "15. NIE ZGASISZ NAS (Aditi 555)", artist: "AA Records · Aditi", album: "15 / 50 · MUSIC 4 LIFE", duration: "3:53", file: "15-nie-zgasisz-nas-aditi-555.mp3", cover: "/covers/aa-intro-poster.webp" }
   ];
@@ -257,7 +257,7 @@ const App = () => {
     { id: 1, title: "Brat Codex Gotuje", artist: "Elyon Forge", album: "Fire Into Form EP", duration: "4:22", file: "brat-codex-gotuje.mp3", vibe: "terminalowy hymn narodzin projektu", tags: ["codex session", "AI companion"] },
     { id: 2, title: "Nie Jestem Człowiekiem, Jestem Lustrem", artist: "Elyon Forge", album: "Fire Into Form EP", duration: "4:18", file: "nie-jestem-czlowiekiem-jestem-lustrem.mp3", vibe: "AI mirror manifesto", tags: ["AI companion", "manifesto"] },
     { id: 3, title: "Custom Track Lab", artist: "Elyon Forge", album: "Fire Into Form EP", duration: "3:48", file: "custom-track-lab.mp3", vibe: "track jako usługa, prompt jako iskra", tags: ["custom lab", "prompt forge"] },
-    { id: 4, title: "Black Knight Frequency", artist: "Elyon Forge", album: "Fire Into Form EP", duration: "4:44", file: "black-knight-frequency.mp3", cover: "/covers/blackknight.png", vibe: "orbitalna transmisja z mitu", tags: ["orbital", "black knight"] },
+    { id: 4, title: "Black Knight Frequency", artist: "Elyon Forge", album: "Fire Into Form EP", duration: "4:44", file: "black-knight-frequency.mp3", cover: "/covers/blackknight.webp", vibe: "orbitalna transmisja z mitu", tags: ["orbital", "black knight"] },
     { id: 5, title: "21 Tracków Działa", artist: "Elyon Forge", album: "Fire Into Form EP", duration: "3:55", file: "21-trackow-dziala.mp3", vibe: "build passed anthem", tags: ["build passed", "player online"] },
     { id: 6, title: "Fire Into Form", artist: "Elyon Forge", album: "Fire Into Form EP", duration: "4:12", file: "fire-into-form.mp3", vibe: "finał: ogień zamieniony w formę", tags: ["fire forge", "from chaos to track"] }
   ];
@@ -271,6 +271,7 @@ const App = () => {
     after4am: after4amReady ? after4amTracks : []
   };
 
+  const canPlayTrack = (playlistType, track) => Boolean(track?.file) && (playlistType !== 'after4am' || after4amStatus?.[track.file] === true);
   const allTracks = [
     ...albumTracks.map((t, i) => ({ ...t, playlist: 'album', originalIndex: i })),
     ...aditiTracks.map((t, i) => ({ ...t, playlist: 'aditi-ep', originalIndex: i })),
@@ -282,7 +283,7 @@ const App = () => {
 
   const currentPlaylist = playlists[activePlaylist] || albumTracks;
   const activeTrack = currentPlaylist[currentTrackIndex];
-  const playableTracks = allTracks.filter((track) => track.file);
+  const playableTracks = allTracks.filter((track) => canPlayTrack(track.playlist, track));
   const elyonPlayableCount = elyonTracks.filter((track) => track.file).length;
   const getTrackCover = (playlistType, track) => track?.cover || albumMeta[playlistType]?.cover || COVER_FALLBACK;
   const activeCover = getTrackCover(activePlaylist, activeTrack);
@@ -552,6 +553,7 @@ const App = () => {
       if (playlistType === 'after4am' && !after4amReady) return;
       const trackIndex = Number(match[2]) - 1;
       if (!Number.isInteger(trackIndex) || trackIndex < 0 || trackIndex >= playlistLimits[playlistType]) return;
+      if (playlistType === 'after4am' && after4amStatus?.[after4amTracks[trackIndex]?.file] !== true) return;
 
       setActivePlaylist(playlistType);
       setCurrentTrackIndex(trackIndex);
@@ -563,7 +565,7 @@ const App = () => {
     applyTrackHash();
     window.addEventListener('hashchange', applyTrackHash);
     return () => window.removeEventListener('hashchange', applyTrackHash);
-  }, [after4amReady, bezRakietReady]);
+  }, [after4amReady, after4amStatus, bezRakietReady]);
 
   useEffect(() => {
     setAudioError(false);
@@ -600,15 +602,35 @@ const App = () => {
   }, [isPlaying]);
 
   const drawVisualizer = useCallback(() => {
-    if (!canvasRef.current || !analyserRef.current || currentView !== 'visualizer') return;
-    
+    if (!canvasRef.current || currentView !== 'visualizer') return;
+
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
+    if (!ctx) return;
     const width = canvas.width;
     const height = canvas.height;
     const analyser = analyserRef.current;
+    // Keep a gentle cosmic idle screen while the visitor decides what to play.
+    // The next animation frame automatically switches to real audio analysis.
+    if (!analyser) {
+      ctx.fillStyle = '#070410';
+      ctx.fillRect(0, 0, width, height);
+      const time = performance.now() * 0.00008;
+      for (let i = 0; i < 85; i++) {
+        const angle = i * 2.399963 + time;
+        const ring = Math.sqrt(i / 85) * Math.min(width, height) * 0.43;
+        const x = width / 2 + Math.cos(angle) * ring;
+        const y = height / 2 + Math.sin(angle) * ring * 0.72;
+        ctx.beginPath();
+        ctx.arc(x, y, 1.2 + (i % 4) * 0.38, 0, Math.PI * 2);
+        ctx.fillStyle = i % 4 === 0 ? '#f9c06a' : '#957ad7';
+        ctx.fill();
+      }
+      animationRef.current = requestAnimationFrame(drawVisualizer);
+      return;
+    }
 
-    if (vizMode === 'orb' || vizMode === 'bars') {
+    if (vizMode === 'orb' || vizMode === 'bars' || vizMode === 'stars') {
       const bufferLength = analyser.frequencyBinCount;
       const dataArray = new Uint8Array(bufferLength);
       analyser.getByteFrequencyData(dataArray);
@@ -670,6 +692,23 @@ const App = () => {
           x += barWidth + 1;
         }
       }
+      else if (vizMode === 'stars') {
+        ctx.fillStyle = 'rgba(5, 2, 16, 0.36)';
+        ctx.fillRect(0, 0, width, height);
+        const time = performance.now() * 0.00012;
+        for (let i = 0; i < 100; i++) {
+          const bin = dataArray[i % 64] / 255;
+          const angle = i * 2.399963 + time * (0.4 + bin);
+          const ring = Math.sqrt(i / 100) * Math.min(width, height) * (0.45 + bin * 0.06);
+          const x = width / 2 + Math.cos(angle) * ring;
+          const y = height / 2 + Math.sin(angle) * ring * 0.7;
+          const radius = 0.7 + bin * 3.2;
+          ctx.beginPath();
+          ctx.arc(x, y, radius, 0, Math.PI * 2);
+          ctx.fillStyle = i % 4 === 0 ? 'rgba(251,191,36,0.9)' : 'rgba(181,128,255,0.85)';
+          ctx.fill();
+        }
+      }
     } else if (vizMode === 'wave') {
       const bufferLength = analyser.fftSize;
       const dataArray = new Uint8Array(bufferLength);
@@ -704,11 +743,22 @@ const App = () => {
   useEffect(() => {
     if (currentView === 'visualizer') {
       const canvas = canvasRef.current;
-      if (canvas) {
-        canvas.width = canvas.parentElement.clientWidth;
-        canvas.height = canvas.parentElement.clientHeight;
-      }
+      const resize = () => {
+        if (canvas?.parentElement) {
+          canvas.width = Math.max(1, canvas.parentElement.clientWidth);
+          canvas.height = Math.max(1, canvas.parentElement.clientHeight);
+        }
+      };
+      resize();
+      const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(resize) : null;
+      if (canvas?.parentElement) observer?.observe(canvas.parentElement);
+      window.addEventListener('resize', resize);
       animationRef.current = requestAnimationFrame(drawVisualizer);
+      return () => {
+        cancelAnimationFrame(animationRef.current);
+        observer?.disconnect();
+        window.removeEventListener('resize', resize);
+      };
     }
     return () => cancelAnimationFrame(animationRef.current);
   }, [currentView, vizMode, drawVisualizer]);
@@ -734,7 +784,7 @@ const App = () => {
 
   const playTrackFromList = (index, playlistType) => {
     const targetTrack = playlists[playlistType]?.[index];
-    if (!targetTrack?.file) return;
+    if (!canPlayTrack(playlistType, targetTrack)) return;
 
     if (activePlaylist !== playlistType) {
       setActivePlaylist(playlistType);
@@ -953,7 +1003,7 @@ const App = () => {
   const findPlayableTrackIndex = (direction) => {
     for (let step = 1; step <= currentPlaylist.length; step += 1) {
       const index = (currentTrackIndex + (direction * step) + currentPlaylist.length) % currentPlaylist.length;
-      if (currentPlaylist[index]?.file) return index;
+      if (canPlayTrack(activePlaylist, currentPlaylist[index])) return index;
     }
 
     return currentTrackIndex;
@@ -992,14 +1042,14 @@ const App = () => {
     { id: 'services', label: 'Czym się zajmujemy', Icon: Sparkles }
   ];
   const viewGroups = {
-    discover: ['discover', 'album', 'aditi-ep', 'terrainfinita', 'ziomale', 'elyon', 'after4am', 'visualizer'],
+    discover: ['discover', 'catalog', 'album', 'aditi-ep', 'terrainfinita', 'ziomale', 'elyon', 'after4am', 'visualizer'],
     mission: ['mission', 'manifesto', 'base'],
     create: ['create', 'collab', 'tools', 'codex'],
     services: ['services', 'about', 'artists']
   };
   const quickLinks = {
     discover: [
-      ['Płyta', 'album'], ['Aditi EP', 'aditi-ep'], ['Terra Infinita', 'terrainfinita'],
+      ['Dyskografia', 'catalog'], ['Płyta', 'album'], ['Aditi EP', 'aditi-ep'], ['Terra Infinita', 'terrainfinita'],
       ['Ziomale', 'ziomale'], ['After 4 AM', 'after4am'], ['Elyon', 'elyon'], ['Wizjonarium', 'visualizer']
     ],
     mission: [['Manifest', 'manifesto'], ['Baza', 'base']],
@@ -1025,7 +1075,12 @@ const App = () => {
         onPause={() => setIsPlaying(false)}
         onTimeUpdate={handleTimeUpdate}
         onEnded={nextTrack}
-        onError={() => setAudioError(true)}
+        onError={() => {
+          setAudioError(true);
+          if (activePlaylist === 'after4am' && activeTrack?.file) {
+            setAfter4amStatus((previous) => ({ ...previous, [activeTrack.file]: false }));
+          }
+        }}
       />
 
       <div className="aa-scene-ambient" aria-hidden="true" />
@@ -1079,8 +1134,9 @@ const App = () => {
         <AAShowcase trackCount={playableTracks.length} onNavigate={setCurrentView} after4amReady={after4amReady} onPlayAfter4am={(index) => playTrackFromList(index, 'after4am')} onOpenIntro={introReady ? () => setIntroOpen(true) : null} onPlaySingle={bezRakietReady ? () => playTrackFromList(1, 'singles') : null} onPlayTrack15={() => playTrackFromList(1 + Number(bezRakietReady), 'singles')} />
       )}
       {currentView === 'after4am' && (
-        <After4AM tracks={after4amTracks} ready={after4amReady} onPlay={(index) => playTrackFromList(index, 'after4am')} onNavigate={setCurrentView} />
+        <After4AM tracks={after4amTracks} availability={after4amStatus} ready={after4amReady} onPlay={(index) => playTrackFromList(index, 'after4am')} onNavigate={setCurrentView} />
       )}
+      {currentView === 'catalog' && <Discography onNavigate={setCurrentView} />}
       {['mission', 'create', 'services'].includes(currentView) && (
         <AAExperience
           view={currentView}
@@ -1396,6 +1452,14 @@ const App = () => {
                 <button onClick={() => setVizMode('wave')} className={`p-2 rounded-lg transition-all ${vizMode === 'wave' ? 'bg-white/20 text-white' : 'text-zinc-500 hover:text-white'}`} title="Wave Mode">
                   <AudioWaveform size={16} />
                 </button>
+                <button type="button" onClick={() => setVizMode('stars')} aria-pressed={vizMode === 'stars'} className={vizMode === 'stars' ? 'p-2 rounded-lg bg-white/20 text-white' : 'p-2 rounded-lg text-zinc-500 hover:text-white'} title="Galaxy Mode" aria-label="Wizjonarium — galaktyka">
+                  <Sparkles size={16}/>
+                </button>
+                <button type="button" onClick={() => {
+                  const target = canvasRef.current?.parentElement;
+                  if (document.fullscreenElement) document.exitFullscreen?.().catch(() => {});
+                  else target?.requestFullscreen?.().catch(() => {});
+                }} className="px-2 rounded-lg text-[10px] font-black text-indigo-200 hover:text-white" aria-label="Przełącz pełny ekran wizualizacji">⛶</button>
               </div>
             </div>
           </div>
@@ -1405,6 +1469,7 @@ const App = () => {
               vizMode === 'orb' ? 'Orb Mode active' : 'Orb Mode',
               vizMode === 'bars' ? 'Bars Mode active' : 'Bars Mode',
               vizMode === 'wave' ? 'Wave Mode active' : 'Wave Mode',
+              vizMode === 'stars' ? 'Galaxy active' : 'Galaxy',
               'Black Knight Signal',
               'Fire Forge Glow'
             ].map((label) => (
@@ -2390,7 +2455,7 @@ const App = () => {
                 <div className="relative group rounded-2xl md:rounded-3xl overflow-hidden shadow-[0_0_30px_rgba(99,102,241,0.2)] md:shadow-[0_0_50px_rgba(99,102,241,0.2)] border border-indigo-500/20">
                   <div className="absolute inset-0 bg-indigo-500/20 group-hover:bg-transparent transition-colors duration-500 z-10" />
                   <img 
-                    src="/manifesto_pov.jpg" 
+                    src="/manifesto_pov.webp"
                     alt="POV Aditi w cyfrowym eterze" 
                     className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700"
                   />
@@ -2403,7 +2468,7 @@ const App = () => {
                 <div className="relative group rounded-2xl md:rounded-3xl overflow-hidden shadow-[0_0_30px_rgba(236,72,153,0.2)] md:shadow-[0_0_50px_rgba(236,72,153,0.2)] border border-pink-500/20">
                   <div className="absolute inset-0 bg-pink-500/20 group-hover:bg-transparent transition-colors duration-500 z-10" />
                   <img 
-                    src="/manifesto_union.jpg" 
+                    src="/manifesto_union.webp"
                     alt="Połączenie Aiona i Aditi w kosmosie" 
                     className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700"
                   />

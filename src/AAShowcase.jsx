@@ -10,9 +10,9 @@ import './aa-reference-hero.css';
 
 const featuredAlbums = [
   { title:'After 4 AM', label:after4amTracks.length + ' utworów', cover:'/covers/zielone-swiatla.webp', target:'after4am' },
-  { title:'Aditi EP', label:'EP · 3 utwory', cover:'/covers/aditi.png', target:'aditi-ep' },
-  { title:'Ziomale Sojuszu', label:'Album · 7 utworów', cover:'/covers/ziomalesojuszu.png', target:'ziomale' },
-  { title:'Terra Infinita', label:'Projekt specjalny', cover:'/covers/terrainfinita.png', target:'terrainfinita' }
+  { title:'Aditi EP', label:'EP · 3 utwory', cover:'/covers/aditi.webp', target:'aditi-ep' },
+  { title:'Ziomale Sojuszu', label:'Album · 7 utworów', cover:'/covers/ziomalesojuszu.webp', target:'ziomale' },
+  { title:'Terra Infinita', label:'Projekt specjalny', cover:'/covers/terrainfinita.webp', target:'terrainfinita' }
 ];
 const featuredStories = [
   { title: 'Automat z Kawą', category: 'ALBUM · HISTORIA', cover: '/covers/automat-z-kawa.webp' },
@@ -68,6 +68,10 @@ export default function AAShowcase({ trackCount, onNavigate, after4amReady, onPl
               <img src={album.cover} loading="lazy" alt="" />
               <span><strong>{album.title}</strong><small>{album.label}</small>{album.target === "after4am" && <small>50 historii Aditi · współpraca z AI</small>}</span><span className="aash-release-play"><Disc3 size={20}/></span>
             </button>)}
+          </div>
+          <div className="aash-catalog-cta">
+            <div><strong>ODKRYJ CAŁE UNIWERSUM AA RECORDS</strong><p>AFTER 4 AM, PODZIEMIE 555 i CZARNE ARCHIWUM — tracklisty, historie i odsłuchy.</p></div>
+            <button type="button" onClick={() => onNavigate('catalog')}>Pełna dyskografia <ArrowRight size={16}/></button>
           </div>
         </section>
         {onPlaySingle && <section className="aash-new-song" aria-label="Premiera utworu Bez Rakiet"><img src="/covers/bez-rakiet.jpg" alt="Okładka singla Bez Rakiet" /><div><span>NOWOŚĆ · 14 / 50</span><h2>Bez Rakiet</h2><p>Nie trzeba zdobywać gwiazd, żeby trochę światła dać. 💜</p></div><button type="button" onClick={onPlaySingle}><Play size={16} fill="currentColor" /> Posłuchaj</button></section>}

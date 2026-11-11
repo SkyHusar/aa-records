@@ -117,3 +117,9 @@
   .aash button,.aash-story,.aash-story img { transition:none!important; }
   .aash button:hover,.aash-story:hover { transform:none; }
 }
+.aash-catalog-cta{margin:24px 0 4px;border:1px solid rgba(221,145,247,.27);border-radius:19px;background:linear-gradient(115deg,rgba(56,19,76,.78),rgba(17,10,34,.9));padding:clamp(15px,3vw,25px);display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.aash-catalog-cta strong{color:#eec1fc;font-size:12px;letter-spacing:.12em}
+.aash-catalog-cta p{color:#c6b4d4;font-size:12px;margin-top:7px;line-height:1.7}
+.aash-catalog-cta button{background:linear-gradient(100deg,#e7aafa,#b8a3ff);color:#180a1e;display:flex;align-items:center;justify-content:center;gap:9px;font-size:12px;font-weight:900;padding:12px 18px;border-radius:30px;white-space:nowrap}
+.aash-catalog-cta button:hover{filter:brightness(1.15)}
+@media(max-width:650px){.aash-catalog-cta button{width:100%}}

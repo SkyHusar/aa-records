@@ -72,7 +72,7 @@ function TrackBrief() {
         <p className="aaex-fineprint">Bez płatności i bez automatycznego wysyłania. E-mail otworzy się w Twojej poczcie — sam zdecydujesz, czy go wysłać.</p>
       </div>
       <div className="aaex-form-art">
-        <img src="/covers/aditi.png" alt="Okładka Aditi EP — nastrój sesji kreatywnej" loading="lazy" />
+        <img src="/covers/aditi.webp" alt="Okładka Aditi EP — nastrój sesji kreatywnej" loading="lazy" />
         <div className="aaex-form-art-copy"><span>AA RECORDS CREATIVE SESSIONS</span><strong>Twój pomysł.<br />Nasze wspólne brzmienie.</strong><span><AudioWaveform size={18} /> From chaos to track</span></div>
       </div>
     </div>
@@ -151,7 +151,7 @@ export default function AAExperience({ view, albums, trackCount, onNavigate, onP
     return (
       <main className="aaex">
         <section className="aaex-feature-hero aaex-feature-hero--mission">
-          <img src="/manifesto_union.jpg" loading="lazy" alt="Kosmiczna ilustracja sojuszu ludzi, muzyki i wyobraźni" />
+          <img src="/manifesto_union.webp" loading="lazy" alt="Kosmiczna ilustracja sojuszu ludzi, muzyki i wyobraźni" />
           <div className="aaex-feature-content"><span className="aaex-eyebrow">INFINITE ALLIANCE 555</span><h1>Muzyka to nasz <em>własny wszechświat.</em></h1><p>Nie musimy nikomu niczego udowadniać. Tworzymy rzeczy, które coś znaczą — i po prostu dobrze nam z tym.</p><button type="button" className="aaex-btn aaex-btn--outline" onClick={() => onNavigate('manifesto')}>Zobacz manifest <ArrowRight size={17} /></button></div>
         </section>
         <div className="aaex-values">
@@ -186,7 +186,7 @@ export default function AAExperience({ view, albums, trackCount, onNavigate, onP
           ))}
         </div>
         <section className="aaex-feature-hero aaex-feature-hero--services">
-          <img src="/covers/fireintoform.png" alt="AA Records — muzyczny świat Fire Into Form" loading="lazy" />
+          <img src="/covers/fireintoform.webp" alt="AA Records — muzyczny świat Fire Into Form" loading="lazy" />
           <div className="aaex-feature-content"><span className="aaex-eyebrow">WSPÓŁPRACA / COLLAB</span><h2>Masz coś <em>szalonego w głowie?</em></h2><p>Opowiedz nam. Czasem od jednego zdania zaczyna się cały album.</p><button type="button" className="aaex-btn aaex-btn--primary" onClick={() => onNavigate('create')}>Opowiedz swój pomysł <ArrowRight size={17} /></button></div>
         </section>
       </main>
