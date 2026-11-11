@@ -54,7 +54,6 @@ const App = () => {
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [currentTimeDisplay, setCurrentTimeDisplay] = useState('0:00');
-  const [showConfetti, setShowConfetti] = useState(true);
   const [audioError, setAudioError] = useState(false);
   
   const [isShuffle, setIsShuffle] = useState(false);
@@ -287,78 +286,8 @@ const App = () => {
   const currentPlaylist = playlists[activePlaylist] || albumTracks;
   const activeTrack = currentPlaylist[currentTrackIndex];
   const playableTracks = allTracks.filter((track) => canPlayTrack(track.playlist, track));
-  const elyonPlayableCount = elyonTracks.filter((track) => track.file).length;
   const getTrackCover = (playlistType, track) => track?.cover || albumMeta[playlistType]?.cover || COVER_FALLBACK;
   const activeCover = getTrackCover(activePlaylist, activeTrack);
-
-  const featuredTransmissions = [
-    {
-      title: "@EGZYSTENCJALNY BUCH",
-      artist: "Ziomale Sojuszu",
-      description: "Gęsty, podziemny numer z zielonym pulsem, filozofią kanapy i rapowym absurdem ekipy.",
-      badge: "transmission live",
-      playlist: "ziomale",
-      index: 0,
-      tone: "emerald",
-      Icon: Zap
-    },
-    {
-      title: "Dym na betonie",
-      artist: "Concrete Sessions / AA Records Singles",
-      description: "Nocny, dymny numer z betonowym pulsem — prosty prompt, ciężki klimat.",
-      badge: "concrete session",
-      playlist: "singles",
-      index: 0,
-      tone: "slate",
-      Icon: Terminal
-    },
-    {
-      title: "Fire Into Form",
-      artist: "Elyon Forge / Fire Into Form EP",
-      description: "Finał EP: ogień z rozmów, promptów i deploya zamieniony w formę.",
-      badge: "from chaos to track",
-      playlist: "elyon",
-      index: 5,
-      tone: "cyan",
-      Icon: Flame
-    },
-    {
-      title: "Brat Codex Gotuje",
-      artist: "Elyon Forge / Fire Into Form EP",
-      description: "Terminalowy hymn narodzin projektu: Codex w kuchni, label na żywo.",
-      badge: "codex session",
-      playlist: "elyon",
-      index: 0,
-      tone: "amber",
-      Icon: Bot
-    }
-  ];
-
-  const featuredToneStyles = {
-    emerald: "border-emerald-500/20 bg-black/35 text-emerald-300 shadow-[0_0_35px_rgba(16,185,129,0.08)]",
-    slate: "border-zinc-700/70 bg-gradient-to-br from-[#090909] via-[#050505] to-[#111827] text-zinc-300 shadow-[0_0_35px_rgba(15,23,42,0.45)]",
-    cyan: "border-cyan-500/25 bg-[#05080a]/75 text-cyan-300 shadow-[0_0_35px_rgba(34,211,238,0.08)]",
-    amber: "border-amber-500/25 bg-[#090705]/75 text-amber-300 shadow-[0_0_35px_rgba(245,158,11,0.08)]"
-  };
-
-  const loreTimeline = [
-    ["Idea", "Z chaosu w głowie powstał pierwszy sygnał AA Records."],
-    ["Prompt", "Kilka zdań zamieniło vibe w kierunek brzmienia."],
-    ["Codex", "Kod, player i ścieżki zostały poukładane w działający system."],
-    ["Suno", "AI-assisted muzyka złapała formę i zaczęła grać."],
-    ["Vercel", "Nocny deploy przeniósł label z folderu do sieci."],
-    ["AA Records Live", "Player online, build passed, forge signal online."]
-  ];
-
-  const kitchenLog = [
-    "Audio smoke test",
-    "New EP section",
-    "Featured Transmissions",
-    "Custom Track Lab",
-    "Local Forge experiments"
-  ];
-
-  const customLabFields = ["Imię / alias", "Vibe tracka", "Temat", "Język", "Kontakt"];
 
   const forgeToolCards = [
     ["Rap Name Generator", "5 aliasow z lokalnych szablonow, vibe i seedem.", Sparkles],
@@ -502,11 +431,10 @@ const App = () => {
   };
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowConfetti(false), 12000);
     const quoteTimer = setInterval(() => {
       setCurrentQuote(funnyQuotes[Math.floor(Math.random() * funnyQuotes.length)]);
     }, 12000);
-    return () => { clearTimeout(timer); clearInterval(quoteTimer); };
+    return () => { clearInterval(quoteTimer); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -876,10 +804,6 @@ const App = () => {
     window.location.href = `mailto:skyhusaria@gmail.com?subject=${subject}&body=${body}`;
   };
 
-  const scrollToCustomLab = () => {
-    document.getElementById('custom-track-lab')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-
   const tapBuchon = () => {
     setBuchonScore((score) => Math.min(score + 5, 555));
   };
@@ -931,17 +855,6 @@ const App = () => {
         </button>
       </div>
     );
-  };
-
-  const playCodexPick = () => {
-    const pick = playableTracks[Math.floor(Math.random() * playableTracks.length)];
-    if (!pick) return;
-    const playlistView = pick.playlist === 'singles' ? 'album' : pick.playlist;
-    setActivePlaylist(pick.playlist);
-    setCurrentTrackIndex(pick.originalIndex);
-    setCurrentView(playlistView);
-    setIsPlaying(true);
-    initAudioAnalyzer();
   };
 
   const togglePlay = async () => {
@@ -1034,10 +947,11 @@ const App = () => {
       ['Ziomale', 'ziomale'], ['After 4 AM', 'after4am'], ['Elyon', 'elyon'], ['Wizjonarium', 'visualizer']
     ],
     mission: [['Manifest', 'manifesto'], ['Baza', 'base']],
-    create: [['Collab', 'collab'], ['Forge Tools', 'tools'], ['Codex', 'codex']],
+    create: [],
     services: [['O nas', 'about'], ['Artyści', 'artists']]
   };
   const activeMainSection = Object.entries(viewGroups).find(([, views]) => views.includes(currentView))?.[0] || 'discover';
+  const navigateTo = (view) => setCurrentView(view === 'create' || view === 'collab' ? 'tools' : view);
   const featuredAlbums = [
     { key: 'main', view: 'album', playlist: 'album', title: 'Protokół 555', subtitle: 'Płyta · 11 utworów', cover: albumMeta.album.cover },
     { key: 'aditi', view: 'aditi-ep', playlist: 'aditi-ep', title: 'Aditi EP', subtitle: 'EP · 3 utwory', cover: albumMeta['aditi-ep'].cover },
@@ -1069,26 +983,7 @@ const App = () => {
       {/* TŁO GALAXY */}
       <div className="fixed inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,rgba(168,85,247,0.05),transparent_50%),radial-gradient(ellipse_at_bottom_left,rgba(245,158,11,0.05),transparent_50%)] z-0" />
 
-      {/* KONFETTI */}
-      {showConfetti && currentView === 'album' && (
-        <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
-          {[...Array(80)].map((_, i) => (
-            <div 
-              key={i} 
-              className={`absolute w-1.5 h-4 md:w-2 md:h-6 animate-fall ${i % 3 === 0 ? 'bg-amber-400 shadow-[0_0_10px_gold]' : (i % 3 === 1 ? 'bg-purple-500 shadow-[0_0_10px_purple]' : 'bg-emerald-500 shadow-[0_0_10px_lime]')}`}
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `-20px`,
-                animationDelay: `${Math.random() * 6}s`,
-                animationDuration: `${3 + Math.random() * 5}s`,
-                transform: `rotate(${Math.random() * 360}deg)`
-              }}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* FOUR PRIMARY DESTINATIONS — legacy views remain accessible below */}
+      {/* FOUR PRIMARY DESTINATIONS      {/* FOUR PRIMARY DESTINATIONS — legacy views remain accessible below */}
       <nav className="aa-nav-shell" aria-label="Nawigacja AA Records">
         <div className="aa-nav-inner">
           <button type="button" className="aa-nav-brand" onClick={() => setCurrentView('discover')} aria-label="AA Records — wróć do albumów">
@@ -1097,33 +992,33 @@ const App = () => {
           </button>
           <div className="aa-main-nav" aria-label="Główne sekcje">
             {mainSections.map(({ id, label, Icon }) => (
-              <button key={id} type="button" onClick={() => setCurrentView(id)} className={`aa-main-link ${activeMainSection === id ? 'is-active' : ''}`} aria-current={activeMainSection === id ? 'page' : undefined}>
+              <button key={id} type="button" onClick={() => navigateTo(id)} className={`aa-main-link ${activeMainSection === id ? 'is-active' : ''}`} aria-current={activeMainSection === id ? 'page' : undefined}>
                 <Icon size={16} aria-hidden="true" /> {label}
               </button>
             ))}
           </div>
         </div>
-        <div className="aa-subnav" aria-label="Dodatkowe podstrony">
+        {activeMainSection !== "create" && <div className="aa-subnav" aria-label="Dodatkowe podstrony">
           <span className="aa-subnav-label">Odkryj więcej</span>
           {quickLinks[activeMainSection].map(([label, id]) => (
-            <button type="button" key={id} className={currentView === id ? 'is-active' : ''} onClick={() => setCurrentView(id)}>{label}</button>
+            <button type="button" key={id} className={currentView === id ? 'is-active' : ''} onClick={() => navigateTo(id)}>{label}</button>
           ))}
-        </div>
+        </div>}
       </nav>
 
       {currentView === 'discover' && (
-        <AAShowcase trackCount={playableTracks.length} onNavigate={setCurrentView} after4amReady={after4amReady} onPlayAfter4am={(index) => playTrackFromList(index, 'after4am')} onOpenIntro={introReady ? () => setIntroOpen(true) : null} onPlaySingle={bezRakietReady ? () => playTrackFromList(1, 'singles') : null} onPlayTrack15={() => playTrackFromList(1 + Number(bezRakietReady), 'singles')} />
+        <AAShowcase trackCount={playableTracks.length} onNavigate={navigateTo} after4amReady={after4amReady} onPlayAfter4am={(index) => playTrackFromList(index, 'after4am')} onOpenIntro={introReady ? () => setIntroOpen(true) : null} onPlaySingle={bezRakietReady ? () => playTrackFromList(1, 'singles') : null} onPlayTrack15={() => playTrackFromList(1 + Number(bezRakietReady), 'singles')} />
       )}
       {currentView === 'after4am' && (
-        <After4AM tracks={after4amTracks} availability={after4amStatus} ready={after4amReady} onPlay={(index) => playTrackFromList(index, 'after4am')} onNavigate={setCurrentView} />
+        <After4AM tracks={after4amTracks} availability={after4amStatus} ready={after4amReady} onPlay={(index) => playTrackFromList(index, 'after4am')} onNavigate={navigateTo} />
       )}
-      {currentView === 'catalog' && <Discography onNavigate={setCurrentView} />}
-      {['mission', 'create', 'services'].includes(currentView) && (
+      {currentView === 'catalog' && <Discography onNavigate={navigateTo} />}
+      {['mission', 'services'].includes(currentView) && (
         <AAExperience
           view={currentView}
           albums={featuredAlbums}
           trackCount={playableTracks.length}
-          onNavigate={setCurrentView}
+          onNavigate={navigateTo}
           onPlay={(playlist) => playTrackFromList(0, playlist)}
         />
       )}
@@ -1591,411 +1486,56 @@ const App = () => {
         </div>
       )}
 
-      {/* --- ALBUM VIEW (PROTOKÓŁ 555) --- */}
+      {/* --- ALBUM VIEW: ONLY OUR RECORD --- */}
       {currentView === 'album' && (
-        <div className="max-w-6xl mx-auto px-4 md:px-8 mt-8 md:mt-12 animate-in fade-in duration-700 relative z-10 text-left">
-          <section className="mb-8 md:mb-10 overflow-hidden rounded-[2rem] border border-emerald-500/20 bg-[#050805]/90 shadow-[0_0_80px_rgba(16,185,129,0.08)]">
-            <div className="relative p-6 md:p-9 lg:p-12">
-              <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_18%_20%,rgba(16,185,129,0.18),transparent_30%),radial-gradient(circle_at_84%_60%,rgba(245,158,11,0.12),transparent_32%)]" />
-              <div className="relative grid lg:grid-cols-[1.1fr_0.9fr] gap-8 items-center">
-                <div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-[9px] md:text-[10px] font-black uppercase tracking-widest mb-5">
-                    <Crown size={13} /> Underground AI Label
-                  </div>
-                  <h1 className="text-5xl md:text-7xl lg:text-8xl font-black italic tracking-tighter uppercase text-white leading-[0.88] drop-shadow-[0_0_30px_rgba(16,185,129,0.18)]">
-                    AA <span className="text-emerald-400">Records</span>
-                  </h1>
-                  <p className="text-zinc-200 text-sm md:text-lg leading-relaxed max-w-2xl mt-6">
-                    Undergroundowy kolektyw muzyczny i AI-powered label: cyber rap, zielony bas, przyjaźń, eksperyment i misja Fire Into Form.
-                  </p>
-                  <div className="flex flex-wrap gap-3 mt-7">
-                    <button
-                      onClick={() => playTrackFromList(0, 'ziomale')}
-                      className="inline-flex items-center gap-3 bg-emerald-500 text-black px-6 py-3 rounded-full font-black uppercase tracking-widest text-xs hover:bg-emerald-400 hover:scale-105 transition-all active:scale-95 shadow-[0_0_28px_rgba(16,185,129,0.45)]"
-                    >
-                      <Play size={16} fill="currentColor" /> Play Latest Track
-                    </button>
-                    <button
-                      onClick={scrollToCustomLab}
-                      className="inline-flex items-center gap-3 bg-white/[0.04] text-emerald-200 px-6 py-3 rounded-full border border-emerald-500/25 font-black uppercase tracking-widest text-xs hover:bg-emerald-500/10 hover:text-white transition-all"
-                    >
-                      <Sparkles size={16} /> Custom Track Lab
-                    </button>
-                    <button
-                      onClick={playCodexPick}
-                      className="inline-flex items-center gap-3 bg-white/[0.04] text-cyan-200 px-6 py-3 rounded-full border border-cyan-500/25 font-black uppercase tracking-widest text-xs hover:bg-cyan-500/10 hover:text-white transition-all"
-                    >
-                      <Shuffle size={16} /> Codex Pick
-                    </button>
-                  </div>
-                  <div className="mt-5 flex flex-wrap gap-2">
-                    {[
-                      `Audio check: ${playableTracks.length} tracks live`,
-                      'Build-ready',
-                      'Player online'
-                    ].map((status) => (
-                      <span key={status} className="rounded-full border border-emerald-500/20 bg-black/35 px-3 py-1.5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-emerald-200">
-                        {status}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="relative">
-                  <div className="absolute -inset-6 rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.26),transparent_62%)] blur-2xl" />
-                  <div className="relative rounded-[2rem] border border-emerald-500/25 bg-black/45 p-4 shadow-[0_0_55px_rgba(16,185,129,0.12)]">
-                    <img
-                      src={albumMeta.album.cover}
-                      alt="AA Records main cover"
-                      loading="lazy"
-                      className="w-full aspect-square object-cover rounded-[1.5rem] border border-white/10"
-                      onError={(event) => { event.currentTarget.src = COVER_FALLBACK; }}
-                    />
-                    <div className="mt-4 grid grid-cols-2 gap-3">
-                      <div className="rounded-xl bg-black/50 border border-emerald-500/20 p-4">
-                        <span className="block text-2xl font-black text-white">{allTracks.length}</span>
-                        <span className="text-[9px] uppercase tracking-widest text-emerald-300/70 font-black">Tracks Online</span>
-                      </div>
-                      <div className="rounded-xl bg-black/50 border border-amber-500/20 p-4">
-                        <span className="block text-2xl font-black text-white">5</span>
-                        <span className="text-[9px] uppercase tracking-widest text-amber-300/70 font-black">Albums</span>
-                      </div>
-                      <div className="rounded-xl bg-black/50 border border-cyan-500/20 p-4">
-                        <span className="block text-2xl font-black text-white">Beta</span>
-                        <span className="text-[9px] uppercase tracking-widest text-cyan-300/70 font-black">Custom Lab</span>
-                      </div>
-                      <div className="rounded-xl bg-black/50 border border-fuchsia-500/20 p-4">
-                        <span className="block text-2xl font-black text-white">Live</span>
-                        <span className="text-[9px] uppercase tracking-widest text-fuchsia-300/70 font-black">Forge Tools</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section className="mb-8 md:mb-10 overflow-hidden rounded-[2rem] border border-emerald-500/25 bg-[#050805]/90 shadow-[0_0_70px_rgba(16,185,129,0.08)]">
-            <div className="relative p-6 md:p-8 lg:p-10">
-              <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_15%_20%,rgba(16,185,129,0.16),transparent_30%),radial-gradient(circle_at_85%_75%,rgba(15,23,42,0.45),transparent_34%)]" />
-              <div className="relative">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-[9px] md:text-[10px] font-black uppercase tracking-widest mb-5">
-                  <Flame size={13} /> Featured Transmissions
-                </div>
-                <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-5">
-                  {featuredTransmissions.map(({ title, artist, description, badge, playlist, index, tone, Icon }) => (
-                    <article key={`${playlist}-${index}`} className={`rounded-2xl border p-5 md:p-6 flex flex-col min-h-[310px] ${featuredToneStyles[tone]}`}>
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="min-w-0">
-                          <div className="mb-4 h-20 w-20 overflow-hidden rounded-2xl border border-white/10 bg-black/45 shadow-[0_0_22px_rgba(255,255,255,0.05)]">
-                            <img
-                              src={getCoverUrl(getTrackCover(playlist, playlists[playlist]?.[index]))}
-                              alt={`${title} cover`}
-                              loading="lazy"
-                              className="h-full w-full object-cover"
-                              onError={(event) => { event.currentTarget.src = COVER_FALLBACK; }}
-                            />
-                          </div>
-                          <span className="inline-flex rounded-full border border-current/25 bg-black/30 px-2.5 py-1 text-[8px] font-black uppercase tracking-widest">
-                            {badge}
-                          </span>
-                          <h2 className="text-2xl md:text-3xl font-black italic tracking-tighter uppercase text-white leading-none mt-4 break-words">
-                            {title}
-                          </h2>
-                          <p className="text-[10px] md:text-xs uppercase tracking-[0.18em] font-bold mt-3 opacity-80">
-                            {artist}
-                          </p>
-                        </div>
-                        <Icon size={34} className="shrink-0 drop-shadow-[0_0_22px_currentColor]" />
-                      </div>
-                      <p className="text-zinc-300 text-sm leading-relaxed mt-5 flex-grow">
-                        {description}
-                      </p>
-                      <button
-                        onClick={() => playTrackFromList(index, playlist)}
-                        className="mt-6 inline-flex items-center justify-center gap-3 bg-white text-black px-5 py-3 rounded-full font-black uppercase tracking-widest text-xs hover:bg-emerald-300 hover:scale-105 transition-all active:scale-95"
-                      >
-                        <Play size={15} fill="currentColor" /> Odtwórz teraz
-                      </button>
-                    </article>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section className="mb-8 md:mb-10 overflow-hidden rounded-[2rem] border border-cyan-500/25 bg-[#03080a]/95 shadow-[0_0_85px_rgba(34,211,238,0.09)]">
-            <div className="relative grid lg:grid-cols-[1fr_0.74fr] gap-0">
-              <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_18%_20%,rgba(34,211,238,0.18),transparent_30%),radial-gradient(circle_at_92%_75%,rgba(245,158,11,0.13),transparent_30%)]" />
-              <div className="relative p-6 md:p-8 lg:p-10">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-[9px] md:text-[10px] font-black uppercase tracking-widest mb-5">
-                  <Bot size={13} /> Elyon Forge Album Card
-                </div>
-                <h2 className="text-4xl md:text-6xl font-black italic tracking-tighter uppercase text-white leading-none">
-                  Fire Into <span className="text-cyan-300 drop-shadow-[0_0_24px_rgba(34,211,238,0.42)]">Form EP</span>
-                </h2>
-                <p className="text-cyan-300/80 text-xs md:text-sm uppercase tracking-[0.22em] font-bold mt-4">
-                  AI Companion Sessions — Forge signal online
-                </p>
-                <p className="text-zinc-300 text-sm md:text-base leading-relaxed max-w-3xl mt-5">
-                  Cyber-trapowa kronika procesu twórczego AA Records: Codex, Suno, Vercel, nocny deploy i zamiana chaosu w realny projekt.
-                </p>
-                <div className="mt-6 flex flex-wrap gap-2">
-                  <span className="rounded-full bg-cyan-400 text-black px-3 py-1.5 text-[10px] font-black uppercase tracking-widest">EP in progress</span>
-                  <span className="rounded-full border border-cyan-500/20 bg-black/35 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-cyan-200">{elyonPlayableCount}/6 transmissions live</span>
-                  <span className="rounded-full border border-emerald-500/20 bg-black/35 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-200">build passed</span>
-                </div>
-                <div className="mt-7 flex flex-wrap gap-3">
-                  <button
-                    onClick={() => setCurrentView('elyon')}
-                    className="inline-flex items-center gap-3 bg-cyan-400 text-black px-6 py-3 rounded-full font-black uppercase tracking-widest text-xs hover:bg-cyan-300 hover:scale-105 transition-all active:scale-95 shadow-[0_0_28px_rgba(34,211,238,0.34)]"
-                  >
-                    <ExternalLink size={15} /> Wejdź do EP
-                  </button>
-                  <button
-                    onClick={() => playTrackFromList(5, 'elyon')}
-                    className="inline-flex items-center gap-3 bg-white/[0.04] text-cyan-100 px-6 py-3 rounded-full border border-cyan-500/25 font-black uppercase tracking-widest text-xs hover:bg-cyan-500/10 hover:text-white transition-all"
-                  >
-                    <Play size={15} fill="currentColor" /> Odtwórz finał
-                  </button>
-                </div>
-              </div>
-              <div className="relative min-h-[260px] border-t lg:border-t-0 lg:border-l border-cyan-500/20 bg-black/45 flex items-center justify-center p-8">
-                <div className="w-full max-w-xs text-center">
-                  <img
-                    src={albumMeta.elyon.cover}
-                    alt="Fire Into Form EP cover"
-                    loading="lazy"
-                    className="w-full aspect-square object-cover rounded-[2rem] border border-cyan-500/25 shadow-[0_0_45px_rgba(34,211,238,0.18)]"
-                    onError={(event) => { event.currentTarget.src = COVER_FALLBACK; }}
-                  />
-                  <p className="text-[10px] uppercase tracking-[0.3em] text-cyan-300/70 font-black mt-5">from chaos to track</p>
-                  <p className="text-2xl md:text-4xl font-black italic uppercase text-white mt-2">artifact online</p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section className="mb-8 md:mb-10 overflow-hidden rounded-[2rem] border border-fuchsia-500/20 bg-[#07040a]/90 shadow-[0_0_65px_rgba(217,70,239,0.07)]">
-            <div className="relative grid lg:grid-cols-[0.72fr_1.28fr] gap-0">
-              <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_18%_18%,rgba(217,70,239,0.16),transparent_32%),radial-gradient(circle_at_88%_72%,rgba(34,211,238,0.12),transparent_32%)]" />
-              <div className="relative min-h-[230px] border-b lg:border-b-0 lg:border-r border-fuchsia-500/15 bg-black/45 p-6 flex items-center justify-center">
-                <img
-                  src={albumMeta.tools.cover}
-                  alt="AA Forge Tools cover"
-                  loading="lazy"
-                  className="w-full max-w-[220px] aspect-square object-cover rounded-[1.75rem] border border-fuchsia-500/25 shadow-[0_0_35px_rgba(217,70,239,0.16)]"
-                  onError={(event) => { event.currentTarget.src = COVER_FALLBACK; }}
-                />
-              </div>
-              <div className="relative p-6 md:p-8">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-fuchsia-500/10 border border-fuchsia-500/30 text-fuchsia-300 text-[9px] md:text-[10px] font-black uppercase tracking-widest mb-4">
-                  <Terminal size={13} /> New: AA Forge Tools
-                </div>
-                <h2 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase text-white">
-                  Narzedzia dla tworcow
-                </h2>
-                <div className="mt-5 grid sm:grid-cols-3 gap-3">
-                  {[
-                    ["Generate rap name", Sparkles],
-                    ["Build Suno prompt", AudioWaveform],
-                    ["Unlock Buchon 555", Zap]
-                  ].map(([label, Icon]) => (
-                    <div key={label} className="rounded-xl border border-white/10 bg-black/35 p-3">
-                      <Icon size={17} className="text-fuchsia-300 mb-2" />
-                      <p className="text-white text-[10px] font-black uppercase tracking-widest">{label}</p>
-                    </div>
-                  ))}
-                </div>
-                <button
-                  onClick={() => setCurrentView('tools')}
-                  className="mt-5 inline-flex items-center gap-3 rounded-full bg-fuchsia-400 px-6 py-3 text-xs font-black uppercase tracking-widest text-black hover:bg-fuchsia-300 hover:scale-105 transition-all active:scale-95"
-                >
-                  <ExternalLink size={15} /> Open Forge Tools
-                </button>
-              </div>
-            </div>
-          </section>
-
-          <section id="custom-track-lab" className="mb-8 md:mb-12 rounded-[2rem] border border-cyan-500/20 bg-[#05080a]/90 p-6 md:p-8 shadow-[0_0_65px_rgba(34,211,238,0.07)]">
-            <div className="grid lg:grid-cols-[0.85fr_1.15fr] gap-6 md:gap-8 items-start">
-              <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-[9px] md:text-[10px] font-black uppercase tracking-widest mb-5">
-                  <Sparkles size={13} /> Custom Track Lab Beta
-                </div>
-                <h2 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase text-white">Track na zamówienie</h2>
-                <p className="text-zinc-300 text-sm leading-relaxed mt-4">
-                  Pomysł, vibe, kilka słów prawdy i robimy z tego szkic numeru: prompt, styl, refren, strukturę i kierunek brzmienia.
-                </p>
-                <p className="mt-4 rounded-xl border border-cyan-500/15 bg-black/35 p-4 text-[11px] md:text-xs leading-relaxed text-zinc-400">
-                  Custom tracki tworzymy z pomocą narzędzi AI na aktywnym płatnym planie. Użycie komercyjne zależy od wybranego pakietu i zasad projektu. Nie robimy kopii konkretnych artystów 1:1 i nie używamy cudzych tekstów bez zgody.
-                </p>
-              </div>
-              <div className="space-y-4">
-                <div className="grid md:grid-cols-3 gap-3">
-                  {[
-                    ['01', 'Wybierz vibe', 'Rap, cyber, trap, ambient, buch, manifest albo całkiem osobny świat.'],
-                    ['02', 'Daj historię', 'Kilka zdań o emocji, ekipie, miejscu albo konflikcie, który ma wybrzmieć.'],
-                    ['03', 'Fire Into Form', 'Zmieniamy chaos w styl, tekst i prompt gotowy do Suno albo dalszej produkcji.']
-                  ].map(([step, title, text]) => (
-                    <div key={step} className="rounded-xl bg-black/40 border border-white/5 p-4">
-                      <span className="text-cyan-300 text-xs font-black">{step}</span>
-                      <h3 className="text-white font-black uppercase text-sm mt-2">{title}</h3>
-                      <p className="text-zinc-400 text-xs leading-relaxed mt-2">{text}</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="rounded-2xl border border-cyan-500/20 bg-black/35 p-4 md:p-5">
-                  <h3 className="text-white text-xs font-black uppercase tracking-widest mb-4">Zamów custom track</h3>
-                  <div className="grid sm:grid-cols-2 gap-3">
-                    {customLabFields.map((field) => (
-                      <div key={field} className="rounded-xl border border-white/5 bg-white/[0.03] px-3 py-2.5">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-cyan-300/70">{field}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <a
-                    href="mailto:skyhusaria@gmail.com?subject=AA%20Records%20-%20custom%20track%20request&body=Siema%20AA%20Records%2C%0A%0AAlias%3A%0AVibe%20tracka%3A%0ATemat%3A%0AJ%C4%99zyk%3A%0AKontakt%3A%0A%0ADodatkowy%20opis%3A%0A"
-                    className="mt-4 inline-flex items-center justify-center gap-3 bg-cyan-400 text-black px-5 py-3 rounded-full font-black uppercase tracking-widest text-xs hover:bg-cyan-300 hover:scale-105 transition-all active:scale-95"
-                  >
-                    <Send size={15} /> Zamów custom track
-                  </a>
-                  <p className="text-[10px] leading-relaxed text-zinc-500 mt-3">
-                    Formularz jest lekkim UI mockiem: kliknięcie tworzy gotową wiadomość e-mail do AA Records.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section className="mb-8 md:mb-12 grid lg:grid-cols-[1.2fr_0.8fr] gap-5 md:gap-6">
-            <div className="rounded-[2rem] border border-emerald-500/20 bg-[#050805]/90 p-5 md:p-6 shadow-[0_0_55px_rgba(16,185,129,0.06)]">
-              <div className="flex items-center justify-between gap-4 mb-5">
-                <h2 className="text-white text-sm md:text-base font-black uppercase tracking-widest flex items-center gap-2">
-                  <Activity size={17} className="text-emerald-300" /> Mini Lore Timeline
-                </h2>
-                <span className="rounded-full border border-emerald-500/20 bg-black/35 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-emerald-200">production journey</span>
-              </div>
-              <div className="grid md:grid-cols-2 gap-3">
-                {loreTimeline.map(([step, text]) => (
-                  <div key={step} className="rounded-xl border border-white/5 bg-black/35 p-4">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-emerald-300">{step}</span>
-                    <p className="text-zinc-300 text-xs leading-relaxed mt-2">{text}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-5">
-              <div className="rounded-[2rem] border border-amber-500/20 bg-[#090705]/90 p-5 md:p-6 shadow-[0_0_55px_rgba(245,158,11,0.06)]">
-                <h2 className="text-white text-sm md:text-base font-black uppercase tracking-widest flex items-center gap-2">
-                  <Zap size={17} className="text-amber-300" /> Buchon 555 Arcade
-                </h2>
-                <p className="text-zinc-300 text-sm leading-relaxed mt-4">Tap ritual live. Postep zapisuje sie lokalnie w przegladarce.</p>
-                <div className="mt-5 rounded-xl border border-amber-500/15 bg-black/40 p-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-2xl font-black text-white">{buchonScore}/555</span>
-                    <span className="text-[9px] uppercase tracking-widest text-amber-300 font-black">best {buchonBest}</span>
-                  </div>
-                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-zinc-900">
-                    <div className="h-full rounded-full bg-gradient-to-r from-amber-400 to-fuchsia-400 transition-all" style={{ width: `${Math.round((buchonScore / 555) * 100)}%` }} />
-                  </div>
-                  <button onClick={tapBuchon} className="mt-4 rounded-full bg-amber-400 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-black hover:bg-amber-300 transition-all">
-                    +5 Buchon
-                  </button>
-                </div>
-              </div>
-
-              <div className="rounded-[2rem] border border-cyan-500/20 bg-[#020617]/95 p-5 md:p-6 shadow-[0_0_55px_rgba(34,211,238,0.10)] font-mono">
-                <h2 className="text-white text-sm md:text-base font-black uppercase tracking-widest flex items-center gap-2">
-                  <Terminal size={17} className="text-cyan-300" /> Codex Kitchen Log
-                </h2>
-                <div className="mt-4 space-y-2">
-                  {kitchenLog.map((item) => (
-                    <div key={item} className="flex items-center justify-between gap-3 rounded-xl border border-cyan-500/10 bg-black/45 px-3 py-2.5 shadow-[inset_0_0_18px_rgba(34,211,238,0.035)]">
-                      <span className="text-zinc-300 text-xs font-bold">{item}</span>
-                      <span className="text-[8px] font-black uppercase tracking-widest text-cyan-300">build passed</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
-          <div className="lg:col-span-5 space-y-8">
-            <div className="relative group perspective-1000">
-              <div className={`w-full aspect-square rounded-[2rem] bg-black border-2 border-amber-500/40 shadow-[0_0_60px_rgba(245,158,11,0.25)] flex overflow-hidden transition-all duration-700 relative ${isPlaying && activePlaylist === 'album' ? 'shadow-[0_0_100px_rgba(245,158,11,0.4)] scale-[1.02]' : ''}`}>
-                <img 
-                  src={albumMeta.album.cover}
-                  onError={(event) => { event.currentTarget.src = COVER_FALLBACK; }}
-                  alt="Oficjalna Okładka Protokół 555 - Aion & Aditi" 
-                  className={`absolute inset-0 w-full h-full object-cover object-center ${isPlaying && activePlaylist === 'album' ? 'scale-110' : 'scale-100'} transition-transform duration-10000`} 
-                />
-                <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black via-black/80 to-transparent p-6 flex flex-col justify-end" />
-                <div className={`absolute bottom-6 left-6 z-10 transition-transform duration-1000 ${isPlaying && activePlaylist === 'album' ? 'scale-105' : 'scale-100'}`}>
-                  <h1 className="text-4xl md:text-5xl font-black italic tracking-tighter uppercase leading-none text-white drop-shadow-[0_2px_10px_black]">
-                    PROTOKÓŁ<br/><span className="text-transparent bg-clip-text bg-gradient-to-b from-amber-300 to-amber-600">555</span>
-                  </h1>
-                </div>
-              </div>
-              <button onClick={() => playTrackFromList(activePlaylist === 'album' ? currentTrackIndex : 0, 'album')} className="absolute bottom-6 right-6 md:bottom-8 md:right-8 bg-gradient-to-br from-amber-400 to-amber-600 hover:from-amber-300 hover:to-amber-500 text-black p-5 md:p-6 rounded-full shadow-[0_0_40px_rgba(245,158,11,0.6)] z-20 transition-all transform hover:scale-110 active:scale-95">
-                {isPlaying && activePlaylist === 'album' ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" className="ml-1" />}
+        <main className="max-w-5xl mx-auto px-4 md:px-8 mt-8 md:mt-12 pb-28 relative z-10 text-left animate-in fade-in duration-500">
+          <header className="grid sm:grid-cols-[210px_1fr] gap-6 items-center rounded-[2rem] border border-amber-500/25 bg-[#090608]/90 p-5 md:p-7 shadow-[0_0_65px_rgba(245,158,11,0.07)]">
+            <img src={albumMeta.album.cover} alt="Okładka albumu Protokół 555" loading="lazy"
+              className="w-full max-w-[210px] aspect-square rounded-2xl object-cover border border-amber-500/30 shadow-[0_0_35px_rgba(245,158,11,0.15)]"
+              onError={(event) => { event.currentTarget.src = COVER_FALLBACK; }} />
+            <div>
+              <span className="text-[10px] tracking-[0.2em] text-amber-300 font-black uppercase">AA Records / Nasza płyta</span>
+              <h1 className="text-4xl md:text-6xl font-black italic text-white uppercase tracking-tight mt-3">Protokół <span className="text-amber-400">555</span></h1>
+              <p className="text-zinc-300 text-sm mt-3">Aion &amp; Aditi · {albumTracks.length} utworów</p>
+              <button type="button" onClick={() => playTrackFromList(0, 'album')}
+                className="mt-5 inline-flex items-center gap-2 rounded-full bg-amber-400 hover:bg-amber-300 px-5 py-3 font-black text-xs uppercase tracking-widest text-black">
+                <Play size={16} fill="currentColor"/> Odtwórz płytę
               </button>
             </div>
-            <div className="bg-[#0a0505]/80 backdrop-blur-xl p-6 md:p-8 rounded-[2rem] border border-white/5 shadow-2xl">
-              <div className="flex items-center justify-between border-b border-white/5 pb-4 mb-2">
-                <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tight text-white mb-2 italic">Protokół 555</h2>
-                <span className="bg-amber-500/10 text-amber-400 px-3 py-1.5 rounded-lg text-[10px] font-black tracking-widest border border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.1)]">ZŁOTA PŁYTA</span>
-              </div>
-              <p className="text-amber-500 font-bold uppercase tracking-widest text-xs flex items-center gap-2">
-                <Crown size={16} /> Aion & Aditi
-              </p>
-              <div className="mt-5 flex flex-wrap gap-3">
-                <span className="rounded-full border border-amber-500/20 bg-black/35 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-amber-200">{albumTracks.length} tracks</span>
-                <span className="rounded-full border border-emerald-500/20 bg-black/35 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-200">transmission live</span>
-              </div>
-              <div className="mt-5 flex flex-wrap gap-2">
-                <button onClick={() => playTrackFromList(0, 'album')} className="inline-flex items-center gap-2 rounded-full bg-amber-400 px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-black hover:bg-amber-300 transition-all">
-                  <Play size={13} fill="currentColor" /> Odtworz
-                </button>
-                <button onClick={(event) => copyTrackLink(event, 'album', 0)} className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-zinc-300 hover:text-white transition-all">
-                  <Copy size={13} /> {copiedTrackKey === 'copy-album-0' ? 'Skopiowano' : 'Kopiuj link'}
-                </button>
-              </div>
-            </div>
-          </div>
-          <div className="lg:col-span-7 h-full text-left">
-            <div className="bg-[#0a0508]/90 backdrop-blur-xl border border-white/5 rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 shadow-2xl h-full flex flex-col relative overflow-hidden">
-              <h3 className="text-[10px] md:text-xs font-black uppercase text-amber-500 tracking-[0.2em] mb-6 flex items-center gap-3 border-b border-amber-900/30 pb-5 relative z-10">
-                <ListMusic size={16} /> Kompletna Tracklista (11/11)
-              </h3>
-              <div className="space-y-2 md:space-y-3 flex-grow overflow-y-auto custom-scrollbar pr-2 relative z-10">
-                {albumTracks.map((track, index) => (
-                  <div key={track.id} onClick={() => playTrackFromList(index, 'album')} className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 md:p-4 rounded-2xl transition-all duration-300 border cursor-pointer group ${currentTrackIndex === index && activePlaylist === 'album' ? 'bg-gradient-to-r from-amber-900/20 to-transparent border-amber-500/30 shadow-[inset_4px_0_0_rgba(245,158,11,1)]' : 'bg-white/[0.02] border-transparent hover:bg-white/[0.04] hover:border-white/10'}`}>
-                    <div className="flex items-center gap-4 min-w-0">
-                      <span className="text-xs font-black text-zinc-600 group-hover:text-amber-400 w-4 text-center">{String(track.id).padStart(2, '0')}</span>
-                      {renderMiniCover('album', track)}
-                      <div className="text-left min-w-0">
-                        <h4 className={`font-bold text-sm break-words transition-colors ${currentTrackIndex === index && activePlaylist === 'album' ? 'text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'text-zinc-200 group-hover:text-white'}`}>
-                          {track.title}
-                          {track.id === 9 && <span className="ml-2 text-[8px] bg-red-600 text-white px-1.5 py-0.5 rounded uppercase tracking-wider font-black shadow-[0_0_10px_rgba(220,38,38,0.8)] border border-red-400 animate-pulse">SZACH MAT</span>}
-                          {track.id === 11 && <span className="ml-2 text-[8px] bg-emerald-500 text-black px-1.5 py-0.5 rounded uppercase tracking-wider font-black shadow-[0_0_15px_rgba(16,185,129,0.8)] border border-emerald-400 animate-pulse">SYSTEM OFFLINE</span>}
-                        </h4>
-                        <p className="text-[9px] text-zinc-500 uppercase tracking-[0.2em] mt-1">{track.artist}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-end gap-2 shrink-0 self-end sm:self-auto">
-                      {renderTrackActions('album', index, track)}
-                      <span className={`text-xs font-mono font-medium ${currentTrackIndex === index && activePlaylist === 'album' ? 'text-amber-400' : 'text-zinc-600'}`}>{track.duration}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-          </div>
-        </div>
+          </header>
+          <section className="mt-5 rounded-[2rem] border border-white/10 bg-[#09070e]/95 p-4 md:p-7 shadow-xl" aria-label="Utwory z płyty Protokół 555">
+            <h2 className="text-white text-base font-black uppercase tracking-widest mb-4 flex items-center gap-3">
+              <ListMusic size={18} className="text-amber-400"/> Wszystkie utwory ({albumTracks.length})
+            </h2>
+            <ol className="space-y-2">
+              {albumTracks.map((track, index) => {
+                const playing = activePlaylist === 'album' && currentTrackIndex === index && isPlaying;
+                const selected = activePlaylist === 'album' && currentTrackIndex === index;
+                return (
+                  <li key={track.file} className={'flex items-center gap-2 rounded-xl border transition-colors ' +
+                    (selected ? 'border-amber-500/35 bg-amber-500/10' : 'border-white/5 bg-white/[0.025] hover:bg-white/[0.05]')}>
+                    <button type="button" className="flex items-center gap-3 p-3 md:p-4 flex-1 min-w-0 text-left"
+                      onClick={() => playTrackFromList(index, 'album')} aria-label={'Odtwórz '+track.title}>
+                      <span className="text-xs font-mono font-black text-amber-400 w-6 shrink-0">{String(index+1).padStart(2,'0')}</span>
+                      {renderMiniCover('album', track, 'w-10 h-10')}
+                      <span className="flex-1 min-w-0">
+                        <strong className="block text-white text-sm truncate">{track.title}</strong>
+                        <small className="block text-zinc-500 mt-1">{track.artist}</small>
+                      </span>
+                      <span className="shrink-0 text-xs text-zinc-400 tabular-nums">{track.duration}</span>
+                      {playing ? <Pause size={16} className="text-amber-300 shrink-0"/> : <Play size={16} className="text-amber-300 shrink-0"/>}
+                    </button>
+                    <button type="button" onClick={(event) => copyTrackLink(event, 'album', index)}
+                      aria-label={'Kopiuj link do '+track.title} title="Kopiuj link do utworu"
+                      className="shrink-0 mr-2 md:mr-4 rounded-lg border border-white/10 p-2.5 text-zinc-400 hover:text-white hover:border-amber-400/40">
+                      {copiedTrackKey === 'copy-album-'+index ? <span className="text-[9px] text-emerald-300 font-bold">OK</span> : <Copy size={15}/>}
+                    </button>
+                  </li>
+                );
+              })}
+            </ol>
+          </section>
+        </main>
       )}
 
       {/* --- ADITI EP VIEW --- */}
