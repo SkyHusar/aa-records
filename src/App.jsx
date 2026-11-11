@@ -1233,7 +1233,8 @@ const App = () => {
             </div>
           </section>
 
-          <section className="mt-6 grid lg:grid-cols-[0.85fr_1.15fr] gap-5">
+          <section className="mt-6">
+
             <div className="rounded-[2rem] border border-cyan-500/20 bg-[#05080a]/90 p-5 md:p-6 shadow-[0_0_55px_rgba(34,211,238,0.06)]">
               <h2 className="text-white text-sm md:text-base font-black uppercase tracking-widest flex items-center gap-2">
                 <BookOpen size={17} className="text-cyan-300" /> AA Prompt Packs
@@ -1260,28 +1261,6 @@ const App = () => {
               </div>
             </div>
 
-            <div className="rounded-[2rem] border border-fuchsia-500/20 bg-[#07040a]/90 p-5 md:p-6 shadow-[0_0_55px_rgba(217,70,239,0.06)]">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <h2 className="text-white text-sm md:text-base font-black uppercase tracking-widest flex items-center gap-2">
-                  <ImageIcon size={17} className="text-fuchsia-300" /> Cover Art Prompt Pack Preview
-                </h2>
-                <span className="rounded-full border border-fuchsia-500/25 bg-black/35 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-fuchsia-200">3000x3000 ready</span>
-              </div>
-              <p className="text-zinc-400 text-xs leading-relaxed mt-3">
-                Recommended final cover export: 3000x3000 PNG/JPG, square 1:1, sRGB.
-              </p>
-              <div className="mt-5 grid md:grid-cols-2 gap-3">
-                {coverPromptPacks.map(({ title, prompt }) => (
-                  <div key={title} className="rounded-2xl border border-white/10 bg-black/35 p-4">
-                    <p className="text-fuchsia-200 text-xs font-black uppercase tracking-widest">{title}</p>
-                    <p className="text-zinc-300 text-xs leading-relaxed mt-3">{prompt}</p>
-                    <button onClick={() => copyToClipboardWithStatus(`cover-${title}`, prompt)} className="mt-3 inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-fuchsia-300 hover:text-white">
-                      <Copy size={13} /> {copiedUtilityKey === `cover-${title}` ? 'Copied' : 'Copy prompt'}
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
           </section>
         </div>
       )}
