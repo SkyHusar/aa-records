@@ -99,7 +99,7 @@ export default function Discography({ onNavigate }) {
         <Sparkles size={29} aria-hidden="true"/>
         <h2>Masz własną historię do opowiedzenia?</h2>
         <p>Wspólne tworzenie AA Records zaczyna się od jednego pomysłu. Opisz klimat, tekst albo melodię — możesz przygotować zgłoszenie i wysłać je e-mailem.</p>
-        <button type="button" onClick={() => onNavigate('create')}><Heart size={16}/> Zaproponuj współpracę</button>
+        <button type="button" onClick={() => onNavigate('collab')}><Heart size={16}/> Zaproponuj współpracę</button>
         <p className="aadisc-direct-contact">Kontakt: <a href="mailto:skyhusaria@gmail.com?subject=AA%20Records%20-%20wspolpraca">skyhusaria@gmail.com</a></p>
         <small>Nie publikujemy przesłanych materiałów bez uzgodnienia z autorem. Formularz nie wysyła nic automatycznie.</small>
       </footer>

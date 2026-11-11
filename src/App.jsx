@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+﻿import { useState, useEffect, useRef, useCallback } from 'react';
 import './scene-themes.css';
 import AAExperience from './AAExperience';
 import AAShowcase from './AAShowcase';
 import After4AM from './AfterFourAM.jsx';
 import Discography from './Discography.jsx';
+import ContactForm from './ContactForm.jsx';
 import { trackNumber, stripTrackPrefix } from './trackPresentation';
 import { after4amTracks } from './after4am';
 import MiniVisualizer from './MiniVisualizer';
@@ -12,7 +13,7 @@ import {
   Play, Pause, SkipForward, SkipBack, Volume2, Heart, Disc, 
   Terminal, Zap, ListMusic, Crown, Flame, Cpu,
   Sparkles, BookOpen, Radio, Shuffle, Activity, AudioWaveform,
-  ShieldAlert, ImageIcon, Video, Bot, ExternalLink, Mail, Send, Handshake, Copy, Share2
+  ShieldAlert, ImageIcon, Video, Bot, ExternalLink, Send, Handshake, Copy, Share2
 } from 'lucide-react';
 
 const App = () => {
@@ -2539,8 +2540,8 @@ const App = () => {
       {/* --- CONTACT / COLLAB VIEW --- */}
       {currentView === 'collab' && (
         <div className="max-w-5xl mx-auto px-4 md:px-8 mt-8 md:mt-12 animate-in fade-in duration-700 pb-24 relative z-10">
-          <section className="grid lg:grid-cols-[0.9fr_1.1fr] gap-8 md:gap-10 items-center">
-            <div className="space-y-5">
+          <section className="grid lg:grid-cols-[0.82fr_1.18fr] gap-8 md:gap-10 items-start">
+            <div className="space-y-5 lg:sticky lg:top-24">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-[9px] md:text-[10px] font-black uppercase tracking-widest">
                 <Handshake size={13} /> Contact / Collab
               </div>
@@ -2548,33 +2549,14 @@ const App = () => {
                 Wyślij demo albo <span className="text-emerald-400">wejdź w sojusz</span>
               </h2>
               <p className="text-zinc-300 text-sm md:text-base leading-relaxed">
-                AA Records jest otwarte na kolaboracje, zwrotki, produkcję, wizualizacje i dziwne pomysły, które mają puls. Bez formularza, bez biurokracji: piszesz prosto do Daniela.
+                Masz własny numer, zwrotkę, bit, pomysł na teledysk lub chcesz tworzyć muzykę razem z AA Records? Napisz do nas bezpośrednio przez formularz, bez otwierania swojej poczty.
+              </p>
+              <p className="text-zinc-400 text-xs leading-relaxed">
+                Odbiorca: <a className="text-emerald-200 font-bold underline underline-offset-4 hover:text-white" href="mailto:skyhusaria@gmail.com">skyhusaria@gmail.com</a>
               </p>
             </div>
-
             <div className="bg-[#050805]/90 border border-emerald-500/20 rounded-2xl p-6 md:p-8 shadow-[0_0_60px_rgba(16,185,129,0.08)]">
-              <div className="space-y-3">
-                <a
-                  href="mailto:skyhusaria@gmail.com"
-                  className="flex items-center justify-between gap-4 p-4 rounded-xl bg-white/[0.03] border border-white/5 hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all"
-                >
-                  <span className="flex items-center gap-3 text-sm font-black text-white"><Mail size={18} className="text-emerald-300" /> skyhusaria@gmail.com</span>
-                  <ExternalLink size={14} className="text-zinc-500" />
-                </a>
-
-                <a
-                  href="mailto:skyhusaria@gmail.com?subject=AA%20Records%20demo%20/%20collab%20request&body=Siema%20AA%20Records%2C%0A%0AChc%C4%99%20wys%C5%82a%C4%87%20demo%20/%20propozycj%C4%99%20wsp%C3%B3%C5%82pracy%3A%0A%0ALink%3A%0AKilka%20s%C5%82%C3%B3w%20o%20klimacie%3A%0A"
-                  className="flex items-center justify-between gap-4 p-4 rounded-xl bg-emerald-500 text-black hover:bg-emerald-400 transition-all font-black uppercase tracking-widest text-xs"
-                >
-                  <span className="flex items-center gap-3"><Send size={17} /> Send demo / collab request</span>
-                  <ExternalLink size={14} />
-                </a>
-
-                <div className="flex items-center justify-between gap-4 p-4 rounded-xl bg-black/40 border border-white/5 text-zinc-400">
-                  <span className="flex items-center gap-3 text-sm font-black"><Radio size={18} className="text-zinc-500" /> TikTok / social placeholder</span>
-                  <span className="text-[9px] uppercase tracking-widest text-zinc-600 font-black">coming soon</span>
-                </div>
-              </div>
+              <ContactForm />
             </div>
           </section>
         </div>

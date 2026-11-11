@@ -173,6 +173,10 @@ export default function AAExperience({ view, albums, trackCount, onNavigate, onP
       <main className="aaex">
         <header className="aaex-simple-header"><span className="aaex-eyebrow"><WandSparkles size={15} /> TWOJA MUZYKA</span><h1>Stwórz swój <em>track.</em></h1><p>Masz pomysł? Opisz go, wybierz klimat i odezwij się do nas. Resztę wymyślimy wspólnie.</p></header>
         <TrackBrief />
+        <div className="aaex-contact-redirect">
+          <span>Wolisz wysłać pomysł bez uruchamiania swojej poczty?</span>
+          <button type="button" onClick={() => onNavigate('collab')}>Przejdź do formularza współpracy <ArrowRight size={16}/></button>
+        </div>
         <section className="aaex-soft-cta"><div><span className="aaex-eyebrow">WIĘCEJ NARZĘDZI</span><h2>Masz wenę? Zajrzyj do Forge Tools.</h2></div><button type="button" className="aaex-btn aaex-btn--outline" onClick={() => onNavigate('tools')}>Otwórz Forge Tools <ArrowRight size={17} /></button></section>
       </main>
     );
