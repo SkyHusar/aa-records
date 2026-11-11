@@ -3,6 +3,7 @@ import './scene-themes.css';
 import AAExperience from './AAExperience';
 import AAShowcase from './AAShowcase';
 import After4AM from './AfterFourAM.jsx';
+import { trackNumber, stripTrackPrefix } from './trackPresentation';
 import { after4amTracks } from './after4am';
 import MiniVisualizer from './MiniVisualizer';
 import AAIntro from './AAIntro';
@@ -1421,7 +1422,7 @@ const App = () => {
                   TERAZ GRA ({activePlaylist.toUpperCase()})
                 </span>
                 <h3 className="text-4xl md:text-6xl font-black italic tracking-tighter text-white drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
-                  {activeTrack.title}
+                  {trackNumber(currentTrackIndex + 1)}. {stripTrackPrefix(activeTrack.title)}
                 </h3>
                 <p className="text-sm md:text-lg font-bold text-zinc-300 uppercase tracking-widest mt-2 drop-shadow-[0_2px_5px_rgba(0,0,0,0.8)]">
                   {activeTrack.artist}
@@ -1938,7 +1939,7 @@ const App = () => {
                 {albumTracks.map((track, index) => (
                   <div key={track.id} onClick={() => playTrackFromList(index, 'album')} className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 md:p-4 rounded-2xl transition-all duration-300 border cursor-pointer group ${currentTrackIndex === index && activePlaylist === 'album' ? 'bg-gradient-to-r from-amber-900/20 to-transparent border-amber-500/30 shadow-[inset_4px_0_0_rgba(245,158,11,1)]' : 'bg-white/[0.02] border-transparent hover:bg-white/[0.04] hover:border-white/10'}`}>
                     <div className="flex items-center gap-4 min-w-0">
-                      <span className="text-xs font-black text-zinc-600 group-hover:text-amber-400 w-4 text-center">{track.id}</span>
+                      <span className="text-xs font-black text-zinc-600 group-hover:text-amber-400 w-4 text-center">{String(track.id).padStart(2, '0')}</span>
                       {renderMiniCover('album', track)}
                       <div className="text-left min-w-0">
                         <h4 className={`font-bold text-sm break-words transition-colors ${currentTrackIndex === index && activePlaylist === 'album' ? 'text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'text-zinc-200 group-hover:text-white'}`}>
@@ -2010,7 +2011,7 @@ const App = () => {
                 {aditiTracks.map((track, index) => (
                   <div key={track.id} onClick={() => playTrackFromList(index, 'aditi-ep')} className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-2xl transition-all duration-300 border cursor-pointer group ${currentTrackIndex === index && activePlaylist === 'aditi-ep' ? 'bg-gradient-to-r from-purple-900/20 to-transparent border-purple-500/30 shadow-[inset_4px_0_0_rgba(168,85,247,1)]' : 'bg-white/[0.02] border-transparent hover:bg-white/[0.04] hover:border-white/10'}`}>
                     <div className="flex items-center gap-5 min-w-0">
-                      <span className={`text-xs font-black transition-all ${currentTrackIndex === index && activePlaylist === 'aditi-ep' ? 'text-purple-400' : 'text-zinc-600'}`}>{track.id}</span>
+                      <span className={`text-xs font-black transition-all ${currentTrackIndex === index && activePlaylist === 'aditi-ep' ? 'text-purple-400' : 'text-zinc-600'}`}>{String(track.id).padStart(2, '0')}</span>
                       {renderMiniCover('aditi-ep', track)}
                       <div className="text-left min-w-0">
                         <h4 className={`font-bold text-sm break-words transition-colors ${currentTrackIndex === index && activePlaylist === 'aditi-ep' ? 'text-purple-400 drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]' : 'text-zinc-200 group-hover:text-white'}`}>
@@ -2094,7 +2095,7 @@ const App = () => {
                   }`}
                 >
                   <div className="flex items-center gap-4 min-w-0">
-                    <span className="text-xs font-black text-zinc-600 group-hover:text-amber-400 w-4 text-center">{track.id}</span>
+                    <span className="text-xs font-black text-zinc-600 group-hover:text-amber-400 w-4 text-center">{String(track.id).padStart(2, '0')}</span>
                     {renderMiniCover('album', track)}
                     <div className="text-left min-w-0">
                       <h4 className={`font-bold text-sm break-words transition-colors ${currentTrackIndex === index && activePlaylist === 'album' ? 'text-amber-400 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'text-zinc-200 group-hover:text-white'}`}>
@@ -2167,7 +2168,7 @@ const App = () => {
                       {ziomaleTracks.map((track, index) => (
                         <div key={track.id} onClick={() => playTrackFromList(index, 'ziomale')} className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-xl cursor-pointer transition-all ${currentTrackIndex === index && activePlaylist === 'ziomale' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-[inset_4px_0_0_rgba(16,185,129,0.5)]' : 'bg-white/[0.02] border border-transparent hover:bg-white/[0.05]'}`}>
                            <div className="flex items-center gap-4 min-w-0">
-                              <span className="text-xs font-black text-emerald-700 w-4 text-center">{track.id}</span>
+                              <span className="text-xs font-black text-emerald-700 w-4 text-center">{String(track.id).padStart(2, '0')}</span>
                               {renderMiniCover('ziomale', track)}
                               <div className="flex flex-col text-left min-w-0">
                                 <span className="font-black text-sm break-words">{track.title}</span>
@@ -2255,7 +2256,7 @@ const App = () => {
                     }`}
                   >
                     <div className="flex items-start gap-4 min-w-0">
-                      <span className="text-xs font-black text-cyan-500/70 w-4 text-center pt-1">{track.id}</span>
+                      <span className="text-xs font-black text-cyan-500/70 w-4 text-center pt-1">{String(track.id).padStart(2, '0')}</span>
                       {renderMiniCover('elyon', track)}
                       <div className="min-w-0 text-left">
                         <div className="flex flex-wrap items-center gap-2">
@@ -2686,7 +2687,7 @@ AA Records
              {activePlaylist === 'album' ? <Disc size={28} className={`relative z-10 ${isPlaying ? 'animate-spin' : ''}`} /> : (activePlaylist === 'aditi-ep' ? <Sparkles size={28} className={`relative z-10 ${isPlaying ? 'animate-pulse' : ''}`} /> : <Zap size={28} className={`relative z-10 ${isPlaying ? 'animate-pulse' : ''}`} />)}
           </div>
           <div className="overflow-hidden text-left">
-            <h4 className="text-[11px] md:text-sm font-black text-white truncate italic">{activeTrack.title}</h4>
+            <h4 className="text-[11px] md:text-sm font-black text-white truncate italic">{trackNumber(currentTrackIndex + 1)}. {stripTrackPrefix(activeTrack.title)}</h4>
             <p className={`text-[9px] md:text-[11px] font-bold uppercase tracking-widest truncate mt-0.5 ${activePlaylist === 'ziomale' ? 'text-emerald-400' : (activePlaylist === 'aditi-ep' ? 'text-purple-400' : 'text-amber-500/80')}`}>{activeTrack.artist}</p>
           </div>
         </div>

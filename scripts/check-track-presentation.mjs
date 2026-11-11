@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import { after4amTracks } from '../src/after4am.js';
+import { trackNumber, stripTrackPrefix, originalSeriesNumber } from '../src/trackPresentation.js';
+assert.equal(after4amTracks.length,22);
+assert.deepEqual(after4amTracks.map((t)=>t.id),Array.from({length:22},(_,i)=>i+1));
+assert.equal(trackNumber(1),'01');
+assert.equal(trackNumber(22),'22');
+assert.equal(stripTrackPrefix('17. Neonowy Autobus 04:44'),'Neonowy Autobus 04:44');
+assert.equal(stripTrackPrefix('03% Baterii'),'03% Baterii');
+assert.equal(originalSeriesNumber('28. Własne Niebo'),28);
+assert.equal(originalSeriesNumber('Pierwszy Autobus'),null);
+for(const track of after4amTracks) assert.ok(stripTrackPrefix(track.title).length);
+const originalNumbers=after4amTracks.map(t=>originalSeriesNumber(t.title)).filter(n=>n!==null);
+assert.deepEqual(originalNumbers,[17,18,21,22,23,25,28]);
+console.log('PASS: 22 numbered album tracks, 7 original 50-series markers, no duplicate title prefixes.');
