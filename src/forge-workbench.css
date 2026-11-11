@@ -1,0 +1,9 @@
+.aa-forge-workbench .aa-forge-label{display:block;font-size:12px;font-weight:750;color:#e8d9f0;line-height:1.5}
+.aa-forge-workbench .aa-forge-signal{display:flex;align-items:center;gap:7px;padding:11px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.025)}
+.aa-forge-workbench .aa-forge-primary{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:12px 17px;border-radius:25px;color:#130c1c;background:linear-gradient(105deg,#e9abf9,#a4f0d7);font-size:12px;font-weight:900}
+.aa-forge-workbench .aa-forge-primary:hover{filter:brightness(1.13)}
+.aa-forge-workbench .aa-forge-secondary{border:1px solid rgba(255,255,255,.18);border-radius:25px;padding:12px 17px;color:#e8ddea;font-size:12px;font-weight:750}
+.aa-forge-workbench .aa-forge-secondary:hover{background:rgba(255,255,255,.06)}
+.aa-forge-workbench .aa-forge-send{scroll-margin-top:115px}
+.aa-forge-workbench .aa-collab-field{width:100%;min-width:0}
+@media(max-width:600px){.aa-forge-workbench .aa-forge-primary{width:100%}.aa-forge-workbench .aa-forge-secondary{width:100%}}

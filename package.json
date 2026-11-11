@@ -11,7 +11,8 @@
     "test:track-numbers": "node scripts/check-track-presentation.mjs",
     "preview": "vite preview",
     "test:experience": "node scripts/check-experience.mjs",
-    "test:contact": "node scripts/check-contact.mjs"
+    "test:contact": "node scripts/check-contact.mjs",
+    "test:forge": "node scripts/check-forge.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.577.0",
