@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://aa-records.vercel.app/sitemap.xml
