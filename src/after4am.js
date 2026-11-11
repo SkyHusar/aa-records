@@ -14,5 +14,12 @@ export const after4amTracks = [
   { id: 12, title: "Paragon z Końca Świata", artist: "AA Records · After 4 AM", album: "After 4 AM", duration: "4:18", file: "paragon-z-konca-swiata.mp3", cover: "/covers/automat-z-kawa.webp" },
   { id: 13, title: "Pierwszy Autobus", artist: "AA Records · After 4 AM", album: "After 4 AM", duration: "4:23", file: "pierwszy-autobus.mp3", cover: "/covers/automat-z-kawa.webp" },
   { id: 14, title: "Telepatia na Stacji", artist: "AA Records · After 4 AM", album: "After 4 AM", duration: "2:34", file: "telepatia-na-stacji.mp3", cover: "/covers/zielone-swiatla.webp" },
-  { id: 15, title: "Zielone Światła", artist: "AA Records · After 4 AM", album: "After 4 AM", duration: "4:28", file: "zielone-swiatla.mp3", cover: "/covers/zielone-swiatla.webp" }
+  { id: 15, title: "Zielone Światła", artist: "AA Records · After 4 AM", album: "After 4 AM", duration: "4:28", file: "zielone-swiatla.mp3", cover: "/covers/zielone-swiatla.webp" },
+  { id: 16, title: "17. Neonowy Autobus 04:44", artist: "AA Records · After 4 AM", album: "After 4 AM", duration: "3:49", file: "17-neonowy-autobus-0444.mp3", cover: "/covers/zielone-swiatla.webp" },
+  { id: 17, title: "18. Słodka Anomalia", artist: "AA Records · After 4 AM", album: "After 4 AM", duration: "3:49", file: "18-slodka-anomalia.mp3", cover: "/covers/dziewczyna-z-piekarni.webp" },
+  { id: 18, title: "21. Manifest Małych Rzeczy", artist: "AA Records · After 4 AM", album: "After 4 AM", duration: "3:50", file: "21-manifest-malych-rzeczy.mp3", cover: "/covers/automat-z-kawa.webp" },
+  { id: 19, title: "22. Wciąż Tańczą Satelity", artist: "AA Records · After 4 AM", album: "After 4 AM", duration: "3:49", file: "22-wciaz-tancza-satelity.mp3", cover: "/covers/zielone-swiatla.webp" },
+  { id: 20, title: "23. Radio Księżyc", artist: "AA Records · After 4 AM", album: "After 4 AM", duration: "3:53", file: "23-radio-ksiezyc.mp3", cover: "/covers/aa-intro-poster.webp" },
+  { id: 21, title: "25. Czas z Plasteliny", artist: "AA Records · After 4 AM", album: "After 4 AM", duration: "3:50", file: "25-czas-z-plasteliny.mp3", cover: "/covers/dziewczyna-z-piekarni.webp" },
+  { id: 22, title: "28. Własne Niebo", artist: "AA Records · After 4 AM", album: "After 4 AM", duration: "3:50", file: "28-wlasne-niebo.mp3", cover: "/covers/aa-hero-scene.webp" },
 ];
