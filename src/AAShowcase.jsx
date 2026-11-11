@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useState } from 'react';
+import { after4amTracks } from './after4am';
 import {
   ArrowRight, AudioWaveform, Disc3, Heart, Headphones, Image as ImageIcon,
   Layers3, Music2, SlidersHorizontal, Sparkles, X, Video, Play
@@ -8,7 +9,7 @@ import './aa-showcase.css';
 import './aa-reference-hero.css';
 
 const featuredAlbums = [
-  { title:'After 4 AM', label:'15 nowych utworów', cover:'/covers/zielone-swiatla.webp', target:'after4am' },
+  { title:'After 4 AM', label:after4amTracks.length + ' utworów', cover:'/covers/zielone-swiatla.webp', target:'after4am' },
   { title:'Aditi EP', label:'EP · 3 utwory', cover:'/covers/aditi.png', target:'aditi-ep' },
   { title:'Ziomale Sojuszu', label:'Album · 7 utworów', cover:'/covers/ziomalesojuszu.png', target:'ziomale' },
   { title:'Terra Infinita', label:'Projekt specjalny', cover:'/covers/terrainfinita.png', target:'terrainfinita' }

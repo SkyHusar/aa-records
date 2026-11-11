@@ -44,9 +44,9 @@ for (const track of playableTracks) {
   }
 }
 
-if (after4amFiles.length !== 15) failures.push(`After 4 AM should contain 15 tracks; found ${after4amFiles.length}.`);
+if (after4amFiles.length !== 22) failures.push(`After 4 AM should contain 22 tracks; found ${after4amFiles.length}.`);
 if (new Set(after4amFiles).size !== after4amFiles.length) failures.push('Duplicate audio paths found in After 4 AM.');
-if (playableTracks.length !== 45) failures.push(`Expected 45 playable tracks (28 previous + 15 After 4 AM + Bez Rakiet + Nie Zgasisz Nas); found ${playableTracks.length}.`);
+if (playableTracks.length !== 52) failures.push(`Expected 52 playable tracks (28 previous + 22 After 4 AM + Bez Rakiet + Nie Zgasisz Nas); found ${playableTracks.length}.`);
 const requiredAssets = ['public/videos/aa-universe-remembers-us.mp4', 'public/covers/aa-intro-poster.webp', 'public/covers/bez-rakiet.jpg', 'public/covers/aa-hero-scene.webp'];
 for (const asset of requiredAssets) if (!existsSync(join(rootDir, asset))) failures.push(`Missing cinematic asset: ${asset}`);
 if (!tracks.some((track) => track.title.includes('EGZYSTENCJALNY BUCH'))) {
@@ -54,6 +54,13 @@ if (!tracks.some((track) => track.title.includes('EGZYSTENCJALNY BUCH'))) {
 }
 
 const requiredNewTracks = [
+  ["17. Neonowy Autobus 04:44", "17-neonowy-autobus-0444.mp3"],
+  ["18. Słodka Anomalia", "18-slodka-anomalia.mp3"],
+  ["21. Manifest Małych Rzeczy", "21-manifest-malych-rzeczy.mp3"],
+  ["22. Wciąż Tańczą Satelity", "22-wciaz-tancza-satelity.mp3"],
+  ["23. Radio Księżyc", "23-radio-ksiezyc.mp3"],
+  ["25. Czas z Plasteliny", "25-czas-z-plasteliny.mp3"],
+  ["28. Własne Niebo", "28-wlasne-niebo.mp3"],
   ['15. NIE ZGASISZ NAS (Aditi 555)', '15-nie-zgasisz-nas-aditi-555.mp3'],
   ['Dym na betonie', 'dym-na-betonie.mp3'],
   ['Brat Codex Gotuje', 'brat-codex-gotuje.mp3'],
